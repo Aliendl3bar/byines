@@ -17,7 +17,7 @@
             <section class="product-gallery">
                 <!-- Main Image -->
                 <div class="main-image-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1.5rem; overflow: hidden; background-color: #EAE4DE; border-radius: 1rem;">
-                    <img id="mainImage" alt="Elegant Abaya - Main View" src="assets/boutique_byines_3314221782547857149.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" />
+                    <img id="mainImage" alt="Elegant Abaya - Main View" src="../assets/boutique_byines_3314221782547857149.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" />
                     <button class="wishlist-btn" style="position: absolute; top: 1.5rem; right: 1.5rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease;">
                         <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                             <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -27,10 +27,10 @@
 
                 <!-- Thumbnail Gallery -->
                 <div class="thumbnail-gallery" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;">
-                    <img class="thumbnail" src="assets/boutique_byines_3314221782547857149.png" alt="View 1" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid var(--brand-dark); opacity: 1; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
-                    <img class="thumbnail" src="assets/boutique_byines_3469503560297835658.png" alt="View 2" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
-                    <img class="thumbnail" src="assets/boutique_byines_3844045366027357924.png" alt="View 3" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
-                    <img class="thumbnail" src="assets/boutique_byines_3628664731358744968.png" alt="View 4" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
+                    <img class="thumbnail" src="../assets/boutique_byines_3314221782547857149.png" alt="View 1" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid var(--brand-dark); opacity: 1; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
+                    <img class="thumbnail" src="../assets/boutique_byines_3469503560297835658.png" alt="View 2" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
+                    <img class="thumbnail" src="../assets/boutique_byines_3844045366027357924.png" alt="View 3" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
+                    <img class="thumbnail" src="../assets/boutique_byines_3628664731358744968.png" alt="View 4" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
                 </div>
             </section>
 
@@ -199,7 +199,7 @@
             <div class="product-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem 1rem;">
                 <div class="product-card" style="cursor: pointer;">
                     <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
-                        <img alt="Classic Abaya" class="hover-scale" src="assets/boutique_byines_3469503560297835658.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
+                        <img alt="Classic Abaya" class="hover-scale" src="../assets/boutique_byines_3469503560297835658.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
                         <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;">
                             <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
                                 <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -211,7 +211,7 @@
                 </div>
                 <div class="product-card" style="cursor: pointer;">
                     <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
-                        <img alt="Modern Abaya" class="hover-scale" src="assets/boutique_byines_3844045366027357924.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
+                        <img alt="Modern Abaya" class="hover-scale" src="../assets/boutique_byines_3844045366027357924.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
                         <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;">
                             <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
                                 <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -223,7 +223,7 @@
                 </div>
                 <div class="product-card" style="cursor: pointer;">
                     <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
-                        <img alt="Evening Abaya" class="hover-scale" src="assets/boutique_byines_3628664731358744968.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
+                        <img alt="Evening Abaya" class="hover-scale" src="../assets/boutique_byines_3628664731358744968.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
                         <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;">
                             <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
                                 <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -235,7 +235,7 @@
                 </div>
                 <div class="product-card" style="cursor: pointer;">
                     <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
-                        <img alt="Textured Abaya" class="hover-scale" src="assets/boutique_byines_3628664731358744968.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
+                        <img alt="Textured Abaya" class="hover-scale" src="../assets/boutique_byines_3628664731358744968.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
                         <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;">
                             <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
                                 <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>

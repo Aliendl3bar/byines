@@ -90,6 +90,7 @@ a {
     justify-content: flex-end;
     gap: 1.5rem;
     flex-shrink: 0;
+    margin-left: 1rem;
 }
 
 .icon-btn {
@@ -97,6 +98,85 @@ a {
     border: none;
     cursor: pointer;
     transition: opacity 0.3s;
+}
+
+.icon-btn:hover {
+    opacity: 0.6;
+}
+
+/* --- Account Dropdown Menu --- */
+.account-menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+.account-dropdown {
+    position: absolute;
+    top: calc(100% + 1rem);
+    right: 0;
+    width: 200px;
+    background-color: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+}
+
+/* Show on hover or focus */
+.account-menu-container:hover .account-dropdown,
+.account-menu-container:focus-within .account-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.account-dropdown .dropdown-arrow {
+    position: absolute;
+    top: -6px;
+    right: 14px;
+    width: 10px;
+    height: 10px;
+    background-color: var(--white);
+    border-left: 1px solid var(--gray-200);
+    border-top: 1px solid var(--gray-200);
+    transform: rotate(45deg);
+}
+
+.dropdown-list {
+    list-style: none;
+    padding: 0.5rem 0;
+}
+
+.dropdown-list li {
+    padding: 0;
+}
+
+.dropdown-list a, .dropdown-list .welcome-user {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    color: var(--brand-dark);
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-list a:hover {
+    background-color: var(--gray-100);
+    opacity: 1;
+}
+
+.dropdown-list .welcome-user {
+    color: var(--gray-500);
+    border-bottom: 1px solid var(--gray-100);
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .icon-btn:hover {
@@ -374,6 +454,11 @@ a {
 
 @media (min-width: 768px) {
     .footer-bottom { flex-direction: row; justify-content: space-between; }
+}
+
+@media (max-width: 767px) {
+    .header-container { gap: 1rem; }
+    .main-nav { gap: 1.5rem; font-size: 0.7rem; }
 }
 
 /* --- Custom Scrollbar --- */

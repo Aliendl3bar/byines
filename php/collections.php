@@ -1,5 +1,5 @@
 <?php include 'header.php'; ?>
-<head><link rel="stylesheet" href="cstyle.css"></head>
+<link rel="stylesheet" href="../css/cstyle.css">
     <main class="main-content">
         <!-- Breadcrumbs & Heading -->
         <div class="header-section">
