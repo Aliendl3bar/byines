@@ -1,7 +1,6 @@
 -- 1. Create and select Database
 CREATE DATABASE IF NOT EXISTS `byines` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `byines`;
-
 -- 2. Create Users Table
 CREATE TABLE IF NOT EXISTS `users` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -13,16 +12,14 @@ CREATE TABLE IF NOT EXISTS `users` (
     `role` ENUM('user', 'admin') NOT NULL DEFAULT 'user',
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
-
+) ;
 -- 3. Create Categories Table
 CREATE TABLE IF NOT EXISTS `categories` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(100) NOT NULL,
     `slug` VARCHAR(100) NOT NULL UNIQUE,
     `image_url` VARCHAR(255) NULL
-) ENGINE=InnoDB;
-
+) ;
 -- 4. Create Products Table
 CREATE TABLE IF NOT EXISTS `products` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -36,8 +33,7 @@ CREATE TABLE IF NOT EXISTS `products` (
     `is_active` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '0 = hidden, 1 = visible',
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
+) ;
 -- 5. Create Product Images Table
 CREATE TABLE IF NOT EXISTS `product_images` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -47,8 +43,7 @@ CREATE TABLE IF NOT EXISTS `product_images` (
     `sort_order` INT NOT NULL DEFAULT 1,
     `is_main` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '1 = hero/thumbnail image',
     FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
+) ;
 -- 6. Create Product Variants Table (Size & Color combinations)
 CREATE TABLE IF NOT EXISTS `product_variants` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -59,8 +54,7 @@ CREATE TABLE IF NOT EXISTS `product_variants` (
     `price_modifier` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     UNIQUE KEY `variant_unique` (`product_id`, `color`, `size`),
     FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
+) ;
 -- 7. Create Addresses Table
 CREATE TABLE IF NOT EXISTS `addresses` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -77,8 +71,7 @@ CREATE TABLE IF NOT EXISTS `addresses` (
     `zip_code` VARCHAR(20) NOT NULL,
     `country` VARCHAR(100) NOT NULL,
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
+) ;
 -- 8. Create Orders Table
 CREATE TABLE IF NOT EXISTS `orders` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -104,8 +97,7 @@ CREATE TABLE IF NOT EXISTS `orders` (
     `payment_transaction_id` VARCHAR(100) NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
-) ENGINE=InnoDB;
-
+) ;
 -- 9. Create Order Items Table
 CREATE TABLE IF NOT EXISTS `order_items` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -115,8 +107,7 @@ CREATE TABLE IF NOT EXISTS `order_items` (
     `price` DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`variant_id`) REFERENCES `product_variants`(`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB;
-
+) ;
 -- 10. Create Wishlist Table
 CREATE TABLE IF NOT EXISTS `wishlist` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -126,8 +117,7 @@ CREATE TABLE IF NOT EXISTS `wishlist` (
     UNIQUE KEY `wishlist_unique` (`user_id`, `product_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
+) ;
 -- 11. Create Reviews Table
 CREATE TABLE IF NOT EXISTS `reviews` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -140,8 +130,7 @@ CREATE TABLE IF NOT EXISTS `reviews` (
     UNIQUE KEY `review_unique` (`product_id`, `user_id`),
     FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
-
+) ;
 -- Seed Data
 -- Insert Initial Categories
 INSERT INTO `categories` (`name`, `slug`, `image_url`) VALUES
@@ -150,7 +139,6 @@ INSERT INTO `categories` (`name`, `slug`, `image_url`) VALUES
 ('Scarfs', 'scarfs', '../assets/boutique_byines_3481002996511481087''s2026-5-14-15.21.22 story.jpg'),
 ('Niqab', 'niqab', '../assets/boutique_byines_3581710268287392853.png')
 ON DUPLICATE KEY UPDATE name=VALUES(name);
-
 -- Insert Initial Products
 INSERT INTO `products` (`category_id`, `name`, `slug`, `sku`, `description`, `price`, `old_price`, `is_active`) VALUES
 (1, 'Elegant Abaya', 'elegant-abaya', 'ABAYA-001', 'Experience timeless elegance with our premium Elegant Abaya. Crafted from luxurious chiffon fabric, this piece combines traditional modest wear with contemporary design.', 360.00, 450.00, 1),
@@ -159,7 +147,6 @@ INSERT INTO `products` (`category_id`, `name`, `slug`, `sku`, `description`, `pr
 (3, 'Organic Cotton Scarf', 'organic-cotton-scarf', 'SCARF-001', 'Breathable organic cotton construction in soft neutral tones.', 85.00, 100.00, 1),
 (4, 'Classic Chiffon Niqab', 'classic-chiffon-niqab', 'NIQAB-001', 'Double-layer premium lightweight chiffon niqab offering optimal coverage and comfort.', 45.00, NULL, 1)
 ON DUPLICATE KEY UPDATE name=VALUES(name);
-
 -- Insert Product Images
 INSERT INTO `product_images` (`product_id`, `color`, `image_name`, `sort_order`, `is_main`) VALUES
 (1, NULL,        'hero.jpg',            1, 1),
@@ -178,7 +165,6 @@ INSERT INTO `product_images` (`product_id`, `color`, `image_name`, `sort_order`,
 (3, 'Umber',     'umber_back.jpg',      2, 0),
 (4, NULL,        'hero.jpg',            1, 1),
 (5, NULL,        'hero.jpg',            1, 1);
-
 -- Insert Product Variants
 INSERT INTO `product_variants` (`product_id`, `color`, `size`, `stock_quantity`, `price_modifier`) VALUES
 (1, 'Black', 'S', 15, 0.00),
