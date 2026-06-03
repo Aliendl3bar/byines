@@ -1,4 +1,4 @@
-<?php include 'header.php'; ?>
+<?php include '../includes/header.php'; ?>
 <link rel="stylesheet" href="../css/cstyle.css">
     <main class="main-content">
         <!-- Breadcrumbs & Heading -->
@@ -204,4 +204,4 @@
         </div>
     </main>
 
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

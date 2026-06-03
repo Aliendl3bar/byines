@@ -1,3 +1,18 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$isLoggedIn = isset($_SESSION['user_id']);
+$userName = $_SESSION['user_name'] ?? '';
+
+// Autoload core database and domain classes
+spl_autoload_register(function ($className) {
+    $file = __DIR__ . '/../classes/' . $className . '.php';
+    if (file_exists($file)) {
+        require_once $file;
+    }
+});
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,13 +60,18 @@
                     <div class="account-dropdown" id="accountDropdown">
                         <div class="dropdown-arrow"></div>
                         <ul class="dropdown-list">
-                            <!-- Show if guest -->
-                            <li class="guest-only"><a href="login.php">Sign In</a></li>
-                            <li class="guest-only"><a href="signup.php">Create Account</a></li>
-                            <!-- Show if logged in -->
-                            <li class="user-only" style="display: none;"><span class="welcome-user">Welcome!</span></li>
-                            <li class="user-only" style="display: none;"><a href="dashboard.php">My Dashboard</a></li>
-                            <li class="user-only" style="display: none;"><a href="logout.php" id="logoutLink">Logout</a></li>
+                            <!-- Check PHP Session for auth state -->
+                            <?php if (!$isLoggedIn): ?>
+                                <li><a href="login.php">Sign In</a></li>
+                                <li><a href="signup.php">Create Account</a></li>
+                            <?php else: ?>
+                                <li><span class="welcome-user" style="padding: 10px 20px; display: block; font-weight: bold; color: var(--primary-color);">Hello, <?= htmlspecialchars($userName) ?>!</span></li>
+                                <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                                    <li><a href="admin_dashboard.php" style="color: #b00020; font-weight: 500;">Admin Panel</a></li>
+                                <?php endif; ?>
+                                <li><a href="dashboard.php">My Dashboard</a></li>
+                                <li><a href="logout.php">Logout</a></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 </div>
@@ -60,41 +80,17 @@
     </header>
 
     <script>
-        // Check login status on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthStatus();
+        // Dropdown toggle logic
+        document.getElementById('accountBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('accountDropdown').classList.toggle('show');
         });
 
-        // Update auth buttons based on session/storage
-        function checkAuthStatus() {
-            const isLoggedIn = sessionStorage.getItem('userLoggedIn') === 'true' || localStorage.getItem('userLoggedIn') === 'true';
-            
-            const guestItems = document.querySelectorAll('.guest-only');
-            const userItems = document.querySelectorAll('.user-only');
-            const welcomeSpan = document.querySelector('.welcome-user');
-
-            if (isLoggedIn) {
-                guestItems.forEach(item => item.style.display = 'none');
-                userItems.forEach(item => item.style.display = 'block');
-                
-                // Set name if present
-                const userData = localStorage.getItem('userData');
-                if (userData) {
-                    const user = JSON.parse(userData);
-                    welcomeSpan.textContent = `Hello, ${user.firstName}`;
-                } else {
-                    welcomeSpan.textContent = 'Welcome Back!';
-                }
-            } else {
-                guestItems.forEach(item => item.style.display = 'block');
-                userItems.forEach(item => item.style.display = 'none');
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('accountDropdown');
+            if (dropdown && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
             }
-        }
-
-        // Handle logout
-        document.getElementById('logoutLink')?.addEventListener('click', function(e) {
-            sessionStorage.removeItem('userLoggedIn');
-            localStorage.removeItem('userLoggedIn');
-            checkAuthStatus();
         });
     </script>

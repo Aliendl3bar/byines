@@ -1,4 +1,4 @@
-<?php include 'header.php'; ?>
+<?php include '../includes/header.php'; ?>
     <link rel="stylesheet" href="../css/cart-checkout.css">
     <main class="cart-checkout-container">
         <!-- Breadcrumb Navigation -->
@@ -187,4 +187,4 @@
         }
     </script>
 
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

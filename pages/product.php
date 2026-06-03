@@ -1,4 +1,4 @@
-<?php include 'header.php'; ?>
+<?php include '../includes/header.php'; ?>
 
     <main style="max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem;">
         <!-- Breadcrumb Navigation -->
@@ -307,4 +307,4 @@
         }
     </script>
 
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

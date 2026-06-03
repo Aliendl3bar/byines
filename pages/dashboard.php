@@ -1,14 +1,23 @@
-<?php include 'header.php'; ?>
-    <!-- Dynamic Client-Side Auth Guard -->
-    <script>
-        (function() {
-            const isLoggedIn = sessionStorage.getItem('userLoggedIn') === 'true' || localStorage.getItem('userLoggedIn') === 'true';
-            if (!isLoggedIn) {
-                window.location.href = 'login.php';
-            }
-        })();
-    </script>
+<?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+// Secure PHP Auth Guard
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 
+require_once '../classes/Database.php';
+$db = Database::getInstance();
+$pdo = $db->getConnection();
+
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$user = $stmt->fetch();
+
+include '../includes/header.php'; 
+?>
     <!-- Page Specific Stylesheet linked inside the page itself, not the header -->
     <link rel="stylesheet" href="../css/dashboard.css">
 
@@ -23,7 +32,7 @@
         <!-- Welcome Banner -->
         <section class="welcome-banner">
             <div class="welcome-info">
-                <h1>Hello, <span id="bannerFirstName">Guest</span>!</h1>
+                <h1>Hello, <span id="bannerFirstName"><?= htmlspecialchars($user['first_name'] ?? 'User') ?></span>!</h1>
                 <p>Welcome to your dashboard. Here you can track your recent orders, manage shipping addresses, and edit account settings.</p>
             </div>
             <div class="welcome-stats">
@@ -353,16 +362,16 @@
                             <div class="form-row-dashboard">
                                 <div class="form-group-dashboard">
                                     <label for="firstName">First Name</label>
-                                    <input type="text" id="profileFirstName" required>
+                                    <input type="text" id="profileFirstName" name="firstName" value="<?= htmlspecialchars($user['first_name'] ?? '') ?>" required>
                                 </div>
                                 <div class="form-group-dashboard">
                                     <label for="lastName">Last Name</label>
-                                    <input type="text" id="profileLastName" required>
+                                    <input type="text" id="profileLastName" name="lastName" value="<?= htmlspecialchars($user['last_name'] ?? '') ?>" required>
                                 </div>
                             </div>
                             <div class="form-group-dashboard">
                                 <label for="email">Email Address</label>
-                                <input type="email" id="profileEmail" required>
+                                <input type="email" id="profileEmail" name="email" value="<?= htmlspecialchars($user['email'] ?? '') ?>" required>
                             </div>
 
                             <div class="form-divider"></div>
@@ -406,27 +415,17 @@
             });
         });
 
-        // Load profile data into dashboard elements from localStorage
+        // Load profile data into dashboard elements
         function loadUserProfile() {
-            const userDataStr = localStorage.getItem('userData');
-            if (userDataStr) {
-                const userData = JSON.parse(userDataStr);
-                
-                // Greeting and Stats
-                document.getElementById('bannerFirstName').textContent = userData.firstName;
-                document.getElementById('shipToName1').textContent = `${userData.firstName} ${userData.lastName}`;
-                document.getElementById('shipToName2').textContent = `${userData.firstName} ${userData.lastName}`;
-                document.getElementById('addrName').textContent = `${userData.firstName} ${userData.lastName}`;
-                document.getElementById('billName').textContent = `${userData.firstName} ${userData.lastName}`;
-
-                // Form Fields
-                document.getElementById('profileFirstName').value = userData.firstName;
-                document.getElementById('profileLastName').value = userData.lastName;
-                document.getElementById('profileEmail').value = userData.email;
-            } else {
-                // Fallbacks if no localStorage (user logged in via session storage only)
-                document.getElementById('bannerFirstName').textContent = 'Valued Customer';
-            }
+            const firstName = <?= json_encode($user['first_name'] ?? 'User') ?>;
+            const lastName = <?= json_encode($user['last_name'] ?? '') ?>;
+            const fullName = `${firstName} ${lastName}`.trim();
+            
+            // Set names in UI
+            document.getElementById('shipToName1').textContent = fullName;
+            document.getElementById('shipToName2').textContent = fullName;
+            document.getElementById('addrName').textContent = fullName;
+            document.getElementById('billName').textContent = fullName;
         }
 
         // Switch panel tabs dynamically
@@ -520,4 +519,4 @@
         }
     </script>
 
-<?php include 'footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

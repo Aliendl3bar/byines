@@ -1,0 +1,338 @@
+/* ==========================================================================
+   Admin Dashboard Stylesheet - Byines Luxury Boutique Redesign
+   ========================================================================== */
+
+/* 1. Main Container & Layout */
+.admin-container {
+    padding-top: 80px; /* Account for fixed header */
+    min-height: calc(100vh - 80px);
+    background-color: var(--brand-cream);
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 3rem;
+    max-width: var(--max-width);
+    width: 100%;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    min-height: calc(100vh - 80px);
+    align-items: start;
+}
+
+/* 2. Sidebar Navigation */
+.admin-sidebar {
+    background-color: var(--white);
+    border: 1px solid var(--brand-earth);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    position: sticky;
+    top: 100px; /* Keep visible on scroll below header */
+    box-shadow: 0 4px 20px -2px rgba(26, 26, 26, 0.03);
+}
+
+.admin-sidebar-header {
+    padding: 0.5rem 0.5rem 1.5rem;
+    border-bottom: 1px solid var(--brand-cream);
+    margin-bottom: 1.5rem;
+}
+
+.admin-sidebar-header h1,
+.admin-sidebar-header h2 {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--brand-dark);
+    letter-spacing: -0.01em;
+}
+
+.admin-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.admin-menu-btn {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: var(--gray-500);
+    padding: 0.85rem 1.25rem;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admin-menu-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+.admin-menu-btn:hover {
+    color: var(--brand-dark);
+    background-color: var(--brand-cream);
+}
+
+.admin-menu-btn:hover svg {
+    transform: translateX(2px);
+}
+
+.admin-menu-btn.active {
+    color: var(--white);
+    background-color: var(--brand-dark);
+    font-weight: 600;
+}
+
+/* 3. Main Content Section */
+.admin-content {
+    min-width: 0; /* Prevents overflow */
+}
+
+.admin-panel {
+    display: none;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.admin-panel.active {
+    display: block;
+}
+
+.admin-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--brand-earth);
+    padding-bottom: 1.25rem;
+}
+
+.admin-panel-title {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    font-weight: 300;
+    color: var(--brand-dark);
+    letter-spacing: -0.01em;
+}
+
+/* 4. Stats & Overview Cards */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.admin-stat-card {
+    background: var(--white);
+    padding: 2.25rem 2rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--brand-earth);
+    box-shadow: 0 4px 20px -2px rgba(26, 26, 26, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.admin-stat-card h3 {
+    color: var(--gray-500);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.admin-stat-card .stat-value {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--brand-dark);
+    line-height: 1.1;
+}
+
+/* 5. Tables */
+.admin-table-container {
+    background: var(--white);
+    border-radius: 0.75rem;
+    border: 1px solid var(--brand-earth);
+    box-shadow: 0 4px 20px -2px rgba(26, 26, 26, 0.02);
+    overflow: hidden;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.admin-table th {
+    background-color: #FAF8F6; /* Soft beige-tinted header */
+    color: var(--brand-dark);
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid var(--brand-earth);
+    letter-spacing: 0.01em;
+}
+
+.admin-table td {
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid var(--brand-cream);
+    color: var(--brand-dark);
+    font-size: 0.9rem;
+    font-weight: 400;
+    vertical-align: middle;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table tbody tr {
+    transition: background-color 0.25s ease;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #FCFBFB; /* Warm background highlight */
+}
+
+/* 6. Status Badges & Pill Labels */
+.admin-badge {
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: inline-block;
+}
+
+/* Organic / Boutique color tones for statuses */
+.badge-success { 
+    background-color: #E2EFE0; 
+    color: #4C7246; 
+} /* Dusty Sage */
+
+.badge-warning { 
+    background-color: #FAF0D6; 
+    color: #8E702D; 
+} /* Muted Mustard */
+
+.badge-danger { 
+    background-color: #F8E2E2; 
+    color: #A34848; 
+} /* Soft Rose */
+
+.badge-neutral { 
+    background-color: #EAE5E0; 
+    color: #6E5C50; 
+} /* Sand/Taupe */
+
+/* 7. Buttons */
+.admin-btn {
+    padding: 0.85rem 1.75rem;
+    background-color: var(--brand-dark);
+    color: var(--white);
+    border: 1px solid var(--brand-dark);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+}
+
+.admin-btn:hover {
+    background-color: transparent;
+    color: var(--brand-dark);
+}
+
+.admin-btn-sm {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+}
+
+.admin-btn-danger {
+    background-color: #A34848;
+    border-color: #A34848;
+}
+
+.admin-btn-danger:hover {
+    background-color: transparent;
+    color: #A34848;
+}
+
+/* 8. Fade In Animation */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(8px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* 9. Responsive Adjustments */
+@media (max-width: 992px) {
+    .admin-layout {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        padding: 2rem 1rem;
+    }
+    
+    .admin-sidebar {
+        position: static;
+        width: 100%;
+        padding: 1.25rem;
+    }
+
+    .admin-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        gap: 0.75rem;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-menu li {
+        flex-shrink: 0;
+    }
+
+    .admin-menu-btn {
+        white-space: nowrap;
+        padding: 0.75rem 1rem;
+    }
+    
+    .admin-menu-btn:hover svg {
+        transform: none;
+    }
+    
+    .admin-content {
+        padding: 0;
+    }
+}

@@ -1,0 +1,113 @@
+<?php
+session_start();
+require_once '../classes/Database.php';
+
+// Redirect logged-in users away from the login page
+if (isset($_SESSION['user_id'])) {
+    header("Location: dashboard.php");
+    exit;
+}
+
+$error = '';
+
+// Handle Form Submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    
+    if (empty($email) || empty($password)) {
+        $error = 'Please enter both email and password.';
+    } else {
+        $db = Database::getInstance();
+        $pdo = $db->getConnection();
+
+        // Retrieve user by email
+        $stmt = $pdo->prepare("SELECT id, first_name, last_name, password_hash, role FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        // Verify user exists and password matches
+        if ($user && password_verify($password, $user['password_hash'])) {
+            // Create session variables
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['first_name'];
+            $_SESSION['user_role'] = $user['role']; // 'user' or 'admin'
+            
+            // Redirect to homepage or dashboard
+            header("Location: index.php");
+            exit;
+        } else {
+            $error = 'Invalid email address or password.';
+        }
+    }
+}
+?>
+<?php include '../includes/header.php'; ?>
+    <link rel="stylesheet" href="../css/login.css">
+
+    <main class="auth-container">
+        <!-- Breadcrumb -->
+        <nav class="auth-breadcrumb">
+            <a href="index.php">Home</a>
+            <span>/</span>
+            <span class="current">Login</span>
+        </nav>
+
+        <div class="auth-wrapper">
+            <div class="auth-form">
+                <h2>Sign In</h2>
+                
+                <?php if ($error): ?>
+                    <div class="auth-error" style="display: block;"><?= $error ?></div>
+                <?php endif; ?>
+
+                <form action="login.php" method="POST">
+                    <!-- Email Field -->
+                    <div class="form-group-auth">
+                        <label for="email">Email Address</label>
+                        <input 
+                            type="email" id="email" name="email" 
+                            placeholder="your.email@example.com" required 
+                            value="<?= htmlspecialchars($email ?? '') ?>"
+                        >
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-group-auth password-toggle">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <span class="toggle-icon" onclick="togglePassword('password')">👁</span>
+                    </div>
+
+                    <!-- Remember & Forgot Options -->
+                    <div class="form-options">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="remember" name="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn">Sign In</button>
+                </form>
+
+                <div class="auth-footer-links">
+                    Don't have an account? <a href="signup.php">Sign up here</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simple script to toggle password visibility
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field.type === 'password') {
+                field.type = 'text';
+            } else {
+                field.type = 'password';
+            }
+        }
+    </script>
+
+<?php include '../includes/footer.php'; ?>

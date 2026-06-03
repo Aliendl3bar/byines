@@ -1,4 +1,5 @@
 -- 1. Create and select Database
+drop database if exists `byines`;
 CREATE DATABASE IF NOT EXISTS `byines` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `byines`;
 -- 2. Create Users Table
