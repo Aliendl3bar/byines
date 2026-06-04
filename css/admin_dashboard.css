@@ -336,3 +336,509 @@
         padding: 0;
     }
 }
+
+/* 10. Admin Modals & Form Dialogs */
+.admin-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(26, 26, 26, 0.4);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.admin-modal-backdrop.show {
+    display: flex;
+    opacity: 1;
+}
+
+.admin-modal {
+    background-color: var(--white);
+    border: 1px solid var(--brand-earth);
+    border-radius: 0.75rem;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 10px 30px rgba(26, 26, 26, 0.1);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.admin-modal-backdrop.show .admin-modal {
+    transform: translateY(0);
+}
+
+.admin-modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--brand-cream);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-modal-header h3 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: var(--brand-dark);
+}
+
+.admin-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--gray-400);
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.admin-modal-close:hover {
+    color: var(--brand-dark);
+}
+
+.admin-modal-body {
+    padding: 2rem;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.admin-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.admin-form-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-500);
+    margin-bottom: 0.5rem;
+}
+
+.admin-form-group input[type="text"],
+.admin-form-group input[type="number"],
+.admin-form-group textarea,
+.admin-form-group select {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--brand-earth);
+    border-radius: 0.375rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--brand-dark);
+    transition: border-color 0.2s;
+}
+
+.admin-form-group input:focus,
+.admin-form-group textarea:focus,
+.admin-form-group select:focus {
+    outline: none;
+    border-color: var(--brand-dark);
+}
+
+.admin-form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-form-checkbox input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--brand-dark);
+}
+
+.admin-modal-footer {
+    padding: 1.5rem 2rem;
+    background-color: #FAF8F6;
+    border-top: 1px solid var(--brand-cream);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+/* 11. Modal Image Edit Gallery */
+.admin-image-edit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.admin-image-edit-card {
+    border: 1px solid var(--brand-earth);
+    border-radius: 0.65rem;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 3/4;
+    background-color: var(--brand-cream);
+    box-shadow: 0 4px 15px rgba(26, 26, 26, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-image-edit-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--brand-dark);
+    box-shadow: 0 8px 25px rgba(26, 26, 26, 0.1);
+}
+
+.admin-image-edit-card.is-main-card {
+    border: 2px solid var(--brand-dark);
+}
+
+.admin-image-edit-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.admin-image-edit-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Actions Overlay (fades in slightly on hover or sits elegantly) */
+.admin-image-top-actions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(26, 26, 26, 0.4) 0%, transparent 100%);
+    z-index: 5;
+}
+
+.admin-image-action-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brand-dark);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.admin-image-action-btn:hover {
+    background: var(--white);
+    transform: scale(1.1);
+}
+
+.admin-image-action-btn.star-btn:hover {
+    color: #c9a063; /* Elegant Gold */
+}
+
+.admin-image-action-btn.delete-btn:hover {
+    color: #a34848; /* Red alert color */
+}
+
+.admin-image-star-badge {
+    background: rgba(76, 114, 70, 0.95); /* Soft Sage Green */
+    color: var(--white);
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    backdrop-filter: blur(4px);
+}
+
+.admin-image-star-badge svg {
+    fill: #ffffff;
+}
+
+.admin-alert-banner {
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.admin-alert-success {
+    background-color: #E2EFE0;
+    color: #4C7246;
+    border: 1px solid #C5DFBE;
+}
+
+.admin-alert-error {
+    background-color: #F8E2E2;
+    color: #A34848;
+    border: 1px solid #EFAFAF;
+}
+
+/* 12. Form Row (2-column layout inside modals) */
+.admin-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 480px) {
+    .admin-form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 13. Modal Tabs */
+.admin-modal-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--brand-cream);
+    padding: 0 2rem;
+    background-color: #FAF8F6;
+}
+
+.admin-modal-tab {
+    background: transparent;
+    border: none;
+    padding: 0.85rem 1.5rem;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+    top: 1px;
+}
+
+.admin-modal-tab:hover {
+    color: var(--brand-dark);
+}
+
+.admin-modal-tab.active {
+    color: var(--brand-dark);
+    border-bottom-color: var(--brand-dark);
+}
+
+.admin-modal-tab-panel {
+    display: none;
+}
+
+.admin-modal-tab-panel.active {
+    display: block;
+}
+
+/* 14. Drag & Drop File Upload Zone */
+.admin-upload-dropzone {
+    border: 2px dashed rgba(210, 195, 180, 0.8);
+    border-radius: 0.75rem;
+    background-color: #FAF8F6;
+    padding: 2.25rem 1.5rem;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-upload-dropzone:hover {
+    border-color: var(--brand-dark);
+    background-color: var(--white);
+}
+
+.admin-upload-dropzone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.dropzone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    pointer-events: none;
+}
+
+.dropzone-icon {
+    width: 42px;
+    height: 42px;
+    color: var(--brand-earth);
+    transition: transform 0.3s ease;
+}
+
+.admin-upload-dropzone:hover .dropzone-icon {
+    transform: translateY(-4px);
+    color: var(--brand-dark);
+}
+
+.dropzone-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--brand-dark);
+}
+
+.dropzone-subtitle {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.admin-file-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+/* 15. Image Color Assignment Bar */
+.admin-image-color-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    background: linear-gradient(to top, rgba(26, 26, 26, 0.8) 0%, rgba(26, 26, 26, 0.3) 70%, transparent 100%);
+    padding: 8px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-image-color-bar select {
+    width: 100%;
+    padding: 4px 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    background-color: rgba(26, 26, 26, 0.7);
+    color: #ffffff;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    text-align: center;
+    text-align-last: center;
+    transition: all 0.2s ease;
+}
+
+.admin-image-color-bar select:hover,
+.admin-image-color-bar select:focus {
+    border-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(26, 26, 26, 0.95);
+    outline: none;
+}
+
+/* 16. Variant / Stock Section */
+.admin-variant-add-section {
+    border: 1px solid var(--brand-cream);
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    background-color: #FAF8F6;
+}
+
+.admin-variant-add-title {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--brand-dark);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--brand-earth);
+}
+
+/* 4-column form row for variant inputs */
+@media (max-width: 640px) {
+    .admin-form-row[style*="grid-template-columns: 1fr 1fr 1fr 1fr"] {
+        grid-template-columns: 1fr 1fr !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .admin-form-row[style*="grid-template-columns: 1fr 1fr 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Stock table: compact actions column */
+#stock-variants-table .admin-btn-sm {
+    padding: 0.35rem 0.85rem;
+    font-size: 0.65rem;
+}
+
+#stock-variants-table td:last-child {
+    white-space: nowrap;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Out of stock highlight */
+#stock-variants-table td[style*="color:#A34848"] {
+    font-weight: 600;
+}
+.admin-image-edit-card {
+    position: relative !important;
+}
+.admin-image-reorder-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) scale(0.9);
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a1a !important;
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.admin-image-reorder-btn svg {
+    display: block;
+    width: 14px;
+    height: 14px;
+}
+.admin-image-edit-card:hover .admin-image-reorder-btn {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+}
+.admin-image-reorder-btn:hover {
+    background: #ffffff !important;
+    color: var(--brand-dark, #1a1a1a) !important;
+    border-color: #ffffff !important;
+    transform: translateY(-50%) scale(1.1);
+}
+.reorder-prev {
+    left: 8px;
+}
+.reorder-next {
+    right: 8px;
+}

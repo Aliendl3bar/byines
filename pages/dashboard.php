@@ -402,6 +402,7 @@ include '../includes/header.php';
     </main>
 
     <!-- Tab Logic, User details loading & profile saving scripts -->
+    <script src="../scripts/dashboard.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             loadUserProfile();
@@ -416,7 +417,7 @@ include '../includes/header.php';
         });
 
         // Load profile data into dashboard elements
-        function loadUserProfile() {
+        window.loadUserProfile = function() {
             const firstName = <?= json_encode($user['first_name'] ?? 'User') ?>;
             const lastName = <?= json_encode($user['last_name'] ?? '') ?>;
             const fullName = `${firstName} ${lastName}`.trim();
@@ -426,96 +427,6 @@ include '../includes/header.php';
             document.getElementById('shipToName2').textContent = fullName;
             document.getElementById('addrName').textContent = fullName;
             document.getElementById('billName').textContent = fullName;
-        }
-
-        // Switch panel tabs dynamically
-        function switchTab(tabName) {
-            // Update Active navigation button
-            document.querySelectorAll('.sidebar-menu-btn').forEach(btn => {
-                if (btn.getAttribute('data-tab') === tabName) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-
-            // Switch active panel
-            document.querySelectorAll('.tab-panel').forEach(panel => {
-                if (panel.id === `panel-${tabName}`) {
-                    panel.classList.add('active');
-                } else {
-                    panel.classList.remove('active');
-                }
-            });
-        }
-
-        // Save Account Profile details back to localStorage
-        function saveProfileDetails(event) {
-            event.preventDefault();
-            
-            const firstName = document.getElementById('profileFirstName').value;
-            const lastName = document.getElementById('profileLastName').value;
-            const email = document.getElementById('profileEmail').value;
-            
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-
-            // Password Change validation
-            if (newPassword || confirmNewPassword) {
-                const currentPassword = document.getElementById('currentPassword').value;
-                if (!currentPassword) {
-                    alert('Please enter your current password to save password changes.');
-                    return;
-                }
-                if (newPassword !== confirmNewPassword) {
-                    alert('New passwords do not match.');
-                    return;
-                }
-                if (newPassword.length < 8) {
-                    alert('New password must be at least 8 characters long.');
-                    return;
-                }
-            }
-
-            // Save updated profile
-            const userData = {
-                firstName,
-                lastName,
-                email
-            };
-
-            localStorage.setItem('userData', JSON.stringify(userData));
-            
-            // Reload components
-            loadUserProfile();
-            
-            // Clear passwords fields
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmNewPassword').value = '';
-
-            alert('Account details updated successfully!');
-            
-            // Force header username updates
-            if (typeof checkAuthStatus === 'function') {
-                checkAuthStatus();
-            }
-        }
-
-        // Wishlist items management
-        let wishlistCount = 3;
-        function removeWishlistItem(itemId) {
-            const itemElement = document.getElementById(`wishlist-item-${itemId}`);
-            if (itemElement) {
-                itemElement.remove();
-                wishlistCount--;
-                document.getElementById('statWishlistCount').textContent = wishlistCount;
-                
-                if (wishlistCount === 0) {
-                    document.getElementById('wishlistGrid').style.display = 'none';
-                    document.getElementById('wishlistEmptyMessage').style.display = 'block';
-                }
-            }
         }
     </script>
 

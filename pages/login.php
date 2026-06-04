@@ -98,16 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </main>
 
-    <script>
-        // Simple script to toggle password visibility
-        function togglePassword(fieldId) {
-            const field = document.getElementById(fieldId);
-            if (field.type === 'password') {
-                field.type = 'text';
-            } else {
-                field.type = 'password';
-            }
-        }
-    </script>
+    <script src="../scripts/toggle_password.js"></script>
 
 <?php include '../includes/footer.php'; ?>

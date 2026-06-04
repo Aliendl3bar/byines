@@ -207,12 +207,6 @@
         </div>
     </main>
 
-    <script>
-        function placeOrder() {
-            alert('Order placed successfully! Thank you for your purchase.');
-            // Redirect to confirmation page
-            // window.location.href = 'order-confirmation.php';
-        }
-    </script>
+    <script src="../scripts/checkout.js"></script>
 
 <?php include '../includes/footer.php'; ?>

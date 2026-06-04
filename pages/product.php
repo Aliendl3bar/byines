@@ -1,4 +1,148 @@
-<?php include '../includes/header.php'; ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Autoload core database and domain classes
+spl_autoload_register(function ($className) {
+    $file = __DIR__ . '/../classes/' . $className . '.php';
+    if (file_exists($file)) {
+        require_once $file;
+    }
+});
+
+$productModel = new Product();
+$product = null;
+
+// Get product identifier from URL query string
+if (isset($_GET['id'])) {
+    $product = $productModel->getById(intval($_GET['id']));
+} elseif (isset($_GET['slug'])) {
+    $product = $productModel->getBySlug(trim($_GET['slug']));
+}
+
+// Fallback: If no identifier is passed, but there's an active product in the DB, load the first one.
+if (!$product && !isset($_GET['id']) && !isset($_GET['slug'])) {
+    $allProducts = $productModel->getAll(false);
+    if (!empty($allProducts)) {
+        $product = $productModel->getById($allProducts[0]['id']);
+    }
+}
+
+// If product is still not found or inactive (and user is not an admin), show Product Not Found
+if (!$product || (!$product['is_active'] && ($_SESSION['user_role'] ?? '') !== 'admin')) {
+    $pageTitle = 'Product Not Found';
+    include '../includes/header.php';
+    ?>
+    <main style="max-width: 1280px; margin: 6rem auto; padding: 2rem 1.5rem; text-align: center;">
+        <h1 style="font-size: 2.5rem; font-weight: 300; color: var(--brand-dark); margin-bottom: 1.5rem;">Product Not Found</h1>
+        <p style="color: var(--gray-500); font-size: 1.125rem; margin-bottom: 2rem;">The product you are looking for does not exist or is currently unavailable.</p>
+        <a href="collections.php" class="btn-primary" style="display: inline-block; text-decoration: none; padding: 1rem 2rem; background-color: var(--brand-dark); color: var(--white); border-radius: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Browse Collections</a>
+    </main>
+    <?php
+    include '../includes/footer.php';
+    exit;
+}
+
+$productId = $product['id'];
+$pageTitle = $product['name'];
+
+// Fetch images and variants
+$images = $productModel->getImages($productId);
+$variants = $productModel->getVariants($productId);
+
+// Resolve Main Image (is_main = 1 or the first uploaded image)
+$mainImageSrc = '../assets/placeholder.png'; // default fallback
+if (!empty($images)) {
+    $mainImageSrc = '../products/' . $productId . '/img/' . $images[0]['image_name'];
+    foreach ($images as $img) {
+        if ($img['is_main']) {
+            $mainImageSrc = '../products/' . $productId . '/img/' . $img['image_name'];
+            break;
+        }
+    }
+}
+
+// Extract distinct colors and sizes from variants
+$distinctColors = [];
+$distinctSizes = [];
+foreach ($variants as $v) {
+    if (!in_array($v['color'], $distinctColors)) {
+        $distinctColors[] = $v['color'];
+    }
+    if (!in_array($v['size'], $distinctSizes)) {
+        $distinctSizes[] = $v['size'];
+    }
+}
+
+// Sort sizes logically
+$sizeOrder = ['XS' => 1, 'S' => 2, 'M' => 3, 'L' => 4, 'XL' => 5, 'XXL' => 6];
+usort($distinctSizes, function($a, $b) use ($sizeOrder) {
+    return ($sizeOrder[$a] ?? 99) <=> ($sizeOrder[$b] ?? 99);
+});
+
+// Fetch reviews
+$db = Database::getInstance();
+$pdo = $db->getConnection();
+$stmtReviews = $pdo->prepare("
+    SELECT r.rating, r.review_text, r.created_at, u.first_name, u.last_name
+    FROM reviews r
+    JOIN users u ON r.user_id = u.id
+    WHERE r.product_id = ? AND r.is_approved = 1
+    ORDER BY r.created_at DESC
+");
+$stmtReviews->execute([$productId]);
+$reviews = $stmtReviews->fetchAll();
+
+// Calculate average rating
+$avgRating = 0.0;
+$reviewCount = count($reviews);
+if ($reviewCount > 0) {
+    $totalRating = 0;
+    foreach ($reviews as $rev) {
+        $totalRating += $rev['rating'];
+    }
+    $avgRating = round($totalRating / $reviewCount, 1);
+}
+
+// Fetch related products (same category, active, limit 4)
+$stmtRelated = $pdo->prepare("
+    SELECT p.id, p.name, p.slug, p.price, p.old_price
+    FROM products p
+    WHERE p.category_id = ? AND p.id != ? AND p.is_active = 1
+    ORDER BY RAND() LIMIT 4
+");
+$stmtRelated->execute([$product['category_id'], $productId]);
+$relatedProducts = $stmtRelated->fetchAll();
+
+// If we don't have enough, fill with other random active products
+if (count($relatedProducts) < 4) {
+    $needed = 4 - count($relatedProducts);
+    $excludeIds = array_merge([$productId], array_column($relatedProducts, 'id'));
+    $placeholders = implode(',', array_fill(0, count($excludeIds), '?'));
+    
+    $stmtFill = $pdo->prepare("
+        SELECT p.id, p.name, p.slug, p.price, p.old_price
+        FROM products p
+        WHERE p.id NOT IN ($placeholders) AND p.is_active = 1
+        ORDER BY RAND() LIMIT $needed
+    ");
+    $stmtFill->execute($excludeIds);
+    $fillProducts = $stmtFill->fetchAll();
+    $relatedProducts = array_merge($relatedProducts, $fillProducts);
+}
+
+// Dynamic image fetcher helper for related products
+$stmtRelImage = $pdo->prepare("
+    SELECT image_name 
+    FROM product_images 
+    WHERE product_id = ? 
+    ORDER BY is_main DESC, sort_order ASC, id ASC 
+    LIMIT 1
+");
+
+include '../includes/header.php';
+?>
 
     <main style="max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem;">
         <!-- Breadcrumb Navigation -->
@@ -7,30 +151,43 @@
             <span style="color: var(--gray-500); margin: 0 0.75rem; font-size: 0.75rem;">/</span>
             <a href="collections.php" style="color: var(--gray-500); text-decoration: none; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em;">Collections</a>
             <span style="color: var(--gray-500); margin: 0 0.75rem; font-size: 0.75rem;">/</span>
-            <span style="color: var(--brand-dark); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Elegant Abaya</span>
+            <a href="collections.php?category=<?= urlencode($product['category_name']) ?>" style="color: var(--gray-500); text-decoration: none; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em;"><?= htmlspecialchars($product['category_name']) ?></a>
+            <span style="color: var(--gray-500); margin: 0 0.75rem; font-size: 0.75rem;">/</span>
+            <span style="color: var(--brand-dark); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;"><?= htmlspecialchars($product['name']) ?></span>
         </nav>
 
         <!-- Product Container -->
-        <div class="product-detail-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-bottom: 6rem;">
+        <div class="product-detail-container" style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4rem; margin-bottom: 6rem;">
             
             <!-- Product Image Gallery -->
-            <section class="product-gallery">
+            <section class="product-gallery" style="min-width: 0;">
                 <!-- Main Image -->
                 <div class="main-image-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1.5rem; overflow: hidden; background-color: #EAE4DE; border-radius: 1rem;">
-                    <img id="mainImage" alt="Elegant Abaya - Main View" src="../assets/boutique_byines_3314221782547857149.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" />
-                    <button class="wishlist-btn" style="position: absolute; top: 1.5rem; right: 1.5rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease;">
+                    <img id="mainImage" alt="<?= htmlspecialchars($product['name']) ?> - Main View" src="<?= $mainImageSrc ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" />
+                    <button class="wishlist-btn" style="position: absolute; top: 1.5rem; right: 1.5rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease;" onclick="alert('Added to wishlist!')">
                         <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                             <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
                     </button>
                 </div>
 
+                <link rel="stylesheet" href="../css/product.css">
                 <!-- Thumbnail Gallery -->
-                <div class="thumbnail-gallery" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;">
-                    <img class="thumbnail" src="../assets/boutique_byines_3314221782547857149.png" alt="View 1" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid var(--brand-dark); opacity: 1; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
-                    <img class="thumbnail" src="../assets/boutique_byines_3469503560297835658.png" alt="View 2" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
-                    <img class="thumbnail" src="../assets/boutique_byines_3844045366027357924.png" alt="View 3" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
-                    <img class="thumbnail" src="../assets/boutique_byines_3628664731358744968.png" alt="View 4" style="width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid transparent; opacity: 0.6; transition: opacity 0.3s ease;" onclick="updateMainImage(this.src)" />
+                <div class="thumbnail-gallery" style="display: flex; gap: 0.75rem; overflow-x: auto; scroll-behavior: smooth; white-space: nowrap; padding: 0.5rem 0; scrollbar-width: none; -ms-overflow-style: none;">
+                    <?php foreach ($images as $index => $img): 
+                        $imgUrl = '../products/' . $productId . '/img/' . $img['image_name'];
+                        $isActive = ($mainImageSrc === $imgUrl);
+                        ?>
+                        <img 
+                            class="thumbnail" 
+                            src="<?= $imgUrl ?>" 
+                            alt="View <?= $index + 1 ?>" 
+                            data-color="<?= htmlspecialchars($img['color'] ?? '') ?>"
+                            data-is-main="<?= $img['is_main'] ?>"
+                            style="width: calc(25% - 0.56rem); min-width: 80px; aspect-ratio: 3/4; object-fit: cover; border-radius: 0.5rem; cursor: pointer; border: 2px solid <?= $isActive ? 'var(--brand-dark)' : 'transparent' ?>; opacity: <?= $isActive ? '1' : '0.6' ?>; transition: all 0.3s ease; flex-shrink: 0;" 
+                            onclick="updateMainImage(this.src)" 
+                        />
+                    <?php endforeach; ?>
                 </div>
             </section>
 
@@ -38,81 +195,94 @@
             <section class="product-details" style="display: flex; flex-direction: column; justify-content: center;">
                 <!-- Product Title & Price -->
                 <div style="margin-bottom: 2rem;">
-                    <h1 style="font-size: 2.5rem; font-weight: 300; color: var(--brand-dark); margin-bottom: 0.5rem;">Elegant Abaya</h1>
-                    <p style="color: var(--gray-500); font-size: 1rem; margin-bottom: 1rem;">SKU: ABAYA-001</p>
+                    <h1 style="font-size: 2.5rem; font-weight: 300; color: var(--brand-dark); margin-bottom: 0.5rem;"><?= htmlspecialchars($product['name']) ?></h1>
+                    <p style="color: var(--gray-500); font-size: 1rem; margin-bottom: 1rem;">SKU: <?= htmlspecialchars($product['sku']) ?></p>
+                    
                     <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                        <span style="font-size: 1.875rem; font-weight: 600; color: var(--brand-dark);">$360</span>
-                        <span style="font-size: 1rem; color: var(--gray-500); text-decoration: line-through;">$450</span>
-                        <span style="background-color: var(--brand-earth); color: var(--white); padding: 0.25rem 0.75rem; border-radius: 0.25rem; font-size: 0.875rem; font-weight: 600;">20% OFF</span>
+                        <span id="productPrice" style="font-size: 1.875rem; font-weight: 600; color: var(--brand-dark);">$<?= number_format($product['price'], 2) ?></span>
+                        
+                        <?php if ($product['old_price'] && $product['old_price'] > $product['price']): ?>
+                            <span style="font-size: 1rem; color: var(--gray-500); text-decoration: line-through;">$<?= number_format($product['old_price'], 2) ?></span>
+                            <?php 
+                            $discount = round((($product['old_price'] - $product['price']) / $product['old_price']) * 100);
+                            ?>
+                            <span style="background-color: var(--brand-earth); color: var(--white); padding: 0.25rem 0.75rem; border-radius: 0.25rem; font-size: 0.875rem; font-weight: 600;"><?= $discount ?>% OFF</span>
+                        <?php endif; ?>
                     </div>
+                    
                     <div style="display: flex; align-items: center; gap: 1rem;">
-                        <span style="color: var(--brand-dark); font-weight: 600;">★★★★★</span>
-                        <span style="color: var(--gray-500); font-size: 0.875rem;">(145 reviews)</span>
+                        <span style="color: var(--brand-dark); font-weight: 600;">
+                            <?php
+                            $stars = round($avgRating);
+                            for ($i = 1; $i <= 5; $i++) {
+                                echo $i <= $stars ? '★' : '☆';
+                            }
+                            ?>
+                        </span>
+                        <span style="color: var(--gray-500); font-size: 0.875rem;">(<?= $reviewCount ?> customer reviews)</span>
                     </div>
                 </div>
 
                 <!-- Product Description -->
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: rgba(244, 241, 238, 0.5); border-radius: 0.75rem;">
                     <p style="color: var(--brand-dark); line-height: 1.8; font-size: 1rem;">
-                        Experience timeless elegance with our premium Elegant Abaya. Crafted from luxurious chiffon fabric, this piece combines traditional modest wear with contemporary design. Perfect for any occasion, from casual gatherings to special events.
+                        <?= nl2br(htmlspecialchars($product['description'])) ?>
                     </p>
-                    <ul style="margin-top: 1rem; list-style: none; padding-left: 0;">
-                        <li style="color: var(--gray-500); margin-bottom: 0.5rem;">✓ Premium chiffon fabric</li>
-                        <li style="color: var(--gray-500); margin-bottom: 0.5rem;">✓ Comfortable fit with flowing silhouette</li>
-                        <li style="color: var(--gray-500); margin-bottom: 0.5rem;">✓ Embroidered detailing on sleeves</li>
-                        <li style="color: var(--gray-500); margin-bottom: 0.5rem;">✓ Available in multiple colors</li>
-                    </ul>
                 </div>
 
                 <!-- Color Options -->
-                <div style="margin-bottom: 2rem;">
-                    <label style="display: block; font-weight: 600; color: var(--brand-dark); margin-bottom: 1rem; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.1em;">Select Color</label>
-                    <div class="color-options" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.75rem;">
-                        <button class="color-btn active" style="width: 100%; padding: 1rem; background-color: #1A1A1A; border: 2px solid var(--brand-dark); border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; color: var(--white); font-size: 0.875rem; font-weight: 500;" data-color="Black" onclick="selectColor(this)">
-                            Black
-                        </button>
-                        <button class="color-btn" style="width: 100%; padding: 1rem; background-color: #8B7355; border: 2px solid transparent; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; color: var(--white); font-size: 0.875rem; font-weight: 500;" data-color="Brown" onclick="selectColor(this)">
-                            Brown
-                        </button>
-                        <button class="color-btn" style="width: 100%; padding: 1rem; background-color: #4A4A4A; border: 2px solid transparent; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; color: var(--white); font-size: 0.875rem; font-weight: 500;" data-color="Charcoal" onclick="selectColor(this)">
-                            Charcoal
-                        </button>
-                        <button class="color-btn" style="width: 100%; padding: 1rem; background-color: #D4A574; border: 2px solid transparent; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; color: var(--brand-dark); font-size: 0.875rem; font-weight: 500;" data-color="Camel" onclick="selectColor(this)">
-                            Camel
-                        </button>
-                        <button class="color-btn" style="width: 100%; padding: 1rem; background-color: #C9B8A8; border: 2px solid transparent; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; color: var(--brand-dark); font-size: 0.875rem; font-weight: 500;" data-color="Cream" onclick="selectColor(this)">
-                            Cream
-                        </button>
+                <?php if (!empty($distinctColors)): ?>
+                    <div style="margin-bottom: 2rem;">
+                        <label style="display: block; font-weight: 600; color: var(--brand-dark); margin-bottom: 1rem; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.1em;">Select Color</label>
+                        <div class="color-options" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <?php foreach ($distinctColors as $color): 
+                                $colorKey = strtolower(trim($color));
+                                $colorMap = [
+                                    'beige' => ['bg' => '#E8DCC4', 'text' => '#1A1A1A'],
+                                    'magenta' => ['bg' => '#8C5B6B', 'text' => '#FFFFFF'],
+                                    'red' => ['bg' => '#A64B4B', 'text' => '#FFFFFF'],
+                                    'black' => ['bg' => '#1A1A1A', 'text' => '#FFFFFF'],
+                                    'white' => ['bg' => '#FAF9F6', 'text' => '#1A1A1A']
+                                ];
+                                $bg = $colorMap[$colorKey]['bg'] ?? $colorKey;
+                                $text = $colorMap[$colorKey]['text'] ?? '#1A1A1A';
+                            ?>
+                                <button class="color-btn" style="padding: 0.75rem 1.5rem; background-color: <?= $bg ?>; border: 2px solid transparent; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; color: <?= $text ?>; font-size: 0.875rem; font-weight: 500;" data-color="<?= htmlspecialchars($color) ?>" onclick="selectColor(this)">
+                                    <?= htmlspecialchars($color) ?>
+                                </button>
+                            <?php endforeach; ?>
+                        </div>
+                        <p id="selectedColor" style="margin-top: 0.75rem; color: var(--gray-500); font-size: 0.875rem;">Selected: <strong></strong></p>
                     </div>
-                    <p id="selectedColor" style="margin-top: 0.75rem; color: var(--gray-500); font-size: 0.875rem;">Selected: <strong>Black</strong></p>
-                </div>
+                <?php endif; ?>
 
                 <!-- Size Options -->
-                <div style="margin-bottom: 2rem;">
-                    <label style="display: block; font-weight: 600; color: var(--brand-dark); margin-bottom: 1rem; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.1em;">Select Size</label>
-                    <div class="size-options" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;">
-                        <button class="size-btn" style="padding: 1rem; border: 1px solid var(--gray-300); background-color: transparent; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-weight: 600;" onclick="selectSize(this)">
-                            XS
-                        </button>
-                        <button class="size-btn" style="padding: 1rem; border: 1px solid var(--gray-300); background-color: transparent; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-weight: 600;" onclick="selectSize(this)">
-                            S
-                        </button>
-                        <button class="size-btn active" style="padding: 1rem; border: 2px solid var(--brand-dark); background-color: rgba(26, 26, 26, 0.05); border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-weight: 600;" onclick="selectSize(this)">
-                            M
-                        </button>
-                        <button class="size-btn" style="padding: 1rem; border: 1px solid var(--gray-300); background-color: transparent; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-weight: 600;" onclick="selectSize(this)">
-                            L
-                        </button>
+                <?php if (!empty($distinctSizes)): ?>
+                    <div style="margin-bottom: 2rem;">
+                        <label style="display: block; font-weight: 600; color: var(--brand-dark); margin-bottom: 1rem; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.1em;">Select Size</label>
+                        <div class="size-options" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <?php foreach ($distinctSizes as $size): ?>
+                                <button class="size-btn" style="padding: 0.75rem 1.25rem; border: 1px solid var(--gray-300); background-color: transparent; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease; font-weight: 600;" data-size="<?= htmlspecialchars($size) ?>" onclick="selectSize(this)">
+                                    <?= htmlspecialchars($size) ?>
+                                </button>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
-                </div>
+                <?php endif; ?>
 
-                <!-- Quantity Selector -->
-                <div style="margin-bottom: 2rem;">
-                    <label style="display: block; font-weight: 600; color: var(--brand-dark); margin-bottom: 1rem; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.1em;">Quantity</label>
-                    <div style="display: flex; align-items: center; border: 1px solid var(--gray-300); border-radius: 0.5rem; width: fit-content;">
-                        <button onclick="decreaseQuantity()" style="width: 3rem; height: 3rem; border: none; background: transparent; font-size: 1.5rem; cursor: pointer; transition: opacity 0.3s ease;">−</button>
-                        <input id="quantity" type="text" value="1" readonly style="width: 3rem; height: 3rem; border: none; border-left: 1px solid var(--gray-300); border-right: 1px solid var(--gray-300); text-align: center; font-size: 1rem; font-weight: 600;">
-                        <button onclick="increaseQuantity()" style="width: 3rem; height: 3rem; border: none; background: transparent; font-size: 1.5rem; cursor: pointer; transition: opacity 0.3s ease;">+</button>
+                <!-- Quantity Selector & Stock Info -->
+                <div style="margin-bottom: 2rem; display: flex; align-items: center; gap: 2rem;">
+                    <div>
+                        <label style="display: block; font-weight: 600; color: var(--brand-dark); margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.1em;">Quantity</label>
+                        <div style="display: flex; align-items: center; border: 1px solid var(--gray-300); border-radius: 0.5rem; width: fit-content; background: var(--white);">
+                            <button onclick="decreaseQuantity()" style="width: 2.5rem; height: 2.5rem; border: none; background: transparent; font-size: 1.25rem; cursor: pointer; transition: opacity 0.3s ease;">−</button>
+                            <input id="quantity" type="text" value="1" readonly style="width: 2.5rem; height: 2.5rem; border: none; border-left: 1px solid var(--gray-300); border-right: 1px solid var(--gray-300); text-align: center; font-size: 1rem; font-weight: 600;">
+                            <button onclick="increaseQuantity()" style="width: 2.5rem; height: 2.5rem; border: none; background: transparent; font-size: 1.25rem; cursor: pointer; transition: opacity 0.3s ease;">+</button>
+                        </div>
+                    </div>
+                    
+                    <div style="padding-top: 1.5rem;">
+                        <span id="stockStatus"></span>
                     </div>
                 </div>
 
@@ -150,20 +320,20 @@
                     <h2 style="font-size: 1.5rem; font-weight: 300; color: var(--brand-dark); margin-bottom: 1.5rem;">Specifications</h2>
                     <table style="width: 100%; border-collapse: collapse;">
                         <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 1rem 0; color: var(--gray-500); font-weight: 600; text-transform: uppercase; font-size: 0.875rem;">Material</td>
-                            <td style="padding: 1rem 0; color: var(--brand-dark);">100% Premium Chiffon</td>
+                            <td style="padding: 1rem 0; color: var(--gray-500); font-weight: 600; text-transform: uppercase; font-size: 0.875rem;">Category</td>
+                            <td style="padding: 1rem 0; color: var(--brand-dark);"><?= htmlspecialchars($product['category_name']) ?></td>
                         </tr>
                         <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 1rem 0; color: var(--gray-500); font-weight: 600; text-transform: uppercase; font-size: 0.875rem;">Length</td>
-                            <td style="padding: 1rem 0; color: var(--brand-dark);">Full length (55-58 inches)</td>
+                            <td style="padding: 1rem 0; color: var(--gray-500); font-weight: 600; text-transform: uppercase; font-size: 0.875rem;">SKU Reference</td>
+                            <td style="padding: 1rem 0; color: var(--brand-dark);"><?= htmlspecialchars($product['sku']) ?></td>
                         </tr>
                         <tr style="border-bottom: 1px solid var(--gray-200);">
-                            <td style="padding: 1rem 0; color: var(--gray-500); font-weight: 600; text-transform: uppercase; font-size: 0.875rem;">Care</td>
-                            <td style="padding: 1rem 0; color: var(--brand-dark);">Dry clean or hand wash</td>
+                            <td style="padding: 1rem 0; color: var(--gray-500); font-weight: 600; text-transform: uppercase; font-size: 0.875rem;">Care Instruction</td>
+                            <td style="padding: 1rem 0; color: var(--brand-dark);">Dry clean or gentle hand wash</td>
                         </tr>
                         <tr>
-                            <td style="padding: 1rem 0; color: var(--gray-500); font-weight: 600; text-transform: uppercase; font-size: 0.875rem;">Made In</td>
-                            <td style="padding: 1rem 0; color: var(--brand-dark);">UAE</td>
+                            <td style="padding: 1rem 0; color: var(--gray-500); font-weight: 600; text-transform: uppercase; font-size: 0.875rem;">Availability</td>
+                            <td style="padding: 1rem 0; color: var(--brand-dark);">Modest storefront exclusive</td>
                         </tr>
                     </table>
                 </div>
@@ -172,22 +342,28 @@
                 <div>
                     <h2 style="font-size: 1.5rem; font-weight: 300; color: var(--brand-dark); margin-bottom: 1.5rem;">Customer Reviews</h2>
                     <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                        <div style="padding-bottom: 1.5rem; border-bottom: 1px solid var(--gray-200);">
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-                                <span style="font-weight: 600; color: var(--brand-dark);">Sarah M.</span>
-                                <span style="color: var(--brand-dark);">★★★★★</span>
-                            </div>
-                            <p style="color: var(--gray-500); font-size: 0.875rem; margin-bottom: 0.5rem;">Verified Purchase</p>
-                            <p style="color: var(--brand-dark); line-height: 1.6;">Beautiful quality and perfect fit. The fabric is soft and flows beautifully. Highly recommended!</p>
-                        </div>
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-                                <span style="font-weight: 600; color: var(--brand-dark);">Fatima A.</span>
-                                <span style="color: var(--brand-dark);">★★★★☆</span>
-                            </div>
-                            <p style="color: var(--gray-500); font-size: 0.875rem; margin-bottom: 0.5rem;">Verified Purchase</p>
-                            <p style="color: var(--brand-dark); line-height: 1.6;">Great quality. Shipping took a bit longer than expected but the product is worth the wait.</p>
-                        </div>
+                        <?php if (empty($reviews)): ?>
+                            <p style="color: var(--gray-500);">No reviews yet for this product. Be the first to share your thoughts!</p>
+                        <?php else: ?>
+                            <?php foreach ($reviews as $rev): ?>
+                                <div style="padding-bottom: 1.5rem; border-bottom: 1px solid var(--gray-200);">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                                        <span style="font-weight: 600; color: var(--brand-dark);"><?= htmlspecialchars($rev['first_name']) ?> <?= htmlspecialchars(substr($rev['last_name'], 0, 1)) ?>.</span>
+                                        <span style="color: var(--brand-dark);">
+                                            <?php
+                                            for ($i = 1; $i <= 5; $i++) {
+                                                echo $i <= $rev['rating'] ? '★' : '☆';
+                                            }
+                                            ?>
+                                        </span>
+                                    </div>
+                                    <p style="color: var(--gray-500); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                                        Verified Purchase &bull; <?= date('F j, Y', strtotime($rev['created_at'])) ?>
+                                    </p>
+                                    <p style="color: var(--brand-dark); line-height: 1.6;"><?= nl2br(htmlspecialchars($rev['review_text'])) ?></p>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -197,114 +373,38 @@
         <section style="margin-bottom: 6rem;">
             <h2 class="section-title" style="font-size: 2.25rem; text-align: center; margin-bottom: 4rem; font-weight: 300;">You May Also Like</h2>
             <div class="product-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem 1rem;">
-                <div class="product-card" style="cursor: pointer;">
-                    <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
-                        <img alt="Classic Abaya" class="hover-scale" src="../assets/boutique_byines_3469503560297835658.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
-                        <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;">
-                            <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
-                                <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                        </button>
+                <?php foreach ($relatedProducts as $rel): 
+                    // Fetch primary image for related product
+                    $stmtRelImage->execute([$rel['id']]);
+                    $relImg = $stmtRelImage->fetch();
+                    $relImgUrl = $relImg ? '../products/' . $rel['id'] . '/img/' . $relImg['image_name'] : '../assets/placeholder.png';
+                    ?>
+                    <div class="product-card" style="cursor: pointer;" onclick="window.location.href='product.php?slug=<?= urlencode($rel['slug']) ?>'">
+                        <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
+                            <img alt="<?= htmlspecialchars($rel['name']) ?>" class="hover-scale" src="<?= $relImgUrl ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
+                            <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;" onclick="event.stopPropagation(); alert('Added to wishlist!')">
+                                <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
+                                    <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <h3 class="product-name" style="font-size: 1rem; font-weight: 500; color: var(--brand-dark); margin-bottom: 0.5rem;"><?= htmlspecialchars($rel['name']) ?></h3>
+                        <p class="product-price" style="color: var(--gray-500); font-size: 0.875rem;">$<?= number_format($rel['price'], 2) ?></p>
                     </div>
-                    <h3 class="product-name" style="font-size: 1rem; font-weight: 500; color: var(--brand-dark); margin-bottom: 0.5rem;">Classic Abaya</h3>
-                    <p class="product-price" style="color: var(--gray-500); font-size: 0.875rem;">$250</p>
-                </div>
-                <div class="product-card" style="cursor: pointer;">
-                    <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
-                        <img alt="Modern Abaya" class="hover-scale" src="../assets/boutique_byines_3844045366027357924.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
-                        <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;">
-                            <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
-                                <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <h3 class="product-name" style="font-size: 1rem; font-weight: 500; color: var(--brand-dark); margin-bottom: 0.5rem;">Modern Abaya</h3>
-                    <p class="product-price" style="color: var(--gray-500); font-size: 0.875rem;">$290</p>
-                </div>
-                <div class="product-card" style="cursor: pointer;">
-                    <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
-                        <img alt="Evening Abaya" class="hover-scale" src="../assets/boutique_byines_3628664731358744968.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
-                        <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;">
-                            <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
-                                <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <h3 class="product-name" style="font-size: 1rem; font-weight: 500; color: var(--brand-dark); margin-bottom: 0.5rem;">Evening Abaya</h3>
-                    <p class="product-price" style="color: var(--gray-500); font-size: 0.875rem;">$290</p>
-                </div>
-                <div class="product-card" style="cursor: pointer;">
-                    <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
-                        <img alt="Textured Abaya" class="hover-scale" src="../assets/boutique_byines_3628664731358744968.png" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
-                        <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;">
-                            <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
-                                <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <h3 class="product-name" style="font-size: 1rem; font-weight: 500; color: var(--brand-dark); margin-bottom: 0.5rem;">Textured Abaya</h3>
-                    <p class="product-price" style="color: var(--gray-500); font-size: 0.875rem;">$310</p>
-                </div>
+                <?php endforeach; ?>
             </div>
         </section>
     </main>
 
+    <!-- Client-side controllers and data initialization -->
+    <script src="../scripts/product.js"></script>
     <script>
-        function updateMainImage(src) {
-            const mainImage = document.getElementById('mainImage');
-            mainImage.src = src;
-            
-            // Update thumbnail states
-            document.querySelectorAll('.thumbnail').forEach(thumb => {
-                if (thumb.src === src) {
-                    thumb.style.border = '2px solid var(--brand-dark)';
-                    thumb.style.opacity = '1';
-                } else {
-                    thumb.style.border = '2px solid transparent';
-                    thumb.style.opacity = '0.6';
-                }
-            });
-        }
-
-        function selectColor(button) {
-            document.querySelectorAll('.color-btn').forEach(btn => {
-                btn.style.border = '2px solid transparent';
-            });
-            button.style.border = '2px solid var(--brand-dark)';
-            document.getElementById('selectedColor').innerHTML = 'Selected: <strong>' + button.getAttribute('data-color') + '</strong>';
-        }
-
-        function selectSize(button) {
-            document.querySelectorAll('.size-btn').forEach(btn => {
-                btn.style.border = '1px solid var(--gray-300)';
-                btn.style.backgroundColor = 'transparent';
-            });
-            button.style.border = '2px solid var(--brand-dark)';
-            button.style.backgroundColor = 'rgba(26, 26, 26, 0.05)';
-        }
-
-        function increaseQuantity() {
-            const qty = document.getElementById('quantity');
-            qty.value = parseInt(qty.value) + 1;
-        }
-
-        function decreaseQuantity() {
-            const qty = document.getElementById('quantity');
-            if (parseInt(qty.value) > 1) {
-                qty.value = parseInt(qty.value) - 1;
-            }
-        }
-
-        function addToCart() {
-            const quantity = document.getElementById('quantity').value;
-            alert('Added ' + quantity + ' item(s) to your cart!');
-            // Here you would integrate with your cart system
-        }
-
-        function buyNow() {
-            alert('Proceeding to checkout...');
-            // Here you would redirect to checkout page
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const variants = <?= json_encode($variants) ?>;
+            const images = <?= json_encode($images) ?>;
+            const basePrice = <?= floatval($product['price']) ?>;
+            initProductPage(variants, images, basePrice);
+        });
     </script>
 
 <?php include '../includes/footer.php'; ?>

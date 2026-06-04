@@ -18,7 +18,7 @@ spl_autoload_register(function ($className) {
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Byines - Timeless Elegance</title>
+    <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) . ' - Byines' : 'Byines - Timeless Elegance' ?></title>
     <!-- Google Fonts: Noto Serif -->
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
