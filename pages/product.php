@@ -342,7 +342,7 @@ include '../includes/header.php';
             <div class="product-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem 1rem;">
                 <?php foreach ($relatedProducts as $rel): 
                     $relImg = $productModel->getMainImage($rel['id']);
-                    $relImgUrl = $relImg ? '../products/' . $rel['id'] . '/img/' . $relImg['image_name'] : '../assets/placeholder.png';
+                    $relImgUrl = $relImg ? '../products/' . $rel['id'] . '/img/' . $relImg : '../assets/placeholder.png';
                     ?>
                     <div class="product-card" style="cursor: pointer;" onclick="window.location.href='product.php?slug=<?= urlencode($rel['slug']) ?>'">
                         <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
