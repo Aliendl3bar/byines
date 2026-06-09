@@ -46,12 +46,9 @@ spl_autoload_register(function ($className) {
                     </svg>
                 </button>
                 <?php
-                $cartCount = 0;
-                if (isset($_SESSION['cart'])) {
-                    foreach ($_SESSION['cart'] as $item) {
-                        $cartCount += $item['quantity'];
-                    }
-                }
+                require_once __DIR__ . '/../classes/Cart.php';
+                $cart = new Cart();
+                $cartCount = $cart->getCount();
                 ?>
                 <a href="cart.php" class="icon-btn" data-purpose="cart-trigger" style="position: relative; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; color: inherit;">
                     <svg class="icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">

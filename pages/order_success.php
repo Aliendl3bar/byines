@@ -3,17 +3,15 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once '../classes/Database.php';
+require_once '../classes/Order.php';
 
 $orderId = isset($_GET['order_id']) ? (int)$_GET['order_id'] : 0;
 $order = null;
 
 if ($orderId > 0) {
     try {
-        $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("SELECT * FROM orders WHERE id = ?");
-        $stmt->execute([$orderId]);
-        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+        $orderModel = new Order();
+        $order = $orderModel->getById($orderId);
     } catch (Exception $e) {
         // Handle silently
     }

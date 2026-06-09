@@ -8,9 +8,9 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION[
     exit;
 }
 
-require_once '../classes/Database.php';
-$db = Database::getInstance();
-$pdo = $db->getConnection();
+require_once '../classes/Order.php';
+
+$orderModel = new Order();
 
 $orderId = $_GET['id'] ?? null;
 if (!$orderId) {
@@ -20,31 +20,19 @@ if (!$orderId) {
 // Handle Status Update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
     $newStatus = $_POST['status'];
-    $stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
-    $stmt->execute([$newStatus, $orderId]);
+    $orderModel->updateStatus($orderId, $newStatus);
     header("Location: admin_view_order.php?id=" . $orderId . "&msg=updated");
     exit;
 }
 
-// Fetch order
-$stmt = $pdo->prepare("SELECT * FROM orders WHERE id = ?");
-$stmt->execute([$orderId]);
-$order = $stmt->fetch(PDO::FETCH_ASSOC);
+// Fetch order with items
+$order = $orderModel->getById($orderId);
 
 if (!$order) {
     die('Order not found.');
 }
 
-// Fetch items
-$itemStmt = $pdo->prepare("
-    SELECT oi.*, v.color, v.size, p.name, p.id as product_id
-    FROM order_items oi
-    JOIN product_variants v ON oi.variant_id = v.id
-    JOIN products p ON v.product_id = p.id
-    WHERE oi.order_id = ?
-");
-$itemStmt->execute([$orderId]);
-$items = $itemStmt->fetchAll(PDO::FETCH_ASSOC);
+$items = $order['items'] ?? [];
 
 $pageTitle = 'Manage Order #' . $order['order_number'];
 include '../includes/header.php'; 

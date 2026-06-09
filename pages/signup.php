@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../classes/Database.php';
+require_once '../classes/User.php';
 
 $error = '';
 $success = '';
@@ -23,30 +23,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (strlen($password) < 8) {
         $error = 'Password must be at least 8 characters long.';
     } else {
-        $db = Database::getInstance();
-        $pdo = $db->getConnection();
-
-        // Check if email already exists
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        if ($stmt->fetch()) {
-            $error = 'An account with this email already exists.';
+        $userModel = new User();
+        $userId = $userModel->register($firstName, $lastName, $email, $password);
+        
+        if ($userId) {
+            header("Location: login.php");
+            exit();
         } else {
-            // Hash password and insert user into database
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("INSERT INTO users (first_name, last_name, email, password_hash) VALUES (?, ?, ?, ?)");
-            
-            try {
-                $stmt->execute([$firstName, $lastName, $email, $hashedPassword]);
-                $success = 'Account created successfully! You can now <a href="login.php">log in</a>.';
-                header("location:login.php");
-                exit();
-
-                // Clear fields on success
-                $firstName = $lastName = $email = '';
-            } catch (PDOException $e) {
-                $error = 'Registration failed. Please try again later.';
-            }
+            $error = 'An account with this email already exists.';
         }
     }
 }

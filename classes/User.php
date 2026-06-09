@@ -84,4 +84,22 @@ class User {
         $user = $stmt->fetch();
         return ($user && $user['role'] === 'admin');
     }
+
+    /**
+     * Delete a user account by ID.
+     * @return bool
+     */
+    public function deleteAccount($userId) {
+        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = ?");
+        return $stmt->execute([$userId]);
+    }
+
+    /**
+     * Get total count of registered users (non-admin).
+     * @return int
+     */
+    public function getUserCount() {
+        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM users WHERE role = 'user'");
+        return (int)$stmt->fetch()['total'];
+    }
 }

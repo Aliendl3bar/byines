@@ -3,23 +3,22 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 $pageTitle = 'Checkout';
-include '../includes/header.php'; 
+require_once '../classes/Cart.php';
+
+$cart = new Cart();
 
 // Check if cart is empty
-$cartItems = $_SESSION['cart'] ?? [];
-if (empty($cartItems)) {
+if ($cart->isEmpty()) {
     echo "<script>window.location.href='cart.php';</script>";
     exit;
 }
 
-$subtotal = 0;
-$itemCount = 0;
-
-foreach ($cartItems as $item) {
-    $subtotal += ($item['price'] * $item['quantity']);
-    $itemCount += $item['quantity'];
-}
+$cartItems = $cart->getItems();
+$subtotal = $cart->getSubtotal();
+$itemCount = $cart->getCount();
 $tax = round($subtotal * 0.10, 2); // 10% tax on goods
+
+include '../includes/header.php'; 
 ?>
 <link rel="stylesheet" href="../css/cart-checkout.css">
 

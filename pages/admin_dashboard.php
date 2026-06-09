@@ -12,30 +12,24 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION[
 require_once '../classes/Database.php';
 require_once '../classes/Product.php';
 require_once '../classes/Category.php';
+require_once '../classes/Order.php';
+require_once '../classes/Collection.php';
+require_once '../classes/User.php';
 
-$db = Database::getInstance();
-$pdo = $db->getConnection();
+$pdo = Database::getInstance()->getConnection();
 $productModel = new Product();
 $categoryModel = new Category();
+$orderModel = new Order();
+$userModel = new User();
+$collectionModel = new Collection();
 
 // --- Fetch Overview Stats ---
-$stmtOrders = $pdo->query("SELECT COUNT(*) as total FROM orders");
-$totalOrders = $stmtOrders->fetch()['total'];
-
-$stmtRevenue = $pdo->query("SELECT SUM(total_amount) as revenue FROM orders WHERE payment_status = 'paid'");
-$totalRevenue = $stmtRevenue->fetch()['revenue'] ?? 0.00;
-
-$stmtUsers = $pdo->query("SELECT COUNT(*) as total FROM users WHERE role = 'user'");
-$totalUsers = $stmtUsers->fetch()['total'];
+$totalOrders = $orderModel->getTotalCount();
+$totalRevenue = $orderModel->getTotalRevenue();
+$totalUsers = $userModel->getUserCount();
 
 // --- Fetch Products ---
-$stmtProducts = $pdo->query("
-    SELECT p.id, p.category_id, p.name, p.slug, p.sku, p.description, p.price, p.is_active, c.name as category_name
-    FROM products p
-    JOIN categories c ON p.category_id = c.id
-    ORDER BY p.id DESC
-");
-$products = $stmtProducts->fetchAll();
+$products = $productModel->getAll(true);
 
 // Pre-fetch images and variants for each product (pass to JS)
 $productImages = [];
@@ -49,27 +43,16 @@ foreach ($products as $p) {
 $categories = $categoryModel->getAll();
 
 // --- Fetch Collections ---
-$stmtCollections = $pdo->query("SELECT * FROM collections ORDER BY id DESC");
-$allCollections = $stmtCollections->fetchAll();
+$allCollections = $collectionModel->getAll();
 
 // --- Fetch Orders ---
-$stmtRecentOrders = $pdo->query("
-    SELECT * FROM orders ORDER BY created_at DESC LIMIT 50
-");
-$orders = $stmtRecentOrders->fetchAll();
+$orders = $orderModel->getAll(50);
 
 // Pre-fetch order items for each order (pass to JS for modal)
 $orderItemsData = [];
 foreach ($orders as $o) {
-    $itemStmt = $pdo->prepare("
-        SELECT oi.quantity, oi.price, v.color, v.size, p.name
-        FROM order_items oi
-        JOIN product_variants v ON oi.variant_id = v.id
-        JOIN products p ON v.product_id = p.id
-        WHERE oi.order_id = ?
-    ");
-    $itemStmt->execute([$o['id']]);
-    $orderItemsData[$o['id']] = $itemStmt->fetchAll(PDO::FETCH_ASSOC);
+    $orderDetail = $orderModel->getById($o['id']);
+    $orderItemsData[$o['id']] = $orderDetail['items'] ?? [];
 }
 
 // Flash messages

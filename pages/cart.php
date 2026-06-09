@@ -3,24 +3,18 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 $pageTitle = 'Your Shopping Cart';
-include '../includes/header.php'; 
+require_once '../classes/Cart.php';
+require_once '../classes/Product.php';
 
-// Fetch images for cart items
-require_once '../classes/Database.php';
-$db = Database::getInstance()->getConnection();
-
-$cartItems = $_SESSION['cart'] ?? [];
-$subtotal = 0;
-$itemCount = 0;
-
-$stmtImage = $db->prepare("SELECT image_name FROM product_images WHERE product_id = ? AND is_main = 1 LIMIT 1");
-
-foreach ($cartItems as $key => $item) {
-    $subtotal += ($item['price'] * $item['quantity']);
-    $itemCount += $item['quantity'];
-}
+$cart = new Cart();
+$productModel = new Product();
+$cartItems = $cart->getItems();
+$subtotal = $cart->getSubtotal();
+$itemCount = $cart->getCount();
 $tax = round($subtotal * 0.10, 2);
-$total = $subtotal + $tax;
+$total = $cart->getTotal();
+
+include '../includes/header.php'; 
 ?>
     <link rel="stylesheet" href="../css/cart-checkout.css">
     <main class="cart-checkout-container">
@@ -46,8 +40,7 @@ $total = $subtotal + $tax;
                 <div id="cartContent" style="display: <?= empty($cartItems) ? 'none' : 'block' ?>;">
                     <?php if (!empty($cartItems)): ?>
                         <?php foreach ($cartItems as $key => $item): 
-                            $stmtImage->execute([$item['product_id']]);
-                            $img = $stmtImage->fetchColumn();
+                            $img = $productModel->getMainImage($item['product_id']);
                             $imgSrc = $img ? "../products/{$item['product_id']}/img/{$img}" : "../assets/placeholder.png";
                         ?>
                         <div class="cart-item" id="item_<?= htmlspecialchars($key) ?>">

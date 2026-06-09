@@ -9,14 +9,12 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION[
     exit;
 }
 
-require_once '../classes/Database.php';
+require_once '../classes/Collection.php';
 
-$db = Database::getInstance();
-$pdo = $db->getConnection();
+$collectionModel = new Collection();
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
-// Helper to handle image upload
 function uploadCollectionImage($fileInputName) {
     if (!isset($_FILES[$fileInputName]) || $_FILES[$fileInputName]['error'] !== UPLOAD_ERR_OK) {
         return null;
@@ -55,12 +53,11 @@ if ($action === 'add') {
 
     $imagePath = uploadCollectionImage('image');
     if (!$imagePath) {
-        $imagePath = ''; // Or a placeholder
+        $imagePath = '';
     }
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO collections (title, image_path, products_ids) VALUES (?, ?, ?)");
-        if ($stmt->execute([$title, $imagePath, $productsIds])) {
+        if ($collectionModel->create($title, $imagePath, $productsIds)) {
             $_SESSION['admin_success'] = "Collection '$title' created successfully.";
         } else {
             $_SESSION['admin_error'] = "Failed to create collection.";
@@ -83,18 +80,13 @@ if ($action === 'add') {
     }
 
     try {
-        // Fetch existing to get old image path if not replacing
-        $stmtEx = $pdo->prepare("SELECT image_path FROM collections WHERE id = ?");
-        $stmtEx->execute([$id]);
-        $existing = $stmtEx->fetch();
-
+        $existing = $collectionModel->getById($id);
         $imagePath = uploadCollectionImage('image');
         if (!$imagePath) {
             $imagePath = $existing['image_path'] ?? '';
         }
 
-        $stmt = $pdo->prepare("UPDATE collections SET title = ?, image_path = ?, products_ids = ? WHERE id = ?");
-        if ($stmt->execute([$title, $imagePath, $productsIds, $id])) {
+        if ($collectionModel->update($id, $title, $imagePath, $productsIds)) {
             $_SESSION['admin_success'] = "Collection updated successfully.";
         } else {
             $_SESSION['admin_error'] = "Failed to update collection.";
@@ -110,8 +102,7 @@ if ($action === 'add') {
 
     if ($id > 0) {
         try {
-            $stmt = $pdo->prepare("DELETE FROM collections WHERE id = ?");
-            if ($stmt->execute([$id])) {
+            if ($collectionModel->delete($id)) {
                 $_SESSION['admin_success'] = "Collection deleted successfully.";
             } else {
                 $_SESSION['admin_error'] = "Failed to delete collection.";

@@ -16,10 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-require_once '../classes/Database.php';
-$db = Database::getInstance();
-$pdo = $db->getConnection();
+require_once '../classes/Order.php';
 
+$orderModel = new Order();
 $action = $_POST['action'] ?? '';
 
 try {
@@ -30,19 +29,11 @@ try {
             exit;
         }
 
-        $pdo->beginTransaction();
-
-        // Delete order items first
-        $stmt = $pdo->prepare("DELETE FROM order_items WHERE order_id = ?");
-        $stmt->execute([$orderId]);
-
-        // Delete the order
-        $stmt = $pdo->prepare("DELETE FROM orders WHERE id = ?");
-        $stmt->execute([$orderId]);
-
-        $pdo->commit();
-
-        echo json_encode(['success' => true, 'message' => 'Order deleted successfully.']);
+        if ($orderModel->deleteOrder($orderId)) {
+            echo json_encode(['success' => true, 'message' => 'Order deleted successfully.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to delete order.']);
+        }
         exit;
 
     } elseif ($action === 'update_status') {
@@ -55,9 +46,7 @@ try {
             exit;
         }
 
-        $stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
-        $stmt->execute([$newStatus, $orderId]);
-
+        $orderModel->updateStatus($orderId, $newStatus);
         echo json_encode(['success' => true, 'message' => 'Order status updated.']);
         exit;
 
@@ -66,8 +55,5 @@ try {
         exit;
     }
 } catch (Exception $e) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
     echo json_encode(['success' => false, 'message' => 'Server error: ' . $e->getMessage()]);
 }

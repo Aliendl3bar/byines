@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../classes/Database.php';
+require_once '../classes/User.php';
 
 // Redirect logged-in users away from the login page
 if (isset($_SESSION['user_id'])) {
@@ -18,22 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || empty($password)) {
         $error = 'Please enter both email and password.';
     } else {
-        $db = Database::getInstance();
-        $pdo = $db->getConnection();
-
-        // Retrieve user by email
-        $stmt = $pdo->prepare("SELECT id, first_name, last_name, password_hash, role FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
-
-        // Verify user exists and password matches
-        if ($user && password_verify($password, $user['password_hash'])) {
-            // Create session variables
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['first_name'];
-            $_SESSION['user_role'] = $user['role']; // 'user' or 'admin'
-            
-            // Redirect to homepage or dashboard
+        $userModel = new User();
+        $user = $userModel->login($email, $password);
+        
+        if ($user) {
             header("Location: index.php");
             exit;
         } else {

@@ -8,19 +8,19 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once '../classes/Database.php';
-$db = Database::getInstance();
-$pdo = $db->getConnection();
+require_once '../classes/User.php';
+require_once '../classes/Order.php';
+require_once '../classes/Product.php';
+
+$userModel = new User();
+$orderModel = new Order();
+$productModel = new Product();
 
 // Fetch user data
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$user = $stmt->fetch();
+$user = $userModel->getProfile($_SESSION['user_id']);
 
 // Fetch orders
-$orderStmt = $pdo->prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC");
-$orderStmt->execute([$_SESSION['user_id']]);
-$orders = $orderStmt->fetchAll(PDO::FETCH_ASSOC);
+$orders = $orderModel->getByUser($_SESSION['user_id']);
 
 $orderCount = count($orders);
 $totalSpent = 0;
@@ -162,16 +162,8 @@ include '../includes/header.php';
                             </div>
                         <?php else: ?>
                             <?php foreach ($orders as $order): 
-                                // Fetch order items
-                                $itemStmt = $pdo->prepare("
-                                    SELECT oi.*, v.color, v.size, p.name, p.id as product_id
-                                    FROM order_items oi
-                                    JOIN product_variants v ON oi.variant_id = v.id
-                                    JOIN products p ON v.product_id = p.id
-                                    WHERE oi.order_id = ?
-                                ");
-                                $itemStmt->execute([$order['id']]);
-                                $items = $itemStmt->fetchAll(PDO::FETCH_ASSOC);
+                                $orderDetail = $orderModel->getById($order['id']);
+                                $items = $orderDetail['items'] ?? [];
                             ?>
                             <div class="order-history-card">
                                 <div class="order-card-header">
@@ -199,10 +191,7 @@ include '../includes/header.php';
                                 <div class="order-card-body">
                                     <div class="order-items-list">
                                         <?php foreach ($items as $item): 
-                                            // Get image with fallback
-                                            $imgStmt = $pdo->prepare("SELECT image_name FROM product_images WHERE product_id = ? ORDER BY (color = ?) DESC, is_main DESC LIMIT 1");
-                                            $imgStmt->execute([$item['product_id'], $item['color']]);
-                                            $imgName = $imgStmt->fetchColumn();
+                                            $imgName = $productModel->getImageByColor($item['product_id'], $item['color']);
                                             $imgSrc = $imgName ? "../products/{$item['product_id']}/img/" . htmlspecialchars($imgName) : "../assets/placeholder.png";
                                         ?>
                                         <div class="order-item-row">

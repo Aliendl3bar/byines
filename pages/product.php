@@ -106,40 +106,7 @@ if ($reviewCount > 0) {
 }
 
 // Fetch related products (same category, active, limit 4)
-$stmtRelated = $pdo->prepare("
-    SELECT p.id, p.name, p.slug, p.price, p.old_price
-    FROM products p
-    WHERE p.category_id = ? AND p.id != ? AND p.is_active = 1
-    ORDER BY RAND() LIMIT 4
-");
-$stmtRelated->execute([$product['category_id'], $productId]);
-$relatedProducts = $stmtRelated->fetchAll();
-
-// If we don't have enough, fill with other random active products
-if (count($relatedProducts) < 4) {
-    $needed = 4 - count($relatedProducts);
-    $excludeIds = array_merge([$productId], array_column($relatedProducts, 'id'));
-    $placeholders = implode(',', array_fill(0, count($excludeIds), '?'));
-    
-    $stmtFill = $pdo->prepare("
-        SELECT p.id, p.name, p.slug, p.price, p.old_price
-        FROM products p
-        WHERE p.id NOT IN ($placeholders) AND p.is_active = 1
-        ORDER BY RAND() LIMIT $needed
-    ");
-    $stmtFill->execute($excludeIds);
-    $fillProducts = $stmtFill->fetchAll();
-    $relatedProducts = array_merge($relatedProducts, $fillProducts);
-}
-
-// Dynamic image fetcher helper for related products
-$stmtRelImage = $pdo->prepare("
-    SELECT image_name 
-    FROM product_images 
-    WHERE product_id = ? 
-    ORDER BY is_main DESC, sort_order ASC, id ASC 
-    LIMIT 1
-");
+$relatedProducts = $productModel->getRelatedProducts($product['category_id'], $productId, 4);
 
 include '../includes/header.php';
 ?>
@@ -374,9 +341,7 @@ include '../includes/header.php';
             <h2 class="section-title" style="font-size: 2.25rem; text-align: center; margin-bottom: 4rem; font-weight: 300;">You May Also Like</h2>
             <div class="product-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem 1rem;">
                 <?php foreach ($relatedProducts as $rel): 
-                    // Fetch primary image for related product
-                    $stmtRelImage->execute([$rel['id']]);
-                    $relImg = $stmtRelImage->fetch();
+                    $relImg = $productModel->getMainImage($rel['id']);
                     $relImgUrl = $relImg ? '../products/' . $rel['id'] . '/img/' . $relImg['image_name'] : '../assets/placeholder.png';
                     ?>
                     <div class="product-card" style="cursor: pointer;" onclick="window.location.href='product.php?slug=<?= urlencode($rel['slug']) ?>'">

@@ -292,6 +292,139 @@ class Product {
     }
 
     /**
+     * Fetch products with main image for listing pages with filtering and pagination.
+     * @return array
+     */
+    public function getProductsWithImages($whereClause, $params, $orderBy, $limit, $offset) {
+        $query = "
+            SELECT p.id, p.name, p.price, p.old_price, pi.image_name,
+                   (SELECT color FROM product_variants pv WHERE pv.product_id = p.id LIMIT 1) as color
+            FROM products p
+            LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_main = 1
+            WHERE $whereClause
+            ORDER BY $orderBy
+            LIMIT $limit OFFSET $offset
+        ";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Count products matching given conditions.
+     * @return int
+     */
+    public function countProducts($whereClause, $params) {
+        $query = "SELECT COUNT(p.id) FROM products p WHERE $whereClause";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn();
+    }
+
+    /**
+     * Get related products from the same category, excluding current product.
+     * @return array
+     */
+    public function getRelatedProducts($categoryId, $excludeId, $limit = 4) {
+        $stmt = $this->pdo->prepare("
+            SELECT p.id, p.name, p.slug, p.price, p.old_price
+            FROM products p
+            WHERE p.category_id = ? AND p.id != ? AND p.is_active = 1
+            ORDER BY RAND() LIMIT ?
+        ");
+        $stmt->execute([$categoryId, $excludeId, $limit]);
+        $products = $stmt->fetchAll();
+
+        if (count($products) < $limit) {
+            $needed = $limit - count($products);
+            $excludeIds = array_merge([$excludeId], array_column($products, 'id'));
+            $placeholders = implode(',', array_fill(0, count($excludeIds), '?'));
+            $stmtFill = $this->pdo->prepare("
+                SELECT p.id, p.name, p.slug, p.price, p.old_price
+                FROM products p
+                WHERE p.id NOT IN ($placeholders) AND p.is_active = 1
+                ORDER BY RAND() LIMIT $needed
+            ");
+            $stmtFill->execute($excludeIds);
+            $products = array_merge($products, $stmtFill->fetchAll());
+        }
+
+        return $products;
+    }
+
+    /**
+     * Get products by a list of IDs with their main images.
+     * @return array
+     */
+    public function getProductsByIds(array $ids, $limit = 4) {
+        if (empty($ids)) return [];
+        $inQuery = implode(',', array_fill(0, count($ids), '?'));
+        $placeholders = implode(',', $ids);
+        $query = "
+            SELECT p.id, p.name, p.price, pi.image_name
+            FROM products p
+            LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_main = 1
+            WHERE p.id IN ($inQuery) AND p.is_active = 1
+            ORDER BY FIELD(p.id, $placeholders)
+            LIMIT ?
+        ";
+        $stmt = $this->pdo->prepare($query);
+        $params = array_merge($ids, [$limit]);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Check if a SKU already exists.
+     * @return bool
+     */
+    public function skuExists($sku, $excludeId = null) {
+        if ($excludeId) {
+            $stmt = $this->pdo->prepare("SELECT id FROM products WHERE sku = ? AND id != ?");
+            $stmt->execute([$sku, $excludeId]);
+        } else {
+            $stmt = $this->pdo->prepare("SELECT id FROM products WHERE sku = ?");
+            $stmt->execute([$sku]);
+        }
+        return (bool)$stmt->fetch();
+    }
+
+    /**
+     * Check if a slug already exists.
+     * @return bool
+     */
+    public function slugExists($slug, $excludeId = null) {
+        if ($excludeId) {
+            $stmt = $this->pdo->prepare("SELECT id FROM products WHERE slug = ? AND id != ?");
+            $stmt->execute([$slug, $excludeId]);
+        } else {
+            $stmt = $this->pdo->prepare("SELECT id FROM products WHERE slug = ?");
+            $stmt->execute([$slug]);
+        }
+        return (bool)$stmt->fetch();
+    }
+
+    /**
+     * Get the main image filename for a product.
+     * @return string|null
+     */
+    public function getMainImage($productId) {
+        $stmt = $this->pdo->prepare("SELECT image_name FROM product_images WHERE product_id = ? ORDER BY is_main DESC, sort_order ASC, id ASC LIMIT 1");
+        $stmt->execute([$productId]);
+        return $stmt->fetchColumn() ?: null;
+    }
+
+    /**
+     * Get a product image matching a specific color.
+     * @return string|null
+     */
+    public function getImageByColor($productId, $color) {
+        $stmt = $this->pdo->prepare("SELECT image_name FROM product_images WHERE product_id = ? ORDER BY (color = ?) DESC, is_main DESC LIMIT 1");
+        $stmt->execute([$productId, $color]);
+        return $stmt->fetchColumn() ?: null;
+    }
+
+    /**
      * Delete a product and all associated images (files + DB) and variants.
      * @return bool
      */

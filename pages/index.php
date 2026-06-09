@@ -1,6 +1,9 @@
 <?php 
+require_once '../classes/Product.php';
+require_once '../classes/Collection.php';
+$productModel = new Product();
+$collectionModel = new Collection();
 include '../includes/header.php'; 
-$db = Database::getInstance()->getConnection();
 ?>
 
     <main>
@@ -17,26 +20,12 @@ $db = Database::getInstance()->getConnection();
             <h2 class="section-title">Popular Picks</h2>
             <div class="product-grid">
                 <?php
-                // Fetch Popular Picks collection
-                $stmtPop = $db->prepare("SELECT products_ids FROM collections WHERE title = 'Popular Picks' LIMIT 1");
-                $stmtPop->execute();
-                $popularPicksIds = $stmtPop->fetchColumn();
+                $popularPicksIds = $collectionModel->getByTitle('Popular Picks');
 
                 if ($popularPicksIds) {
                     $idsArray = array_filter(array_map('intval', explode(',', $popularPicksIds)));
                     if (!empty($idsArray)) {
-                        $inQuery = implode(',', array_fill(0, count($idsArray), '?'));
-                        $prodQuery = "
-                            SELECT p.id, p.name, p.price, pi.image_name 
-                            FROM products p 
-                            LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_main = 1 
-                            WHERE p.id IN ($inQuery) AND p.is_active = 1
-                            ORDER BY FIELD(p.id, $popularPicksIds)
-                            LIMIT 4
-                        ";
-                        $prodStmt = $db->prepare($prodQuery);
-                        $prodStmt->execute($idsArray);
-                        $popularProducts = $prodStmt->fetchAll(PDO::FETCH_ASSOC);
+                        $popularProducts = $productModel->getProductsByIds($idsArray, 4);
 
                         foreach ($popularProducts as $product):
                             $imageSrc = !empty($product['image_name']) 
@@ -67,9 +56,10 @@ $db = Database::getInstance()->getConnection();
 
         <section class="featured-banners" data-purpose="featured-banners">
             <?php
-            // Fetch collections from the database
-            $stmt = $db->query("SELECT * FROM collections WHERE title != 'Popular Picks' ORDER BY id ASC");
-            $collections = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $allCollections = $collectionModel->getAll();
+            $collections = array_filter($allCollections, function($c) {
+                return $c['title'] !== 'Popular Picks';
+            });
 
             if ($collections):
                 foreach ($collections as $collection):

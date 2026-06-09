@@ -1,6 +1,11 @@
 <?php 
-require_once '../classes/Database.php';
-$db = Database::getInstance()->getConnection();
+require_once '../classes/Product.php';
+require_once '../classes/Category.php';
+require_once '../classes/Collection.php';
+
+$productModel = new Product();
+$categoryModel = new Category();
+$collectionModel = new Collection();
 
 $categorySlug = $_GET['category'] ?? null;
 $collectionId = $_GET['id'] ?? null;
@@ -8,8 +13,7 @@ $sort = $_GET['sort'] ?? 'newest';
 $priceFilter = $_GET['price_filter'] ?? 500;
 
 // Fetch categories
-$stmtCat = $db->query("SELECT * FROM categories ORDER BY name ASC");
-$categories = $stmtCat->fetchAll(PDO::FETCH_ASSOC);
+$categories = $categoryModel->getAll();
 
 // Base query for products
 $where = ["p.is_active = 1"];
@@ -19,9 +23,7 @@ $pageTitle = "All Collections";
 $breadcrumbCat = "All";
 
 if ($categorySlug) {
-    $stmt = $db->prepare("SELECT id, name FROM categories WHERE slug = ? LIMIT 1");
-    $stmt->execute([$categorySlug]);
-    $cat = $stmt->fetch();
+    $cat = $categoryModel->getBySlug($categorySlug);
     if ($cat) {
         $where[] = "p.category_id = ?";
         $params[] = $cat['id'];
@@ -29,9 +31,7 @@ if ($categorySlug) {
         $breadcrumbCat = htmlspecialchars($cat['name']);
     }
 } elseif ($collectionId) {
-    $stmt = $db->prepare("SELECT title, products_ids FROM collections WHERE id = ? LIMIT 1");
-    $stmt->execute([$collectionId]);
-    $col = $stmt->fetch();
+    $col = $collectionModel->getById($collectionId);
     if ($col && !empty($col['products_ids'])) {
         $ids = array_filter(array_map('intval', explode(',', $col['products_ids'])));
         if (!empty($ids)) {
@@ -41,7 +41,7 @@ if ($categorySlug) {
             $pageTitle = htmlspecialchars($col['title']);
             $breadcrumbCat = htmlspecialchars($col['title']);
         } else {
-            $where[] = "1=0"; // empty collection
+            $where[] = "1=0";
         }
     }
 }
@@ -65,26 +65,11 @@ $limit = 12;
 $offset = ($page - 1) * $limit;
 
 // Total count
-$countQuery = "SELECT COUNT(p.id) FROM products p WHERE $whereClause";
-$stmtCount = $db->prepare($countQuery);
-$stmtCount->execute($params);
-$totalProducts = $stmtCount->fetchColumn();
-$totalPages = ceil($totalProducts / $limit);
-if ($totalPages == 0) $totalPages = 1;
+$totalProducts = $productModel->countProducts($whereClause, $params);
+$totalPages = max(1, ceil($totalProducts / $limit));
 
 // Fetch products
-$query = "
-    SELECT p.id, p.name, p.price, pi.image_name,
-           (SELECT color FROM product_variants pv WHERE pv.product_id = p.id LIMIT 1) as color
-    FROM products p 
-    LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_main = 1 
-    WHERE $whereClause
-    ORDER BY $orderBy
-    LIMIT $limit OFFSET $offset
-";
-$stmtProd = $db->prepare($query);
-$stmtProd->execute($params);
-$products = $stmtProd->fetchAll(PDO::FETCH_ASSOC);
+$products = $productModel->getProductsWithImages($whereClause, $params, $orderBy, $limit, $offset);
 
 include '../includes/header.php'; 
 ?>

@@ -61,18 +61,82 @@ class Order {
             ");
 
             foreach ($items as $item) {
-                // Insert item
-                $stmtItem->execute([$orderId, $item['variant_id'], $item['quantity'], $item['price']]);
-
-                // Deduct inventory
-                $stmtStock->execute([$item['quantity'], $item['variant_id'], $item['quantity']]);
+                $variantId = $item['variant_id'] ?? $this->getVariantId($item['product_id'], $item['color'], $item['size']);
+                if (!$variantId) {
+                    throw new Exception("Variant not found for product: " . ($item['name'] ?? 'unknown'));
+                }
+                $stmtItem->execute([$orderId, $variantId, $item['quantity'], $item['price']]);
+                $stmtStock->execute([$item['quantity'], $variantId, $item['quantity']]);
                 if ($stmtStock->rowCount() === 0) {
-                    throw new Exception("Insufficient stock for variant ID " . $item['variant_id']);
+                    throw new Exception("Insufficient stock for variant ID " . $variantId);
                 }
             }
 
             $this->pdo->commit();
             return $orderId;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Create order from cart items (simplified, used by process_order.php).
+     * @return array|false ['order_id' => int, 'order_number' => string]
+     */
+    public function createFromCart($userId, $shippingName, $shippingPhone, $addressLine1, $city, $shippingMethod, $paymentMethod, $items) {
+        try {
+            $this->pdo->beginTransaction();
+
+            $orderNumber = 'BYINES-' . strtoupper(bin2hex(random_bytes(4)));
+
+            $subtotal = 0;
+            foreach ($items as $item) {
+                $subtotal += $item['price'] * $item['quantity'];
+            }
+
+            $tax = round($subtotal * 0.10, 2);
+            $cityLower = strtolower($city);
+            $shippingCost = ($cityLower === 'tangier' || $cityLower === 'tanger') ? 0.00 : 3.00;
+            $totalAmount = $subtotal + $tax + $shippingCost;
+            $shippingCountry = 'Morocco';
+
+            $stmt = $this->pdo->prepare("
+                INSERT INTO orders (
+                    user_id, order_number, subtotal, tax, shipping_cost, total_amount,
+                    status, shipping_name, shipping_phone, shipping_address_line1,
+                    shipping_city, shipping_state, shipping_zip, shipping_country,
+                    shipping_method, payment_method, payment_status
+                ) VALUES (
+                    ?, ?, ?, ?, ?, ?,
+                    'pending', ?, ?, ?,
+                    ?, '', '', ?,
+                    'Standard', ?, 'unpaid'
+                )
+            ");
+
+            $stmt->execute([
+                $userId, $orderNumber, $subtotal, $tax, $shippingCost, $totalAmount,
+                $shippingName, $shippingPhone, $addressLine1,
+                $city, $shippingCountry,
+                $paymentMethod
+            ]);
+
+            $orderId = $this->pdo->lastInsertId();
+
+            $itemStmt = $this->pdo->prepare("INSERT INTO order_items (order_id, variant_id, quantity, price) VALUES (?, ?, ?, ?)");
+            $stockStmt = $this->pdo->prepare("UPDATE product_variants SET stock_quantity = GREATEST(stock_quantity - ?, 0) WHERE product_id = ? AND color = ? AND size = ?");
+
+            foreach ($items as $item) {
+                $variantId = $this->getVariantId($item['product_id'], $item['color'], $item['size']);
+                if ($variantId) {
+                    $itemStmt->execute([$orderId, $variantId, $item['quantity'], $item['price']]);
+                    $stockStmt->execute([$item['quantity'], $item['product_id'], $item['color'], $item['size']]);
+                }
+            }
+
+            $this->pdo->commit();
+            return ['order_id' => $orderId, 'order_number' => $orderNumber];
         } catch (Exception $e) {
             $this->pdo->rollBack();
             return false;
@@ -135,5 +199,52 @@ class Order {
     public function updateStatus($id, $status) {
         $stmt = $this->pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
         return $stmt->execute([$status, $id]);
+    }
+
+    /**
+     * Delete an order and its items.
+     * @return bool
+     */
+    public function deleteOrder($orderId) {
+        try {
+            $this->pdo->beginTransaction();
+            $stmt = $this->pdo->prepare("DELETE FROM order_items WHERE order_id = ?");
+            $stmt->execute([$orderId]);
+            $stmt = $this->pdo->prepare("DELETE FROM orders WHERE id = ?");
+            $stmt->execute([$orderId]);
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Look up variant ID by product, color, and size.
+     * @return int|null
+     */
+    public function getVariantId($productId, $color, $size) {
+        $stmt = $this->pdo->prepare("SELECT id FROM product_variants WHERE product_id = ? AND color = ? AND size = ? LIMIT 1");
+        $stmt->execute([$productId, $color, $size]);
+        return $stmt->fetchColumn() ?: null;
+    }
+
+    /**
+     * Get total number of orders.
+     * @return int
+     */
+    public function getTotalCount() {
+        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM orders");
+        return (int)$stmt->fetch()['total'];
+    }
+
+    /**
+     * Get total revenue from paid orders.
+     * @return float
+     */
+    public function getTotalRevenue() {
+        $stmt = $this->pdo->query("SELECT SUM(total_amount) as revenue FROM orders WHERE payment_status = 'paid'");
+        return (float)($stmt->fetch()['revenue'] ?? 0.00);
     }
 }

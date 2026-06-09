@@ -197,9 +197,7 @@ if ($action === 'save_product_assets') {
     }
 
     // Check unique SKU
-    $stmtCheck = $pdo->prepare("SELECT id FROM products WHERE sku = ?");
-    $stmtCheck->execute([$sku]);
-    if ($stmtCheck->fetch()) {
+    if ($productModel->skuExists($sku)) {
         $_SESSION['admin_error'] = "Product SKU '$sku' already exists.";
         header("Location: admin_dashboard.php?tab=products");
         exit;
@@ -208,9 +206,7 @@ if ($action === 'save_product_assets') {
     $slug = createSlug($name);
     
     // Check unique slug
-    $stmtSlug = $pdo->prepare("SELECT id FROM products WHERE slug = ?");
-    $stmtSlug->execute([$slug]);
-    if ($stmtSlug->fetch()) {
+    if ($productModel->slugExists($slug)) {
         $slug .= '-' . time();
     }
 
@@ -218,8 +214,7 @@ if ($action === 'save_product_assets') {
 
     if ($productId) {
         // Automatically insert a default variant (Color: Default, Size: M, Stock)
-        $stmtVariant = $pdo->prepare("INSERT INTO product_variants (product_id, color, size, stock_quantity) VALUES (?, 'Default', 'M', ?)");
-        $stmtVariant->execute([$productId, $stock]);
+        $productModel->addVariant($productId, 'Default', 'M', $stock, 0.00);
 
         // Process uploads
         uploadProductImages($productId, 'images', $productModel);

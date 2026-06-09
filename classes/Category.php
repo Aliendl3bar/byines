@@ -28,6 +28,16 @@ class Category {
     }
 
     /**
+     * Get a category by its slug.
+     * @return array|null
+     */
+    public function getBySlug($slug) {
+        $stmt = $this->pdo->prepare("SELECT id, name, slug, image_url FROM categories WHERE slug = ? LIMIT 1");
+        $stmt->execute([$slug]);
+        return $stmt->fetch() ?: null;
+    }
+
+    /**
      * Create a new category.
      * @return bool
      */
