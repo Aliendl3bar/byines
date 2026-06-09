@@ -9,14 +9,16 @@ let productImages = [];
 let basePrice = 0.00;
 let selectedColor = "";
 let selectedSize = "";
+let currentProductId = 0;
 
 /**
  * Initialize the product page controls.
  */
-function initProductPage(variants, images, base) {
+function initProductPage(variants, images, base, pid) {
     productVariants = variants;
     productImages = images;
     basePrice = parseFloat(base);
+    currentProductId = parseInt(pid);
 
     // Initialize infinite scroll
     setupInfiniteScroll();
@@ -368,9 +370,62 @@ function addToCart() {
         return;
     }
 
-    alert(`Successfully added ${quantity} item(s) (${selectedColor} / Size ${selectedSize}) to your cart!`);
-    
-    // In a real application, you would make an AJAX call here to save to the cart session/DB
+    const addToCartBtn = document.querySelector('.add-to-cart-btn');
+    const originalText = addToCartBtn.innerHTML;
+    addToCartBtn.innerHTML = 'Adding...';
+    addToCartBtn.disabled = true;
+
+    // Send AJAX request
+    const formData = new FormData();
+    formData.append('action', 'add');
+    formData.append('product_id', currentProductId);
+    formData.append('color', selectedColor);
+    formData.append('size', selectedSize);
+    formData.append('quantity', quantity);
+
+    fetch('cart_action.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update cart badge in header
+            const cartBadge = document.getElementById('cart-badge-count');
+            if (cartBadge) {
+                cartBadge.innerText = data.cartCount;
+                cartBadge.style.display = data.cartCount > 0 ? 'flex' : 'none';
+                
+                // Add a small bounce animation to the badge
+                cartBadge.style.transform = 'translate(25%, -25%) scale(1.3)';
+                setTimeout(() => { cartBadge.style.transform = 'translate(25%, -25%) scale(1)'; }, 300);
+            }
+            
+            // Visual feedback on button
+            addToCartBtn.innerHTML = 'Added to Cart ✓';
+            addToCartBtn.style.backgroundColor = '#4CAF50';
+            addToCartBtn.style.color = 'white';
+            
+            setTimeout(() => {
+                addToCartBtn.innerHTML = originalText;
+                addToCartBtn.style.backgroundColor = '';
+                addToCartBtn.style.color = '';
+                addToCartBtn.disabled = false;
+            }, 2000);
+            
+        } else {
+            alert(data.message || 'Error adding to cart.');
+            addToCartBtn.innerHTML = originalText;
+            addToCartBtn.disabled = false;
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('A network error occurred.');
+        addToCartBtn.innerHTML = originalText;
+        addToCartBtn.disabled = false;
+    });
 }
 
 /**

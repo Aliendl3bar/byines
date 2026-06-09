@@ -26,4 +26,31 @@ class Category {
         $stmt->execute([$id]);
         return $stmt->fetch() ?: null;
     }
+
+    /**
+     * Create a new category.
+     * @return bool
+     */
+    public function create($name, $slug, $imageUrl) {
+        $stmt = $this->pdo->prepare("INSERT INTO categories (name, slug, image_url) VALUES (?, ?, ?)");
+        return $stmt->execute([$name, $slug, $imageUrl]);
+    }
+
+    /**
+     * Update an existing category.
+     * @return bool
+     */
+    public function update($id, $name, $slug, $imageUrl) {
+        $stmt = $this->pdo->prepare("UPDATE categories SET name = ?, slug = ?, image_url = ? WHERE id = ?");
+        return $stmt->execute([$name, $slug, $imageUrl, $id]);
+    }
+
+    /**
+     * Delete a category by its ID.
+     * @return bool
+     */
+    public function delete($id) {
+        $stmt = $this->pdo->prepare("DELETE FROM categories WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
 }

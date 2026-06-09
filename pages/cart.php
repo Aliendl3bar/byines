@@ -1,4 +1,27 @@
-<?php include '../includes/header.php'; ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$pageTitle = 'Your Shopping Cart';
+include '../includes/header.php'; 
+
+// Fetch images for cart items
+require_once '../classes/Database.php';
+$db = Database::getInstance()->getConnection();
+
+$cartItems = $_SESSION['cart'] ?? [];
+$subtotal = 0;
+$itemCount = 0;
+
+$stmtImage = $db->prepare("SELECT image_name FROM product_images WHERE product_id = ? AND is_main = 1 LIMIT 1");
+
+foreach ($cartItems as $key => $item) {
+    $subtotal += ($item['price'] * $item['quantity']);
+    $itemCount += $item['quantity'];
+}
+$tax = round($subtotal * 0.10, 2);
+$total = $subtotal + $tax;
+?>
     <link rel="stylesheet" href="../css/cart-checkout.css">
     <main class="cart-checkout-container">
         <!-- Breadcrumb Navigation -->
@@ -15,101 +38,63 @@
             
             <!-- Cart Items List -->
             <section class="cart-items">
-                <div id="emptyCart" class="empty-cart-message" style="display: none;">
+                <div id="emptyCart" class="empty-cart-message" style="display: <?= empty($cartItems) ? 'block' : 'none' ?>;">
                     <p>Your cart is empty</p>
-                    <a href="collections.php">Continue Shopping</a>
+                    <a href="shop.php">Continue Shopping</a>
                 </div>
 
-                <div id="cartContent" style="display: block;">
-                    <!-- Cart Item 1 -->
-                    <div class="cart-item">
-                        <div class="cart-item-image">
-                            <img src="../assets/boutique_byines_3314221782547857149.png" alt="Elegant Abaya">
-                        </div>
-                        <div class="cart-item-info">
-                            <div class="cart-item-details">
-                                <h3>Elegant Abaya</h3>
-                                <p>SKU: ABAYA-001</p>
-                                <p>Color: <strong>Black</strong> | Size: <strong>M</strong></p>
+                <div id="cartContent" style="display: <?= empty($cartItems) ? 'none' : 'block' ?>;">
+                    <?php if (!empty($cartItems)): ?>
+                        <?php foreach ($cartItems as $key => $item): 
+                            $stmtImage->execute([$item['product_id']]);
+                            $img = $stmtImage->fetchColumn();
+                            $imgSrc = $img ? "../products/{$item['product_id']}/img/{$img}" : "../assets/placeholder.png";
+                        ?>
+                        <div class="cart-item" id="item_<?= htmlspecialchars($key) ?>">
+                            <div class="cart-item-image">
+                                <img src="<?= $imgSrc ?>" alt="<?= htmlspecialchars($item['name']) ?>">
                             </div>
-                            <div class="cart-item-footer">
-                                <div class="qty-control">
-                                    <button onclick="decreaseItemQty(1)">−</button>
-                                    <input type="text" value="1" readonly>
-                                    <button onclick="increaseItemQty(1)">+</button>
+                            <div class="cart-item-info">
+                                <div class="cart-item-details">
+                                    <h3><?= htmlspecialchars($item['name']) ?></h3>
+                                    <?php if ($item['color'] || $item['size']): ?>
+                                        <p>
+                                            <?php if ($item['color']): ?>Color: <strong><?= htmlspecialchars($item['color']) ?></strong><?php endif; ?>
+                                            <?php if ($item['color'] && $item['size']): ?> | <?php endif; ?>
+                                            <?php if ($item['size']): ?>Size: <strong><?= htmlspecialchars($item['size']) ?></strong><?php endif; ?>
+                                        </p>
+                                    <?php endif; ?>
                                 </div>
-                                <div class="item-price-section">
-                                    <p class="item-price">$360</p>
-                                    <button class="remove-btn" onclick="removeItem(1)">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cart Item 2 -->
-                    <div class="cart-item">
-                        <div class="cart-item-image">
-                            <img src="../assets/boutique_byines_3469503560297835658.png" alt="Classic Abaya">
-                        </div>
-                        <div class="cart-item-info">
-                            <div class="cart-item-details">
-                                <h3>Classic Abaya</h3>
-                                <p>SKU: ABAYA-002</p>
-                                <p>Color: <strong>Brown</strong> | Size: <strong>S</strong></p>
-                            </div>
-                            <div class="cart-item-footer">
-                                <div class="qty-control">
-                                    <button onclick="decreaseItemQty(2)">−</button>
-                                    <input type="text" value="1" readonly>
-                                    <button onclick="increaseItemQty(2)">+</button>
-                                </div>
-                                <div class="item-price-section">
-                                    <p class="item-price">$250</p>
-                                    <button class="remove-btn" onclick="removeItem(2)">Remove</button>
+                                <div class="cart-item-footer">
+                                    <div class="qty-control">
+                                        <button onclick="decreaseItemQty('<?= htmlspecialchars($key) ?>')">−</button>
+                                        <input type="text" id="qty_<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($item['quantity']) ?>" readonly>
+                                        <button onclick="increaseItemQty('<?= htmlspecialchars($key) ?>')">+</button>
+                                    </div>
+                                    <div class="item-price-section">
+                                        <p class="item-price">$<?= number_format($item['price'], 2) ?></p>
+                                        <button class="remove-btn" onclick="removeItem('<?= htmlspecialchars($key) ?>')">Remove</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Cart Item 3 -->
-                    <div class="cart-item">
-                        <div class="cart-item-image">
-                            <img src="../assets/boutique_byines_3844045366027357924.png" alt="Modern Abaya">
-                        </div>
-                        <div class="cart-item-info">
-                            <div class="cart-item-details">
-                                <h3>Modern Abaya</h3>
-                                <p>SKU: ABAYA-003</p>
-                                <p>Color: <strong>Charcoal</strong> | Size: <strong>L</strong></p>
-                            </div>
-                            <div class="cart-item-footer">
-                                <div class="qty-control">
-                                    <button onclick="decreaseItemQty(3)">−</button>
-                                    <input type="text" value="2" readonly>
-                                    <button onclick="increaseItemQty(3)">+</button>
-                                </div>
-                                <div class="item-price-section">
-                                    <p class="item-price">$580</p>
-                                    <button class="remove-btn" onclick="removeItem(3)">Remove</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
 
                     <!-- Continue Shopping -->
                     <div class="continue-shopping-section">
-                        <a href="collections.php" class="continue-shopping-link">Continue Shopping</a>
+                        <a href="shop.php" class="continue-shopping-link">Continue Shopping</a>
                     </div>
                 </div>
             </section>
 
             <!-- Order Summary Sidebar -->
-            <aside class="order-summary">
+            <aside class="order-summary" style="display: <?= empty($cartItems) ? 'none' : 'block' ?>;">
                 <h2>Order Summary</h2>
                 
                 <div class="summary-row">
-                    <span class="summary-label">Subtotal (3 items)</span>
-                    <span class="summary-value">$1,190.00</span>
+                    <span class="summary-label" id="summary-subtotal-label">Subtotal (<?= $itemCount ?> items)</span>
+                    <span class="summary-value" id="summary-subtotal">$<?= number_format($subtotal, 2) ?></span>
                 </div>
 
                 <div class="summary-row">
@@ -119,7 +104,7 @@
 
                 <div class="summary-row">
                     <span class="summary-label">Tax</span>
-                    <span class="summary-value">$119.00</span>
+                    <span class="summary-value" id="summary-tax">$<?= number_format($tax, 2) ?></span>
                 </div>
 
                 <!-- Promo Code -->
@@ -134,7 +119,7 @@
                 <!-- Total -->
                 <div class="order-total">
                     <span class="total-label">Total</span>
-                    <span class="total-amount">$1,309.00</span>
+                    <span class="total-amount" id="summary-total">$<?= number_format($total, 2) ?></span>
                 </div>
 
                 <!-- Checkout Button -->
@@ -150,6 +135,6 @@
         </div>
     </main>
 
-    <script src="../scripts/cart.js"></script>
+    <script src="../scripts/cart.js?v=<?= time() ?>"></script>
 
 <?php include '../includes/footer.php'; ?>

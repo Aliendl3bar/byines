@@ -37,7 +37,7 @@ if (!$product || (!$product['is_active'] && ($_SESSION['user_role'] ?? '') !== '
     <main style="max-width: 1280px; margin: 6rem auto; padding: 2rem 1.5rem; text-align: center;">
         <h1 style="font-size: 2.5rem; font-weight: 300; color: var(--brand-dark); margin-bottom: 1.5rem;">Product Not Found</h1>
         <p style="color: var(--gray-500); font-size: 1.125rem; margin-bottom: 2rem;">The product you are looking for does not exist or is currently unavailable.</p>
-        <a href="collections.php" class="btn-primary" style="display: inline-block; text-decoration: none; padding: 1rem 2rem; background-color: var(--brand-dark); color: var(--white); border-radius: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Browse Collections</a>
+        <a href="shop.php" class="btn-primary" style="display: inline-block; text-decoration: none; padding: 1rem 2rem; background-color: var(--brand-dark); color: var(--white); border-radius: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Browse Collections</a>
     </main>
     <?php
     include '../includes/footer.php';
@@ -149,9 +149,9 @@ include '../includes/header.php';
         <nav class="breadcrumb-nav" style="margin-bottom: 2rem;">
             <a href="index.php" style="color: var(--gray-500); text-decoration: none; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em;">Home</a>
             <span style="color: var(--gray-500); margin: 0 0.75rem; font-size: 0.75rem;">/</span>
-            <a href="collections.php" style="color: var(--gray-500); text-decoration: none; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em;">Collections</a>
+            <a href="shop.php" style="color: var(--gray-500); text-decoration: none; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em;">Collections</a>
             <span style="color: var(--gray-500); margin: 0 0.75rem; font-size: 0.75rem;">/</span>
-            <a href="collections.php?category=<?= urlencode($product['category_name']) ?>" style="color: var(--gray-500); text-decoration: none; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em;"><?= htmlspecialchars($product['category_name']) ?></a>
+            <a href="shop.php?category=<?= urlencode($product['category_name']) ?>" style="color: var(--gray-500); text-decoration: none; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em;"><?= htmlspecialchars($product['category_name']) ?></a>
             <span style="color: var(--gray-500); margin: 0 0.75rem; font-size: 0.75rem;">/</span>
             <span style="color: var(--brand-dark); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;"><?= htmlspecialchars($product['name']) ?></span>
         </nav>
@@ -164,9 +164,9 @@ include '../includes/header.php';
                 <!-- Main Image -->
                 <div class="main-image-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1.5rem; overflow: hidden; background-color: #EAE4DE; border-radius: 1rem;">
                     <img id="mainImage" alt="<?= htmlspecialchars($product['name']) ?> - Main View" src="<?= $mainImageSrc ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" />
-                    <button class="wishlist-btn" style="position: absolute; top: 1.5rem; right: 1.5rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease;" onclick="alert('Added to wishlist!')">
+                    <button class="wishlist-btn" style="position: absolute; top: 1.5rem; right: 1.5rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease;" onclick="addToCart()">
                         <svg style="width: 1.5rem; height: 1.5rem;" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
                     </button>
                 </div>
@@ -382,9 +382,9 @@ include '../includes/header.php';
                     <div class="product-card" style="cursor: pointer;" onclick="window.location.href='product.php?slug=<?= urlencode($rel['slug']) ?>'">
                         <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
                             <img alt="<?= htmlspecialchars($rel['name']) ?>" class="hover-scale" src="<?= $relImgUrl ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
-                            <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;" onclick="event.stopPropagation(); alert('Added to wishlist!')">
+                            <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;" onclick="quickAddToCart(<?= $rel['id'] ?>, this); event.preventDefault(); event.stopPropagation();">
                                 <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
-                                    <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
                                 </svg>
                             </button>
                         </div>
@@ -397,13 +397,14 @@ include '../includes/header.php';
     </main>
 
     <!-- Client-side controllers and data initialization -->
-    <script src="../scripts/product.js"></script>
+    <script src="../scripts/product.js?v=<?= time() ?>"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const variants = <?= json_encode($variants) ?>;
             const images = <?= json_encode($images) ?>;
             const basePrice = <?= floatval($product['price']) ?>;
-            initProductPage(variants, images, basePrice);
+            const productId = <?= intval($productId) ?>;
+            initProductPage(variants, images, basePrice, productId);
         });
     </script>
 

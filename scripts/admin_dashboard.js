@@ -1,4 +1,3 @@
-﻿
 document.addEventListener('DOMContentLoaded', function() {
 
     // ============================
@@ -14,34 +13,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Activate tab from URL ?tab= parameter (preserves tab after redirects)
     const urlParams = new URLSearchParams(window.location.search);
     const activeTab = urlParams.get('tab');
     if (activeTab) {
         const tabBtn = document.querySelector('.admin-menu-btn[data-tab="' + activeTab + '"]');
-        if (tabBtn) {
-            tabBtn.click();
-        }
+        if (tabBtn) tabBtn.click();
     }
 
     // ============================
     // 2. MODAL OPEN / CLOSE
     // ============================
-    function openModal(id) {
+    window.openModal = function(id) {
         const modal = document.getElementById(id);
         if (modal) {
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
         }
-    }
+    };
 
-    function closeModal(id) {
+    window.closeModal = function(id) {
         const modal = document.getElementById(id);
         if (modal) {
             modal.classList.remove('show');
             document.body.style.overflow = '';
         }
-    }
+    };
 
     document.querySelectorAll('[data-close-modal]').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -66,16 +62,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ============================
-    // 3. ADD PRODUCT MODAL
+    // 3. PRODUCT MODALS
     // ============================
     const btnAddProduct = document.getElementById('btn-open-add-product');
     if (btnAddProduct) {
         btnAddProduct.addEventListener('click', () => openModal('modal-add-product'));
     }
 
-// ============================
-    // 5. MANAGE PRODUCT MODAL
-    // ============================
     let currentProductId = null;
     let localImages = [];
     let localVariants = [];
@@ -86,11 +79,9 @@ document.addEventListener('DOMContentLoaded', function() {
             currentProductId = this.dataset.productId;
             const name = this.dataset.productName;
             
-            localImages = JSON.parse(JSON.stringify(productImagesData[currentProductId] || []));
-            localVariants = JSON.parse(JSON.stringify(productVariantsData[currentProductId] || []));
+            localImages = JSON.parse(JSON.stringify(window.productImagesData?.[currentProductId] || []));
+            localVariants = JSON.parse(JSON.stringify(window.productVariantsData?.[currentProductId] || []));
 
-
-            // Populate edit form
             document.getElementById('edit-id').value = currentProductId;
             document.getElementById('edit-name').value = name;
             document.getElementById('edit-sku').value = this.dataset.productSku;
@@ -98,24 +89,20 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('edit-category').value = this.dataset.productCategory;
             document.getElementById('edit-description').value = this.dataset.productDescription;
             document.getElementById('edit-is-active').checked = (this.dataset.productActive === '1');
-            document.getElementById('manage-modal-title').textContent = 'Manage: ' + name;
+            const titleEl = document.getElementById('manage-modal-title');
+            if (titleEl) titleEl.textContent = 'Manage: ' + name;
 
-            // Set product IDs on sub-forms
-            document.getElementById('upload-product-id').value = currentProductId;
+            const uploadIdEl = document.getElementById('upload-product-id');
+            if (uploadIdEl) uploadIdEl.value = currentProductId;
 
-            // Populate image gallery & variants table
-            renderImageGallery();
-            renderVariantsTable();
+            if (typeof renderImageGallery === 'function') renderImageGallery();
+            if (typeof renderVariantsTable === 'function') renderVariantsTable();
 
-            // Reset to details tab
             switchManageTab('details');
             openModal('modal-manage-product');
         });
     });
 
-    // ============================
-    // 6. LOCAL STATE ACTIONS & GALLERY
-    // ============================
     window.uiAddVariant = function() {
         const color = document.getElementById('new-variant-color').value.trim();
         const size = document.getElementById('new-variant-size').value;
@@ -134,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('new-variant-stock').value = '0';
         document.getElementById('new-variant-price').value = '0.00';
         renderVariantsTable();
-        renderImageGallery(); // colors might have changed
+        renderImageGallery();
     };
 
     window.uiDeleteVariant = function(vid) {
@@ -164,8 +151,8 @@ document.addEventListener('DOMContentLoaded', function() {
         renderImageGallery();
     };
     
-    // Attach submit to modal-edit-variant form dynamically (if we can)
-    document.querySelector('#modal-edit-variant form').onsubmit = window.uiEditVariantSubmit;
+    const editVariantForm = document.querySelector('#modal-edit-variant form');
+    if (editVariantForm) editVariantForm.onsubmit = window.uiEditVariantSubmit;
 
     window.uiDeleteImage = function(imgId) {
         if(!confirm('Remove this image?')) return;
@@ -196,7 +183,6 @@ document.addEventListener('DOMContentLoaded', function() {
             localImages[index] = temp;
         }
         
-        // Update sort_order explicitly based on array index
         localImages.forEach((img, idx) => img.sort_order = idx);
         renderImageGallery();
     };
@@ -215,9 +201,6 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.disabled = false;
             btn.textContent = 'Upload Images';
             if(data.success) {
-                // Update localImages with the newly returned images array from DB 
-                // but keep any local unsaved changes? 
-                // Actually the cleanest way is just to append any NEW images from data.images that aren't in localImages yet.
                 data.images.forEach(dbImg => {
                     if (!localImages.find(li => li.id == dbImg.id)) {
                         localImages.push(dbImg);
@@ -240,7 +223,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
         formData.append('action', 'save_product_assets');
         formData.append('product_id', currentProductId);
-        // Ensure sort order is correct and first image is main before saving
         localImages.forEach((img, idx) => {
             img.sort_order = idx;
             img.is_main = (idx === 0) ? 1 : 0;
@@ -257,8 +239,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }).then(res => res.json()).then(data => {
             btns.forEach(b => { b.disabled = false; b.textContent = 'Save Changes'; });
             if(data.success) {
-                productImagesData[currentProductId] = data.images;
-                productVariantsData[currentProductId] = data.variants;
+                if (window.productImagesData) window.productImagesData[currentProductId] = data.images;
+                if (window.productVariantsData) window.productVariantsData[currentProductId] = data.variants;
                 closeModal('modal-manage-product');
                 alert('Changes saved successfully!');
             } else {
@@ -271,14 +253,13 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function getVariantColors() {
-        const colors = [...new Set(localVariants.map(v => v.color))];
-        return colors.sort();
+        return [...new Set(localVariants.map(v => v.color))].sort();
     }
 
-    function renderImageGallery() {
+    window.renderImageGallery = function() {
         const gallery = document.getElementById('manage-image-gallery');
+        if (!gallery) return;
         
-        // Auto-assign is_main to the first element in local state
         localImages.forEach((img, idx) => {
             img.is_main = (idx === 0) ? 1 : 0;
         });
@@ -318,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 html += '      <span>Main</span>';
                 html += '    </div>';
             } else {
-                html += '    <div></div>'; // Placeholder to align delete button to the right
+                html += '    <div></div>';
             }
             html += '    <a href="javascript:void(0)" onclick="window.uiDeleteImage(' + img.id + ')" class="admin-image-action-btn delete-btn" title="Delete Image">';
             html += '      <svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
@@ -341,13 +322,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         gallery.innerHTML = html;
-    }
+    };
 
-    // ============================
-    // 7. VARIANTS / STOCK TABLE
-    // ============================
-    function renderVariantsTable() {
+    window.renderVariantsTable = function() {
         const tbody = document.getElementById('stock-variants-body');
+        if (!tbody) return;
         const variants = localVariants;
         
         if (variants.length === 0) {
@@ -390,12 +369,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 openModal('modal-edit-variant');
             });
         });
-    }
+    };
 
-    // ============================
-    // 8. MANAGE MODAL TAB SWITCHER
-    // ============================
-    function switchManageTab(tabName) {
+    window.switchManageTab = function(tabName) {
         document.querySelectorAll('.admin-modal-tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.admin-modal-tab-panel').forEach(p => p.classList.remove('active'));
 
@@ -403,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const activePanel = document.getElementById('manage-tab-' + tabName);
         if (activeTab) activeTab.classList.add('active');
         if (activePanel) activePanel.classList.add('active');
-    }
+    };
 
     document.querySelectorAll('.admin-modal-tab').forEach(tab => {
         tab.addEventListener('click', function() {
@@ -412,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ============================
-    // 9. IMAGE PREVIEW ON FILE INPUT
+    // IMAGE PREVIEW ON FILE INPUT
     // ============================
     function setupImagePreview(inputId, previewId) {
         const input = document.getElementById(inputId);
@@ -438,9 +414,70 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupImagePreview('add-images', 'add-images-preview');
     setupImagePreview('upload-new-images', 'upload-images-preview');
+    setupImagePreview('add-col-image', 'add-col-preview');
+    setupImagePreview('edit-col-image', 'edit-col-preview');
+    setupImagePreview('add-cat-image', 'add-cat-preview');
+    setupImagePreview('edit-cat-image', 'edit-cat-preview');
 
     // ============================
-    // 10. AUTO-DISMISS FLASH MESSAGES
+    // CATEGORY MODALS
+    // ============================
+    const btnAddCategory = document.getElementById('btn-open-add-category');
+    if (btnAddCategory) {
+        btnAddCategory.addEventListener('click', () => openModal('modal-add-category'));
+    }
+
+    document.querySelectorAll('.btn-edit-category').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const idEl = document.getElementById('edit-cat-id');
+            const nameEl = document.getElementById('edit-cat-name');
+            const slugEl = document.getElementById('edit-cat-slug');
+            if (idEl) idEl.value = this.dataset.id;
+            if (nameEl) nameEl.value = this.dataset.name;
+            if (slugEl) slugEl.value = this.dataset.slug;
+
+            const imgEl = document.getElementById('edit-cat-current-image');
+            if (imgEl && this.dataset.imageUrl) {
+                imgEl.src = this.dataset.imageUrl;
+                imgEl.style.display = 'block';
+            } else if (imgEl) {
+                imgEl.style.display = 'none';
+            }
+            openModal('modal-edit-category');
+        });
+    });
+
+    // ============================
+    // COLLECTION MODALS
+    // ============================
+    const btnAddCollection = document.getElementById('btn-open-add-collection');
+    if (btnAddCollection) {
+        btnAddCollection.addEventListener('click', () => openModal('modal-add-collection'));
+    }
+
+    document.querySelectorAll('.btn-edit-collection').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const idEl = document.getElementById('edit-col-id');
+            const titleEl = document.getElementById('edit-col-title');
+            const productsEl = document.getElementById('edit-col-products-ids');
+            
+            if (idEl) idEl.value = this.dataset.id;
+            if (titleEl) titleEl.value = this.dataset.title;
+            if (productsEl) productsEl.value = this.dataset.productsIds;
+            
+            const imgEl = document.getElementById('edit-col-current-image');
+            if (imgEl && this.dataset.imagePath) {
+                imgEl.src = this.dataset.imagePath;
+                imgEl.style.display = 'block';
+            } else if (imgEl) {
+                imgEl.style.display = 'none';
+            }
+            openModal('modal-edit-collection');
+        });
+    });
+
+    // ============================
+    // AUTO-DISMISS FLASH MESSAGES
     // ============================
     document.querySelectorAll('.admin-alert-banner').forEach(banner => {
         setTimeout(() => {
@@ -452,4 +489,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 });
-
