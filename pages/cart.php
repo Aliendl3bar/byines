@@ -22,7 +22,7 @@ include '../includes/header.php';
         <nav class="breadcrumb-nav">
             <a href="index.php">Home</a>
             <span>/</span>
-            <span class="breadcrumb-current">Shopping Cart</span>
+            <span class="breadcrumb-current" style="color: var(--brand-dark); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Shopping Cart</span>
         </nav>
 
         <h1 class="page-title">Your Shopping Cart</h1>
@@ -32,12 +32,12 @@ include '../includes/header.php';
             
             <!-- Cart Items List -->
             <section class="cart-items">
-                <div id="emptyCart" class="empty-cart-message" data-visible="<?= empty($cartItems) ? 'true' : 'false' ?>">
+                <div id="emptyCart" class="empty-cart-message" style="display: <?= empty($cartItems) ? 'block' : 'none' ?>;">
                     <p>Your cart is empty</p>
                     <a href="shop.php">Continue Shopping</a>
                 </div>
 
-                <div id="cartContent" data-visible="<?= empty($cartItems) ? 'false' : 'true' ?>">
+                <div id="cartContent" style="display: <?= empty($cartItems) ? 'none' : 'block' ?>;">
                     <?php if (!empty($cartItems)): ?>
                         <?php foreach ($cartItems as $key => $item): 
                             $img = $productModel->getMainImage($item['product_id']);
@@ -60,13 +60,13 @@ include '../includes/header.php';
                                 </div>
                                 <div class="cart-item-footer">
                                     <div class="qty-control">
-                                        <button data-action="decrease-qty" data-key="<?= htmlspecialchars($key) ?>">−</button>
+                                        <button onclick="decreaseItemQty('<?= htmlspecialchars($key) ?>')">−</button>
                                         <input type="text" id="qty_<?= htmlspecialchars($key) ?>" value="<?= htmlspecialchars($item['quantity']) ?>" readonly>
-                                        <button data-action="increase-qty" data-key="<?= htmlspecialchars($key) ?>">+</button>
+                                        <button onclick="increaseItemQty('<?= htmlspecialchars($key) ?>')">+</button>
                                     </div>
                                     <div class="item-price-section">
                                         <p class="item-price">$<?= number_format($item['price'], 2) ?></p>
-                                        <button class="remove-btn" data-action="remove-item" data-key="<?= htmlspecialchars($key) ?>">Remove</button>
+                                        <button class="remove-btn" onclick="removeItem('<?= htmlspecialchars($key) ?>')">Remove</button>
                                     </div>
                                 </div>
                             </div>
@@ -82,7 +82,7 @@ include '../includes/header.php';
             </section>
 
             <!-- Order Summary Sidebar -->
-            <aside class="order-summary" data-visible="<?= empty($cartItems) ? 'false' : 'true' ?>">
+            <aside class="order-summary" style="display: <?= empty($cartItems) ? 'none' : 'block' ?>;">
                 <h2>Order Summary</h2>
                 
                 <div class="summary-row">

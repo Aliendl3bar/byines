@@ -95,7 +95,7 @@ include '../includes/header.php';
                         <?php if ($collectionId): ?><input type="hidden" name="id" value="<?= htmlspecialchars($collectionId) ?>"><?php endif; ?>
                         <input type="hidden" name="price_filter" value="<?= htmlspecialchars($priceFilter) ?>">
                         <span class="sort-label">Sort By:</span>
-                        <select class="sort-select" name="sort" data-action="submit-sort">
+                        <select class="sort-select" name="sort" onchange="document.getElementById('sort-form').submit();">
                             <option value="newest" <?= $sort == 'newest' ? 'selected' : '' ?>>Newest</option>
                             <option value="price_asc" <?= $sort == 'price_asc' ? 'selected' : '' ?>>Price: Low to High</option>
                             <option value="price_desc" <?= $sort == 'price_desc' ? 'selected' : '' ?>>Price: High to Low</option>
@@ -137,7 +137,7 @@ include '../includes/header.php';
                         </div>
                         
                         <!-- Size (For later) -->
-                        <div class="filter-group filter-group-disabled">
+                        <div class="filter-group" style="opacity: 0.5;">
                             <div class="filter-group-header">
                                 <span class="material-symbols-outlined icon-md">straighten</span>
                                 <span class="filter-group-title">Size</span>
@@ -158,7 +158,8 @@ include '../includes/header.php';
                             </div>
                             <div class="price-slider-container">
                                 <input class="price-slider" type="range" name="price_filter" min="0" max="500" step="10" value="<?= $priceFilter ?>" 
-                                       data-action="update-price-label"/>
+                                       oninput="document.getElementById('price-val').innerText = this.value >= 500 ? '500+' : this.value"
+                                       onchange="document.getElementById('filter-form').submit();"/>
                                 <div class="price-labels">
                                     <span>$0</span>
                                     <span>$500+</span>
@@ -173,8 +174,8 @@ include '../includes/header.php';
             <section class="product-section">
                 <div class="product-grid">
                     <?php if (empty($products)): ?>
-                        <div class="no-products">
-                            <h3 class="no-products-text">No products found in this category.</h3>
+                        <div style="grid-column: 1/-1; text-align: center; padding: 4rem 0;">
+                            <h3 style="color: var(--gray-500); font-family: var(--font-serif); font-weight: 400;">No products found in this category.</h3>
                         </div>
                     <?php else: ?>
                         <?php foreach ($products as $prod): 
@@ -184,16 +185,16 @@ include '../includes/header.php';
                         ?>
                         <div class="product-card">
                             <div class="card-image-wrapper">
-                                <a href="product.php?id=<?= $prod['id'] ?>" class="block-link">
+                                <a href="product.php?id=<?= $prod['id'] ?>" style="display: block;">
                                     <img class="product-image hover-scale" alt="<?= htmlspecialchars($prod['name']) ?>" src="<?= $imageSrc ?>"/>
                                 </a>
-                                <button class="wishlist-btn" data-action="quick-add-cart" data-product-id="<?= $prod['id'] ?>">
+                                <button class="wishlist-btn" onclick="quickAddToCart(<?= $prod['id'] ?>, this); event.preventDefault();">
                                     <span class="material-symbols-outlined icon-md">shopping_bag</span>
                                 </button>
                             </div>
                             <div class="product-info">
                                 <div>
-                                    <h3 class="product-name"><a href="product.php?id=<?= $prod['id'] ?>"><?= htmlspecialchars($prod['name']) ?></a></h3>
+                                    <h3 class="product-name"><a href="product.php?id=<?= $prod['id'] ?>" style="text-decoration:none; color:inherit;"><?= htmlspecialchars($prod['name']) ?></a></h3>
                                     <p class="product-color"><?= htmlspecialchars($prod['color'] ?? 'Various Colors') ?></p>
                                 </div>
                                 <span class="product-price">$<?= number_format((float)$prod['price'], 2) ?></span>
@@ -212,11 +213,11 @@ include '../includes/header.php';
                         
                         $baseParams = $_GET;
                     ?>
-                    <a href="shop.php?<?= http_build_query(array_merge($baseParams, ['page' => $prevPage])) ?>" class="pagination-btn<?= $page <= 1 ? ' pagination-btn-disabled' : '' ?>">
+                    <a href="shop.php?<?= http_build_query(array_merge($baseParams, ['page' => $prevPage])) ?>" class="pagination-btn" <?= $page <= 1 ? 'style="pointer-events:none;opacity:0.5;"' : '' ?>>
                         <span class="material-symbols-outlined icon-sm">chevron_left</span>
                     </a>
                     <span class="pagination-text">Page <?= sprintf('%02d', $page) ?> / <?= sprintf('%02d', $totalPages) ?></span>
-                    <a href="shop.php?<?= http_build_query(array_merge($baseParams, ['page' => $nextPage])) ?>" class="pagination-btn<?= $page >= $totalPages ? ' pagination-btn-disabled' : '' ?>">
+                    <a href="shop.php?<?= http_build_query(array_merge($baseParams, ['page' => $nextPage])) ?>" class="pagination-btn" <?= $page >= $totalPages ? 'style="pointer-events:none;opacity:0.5;"' : '' ?>>
                         <span class="material-symbols-outlined icon-sm">chevron_right</span>
                     </a>
                 </div>
@@ -225,5 +226,4 @@ include '../includes/header.php';
         </div>
     </main>
 
-<script src="../js/shop.js?v=<?= time() ?>"></script>
 <?php include '../includes/footer.php'; ?>

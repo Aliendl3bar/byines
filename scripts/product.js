@@ -48,9 +48,10 @@ function updateMainImage(src, elementToCenter = null) {
     if (!mainImage) return;
     mainImage.src = src;
     
-    // Clear active state from all thumbnails
+    // Clear styles from all thumbnails
     document.querySelectorAll('.thumbnail').forEach(thumb => {
-        thumb.classList.remove('active');
+        thumb.style.border = '2px solid transparent';
+        thumb.style.opacity = '0.6';
     });
 
     // Highlight and center the correct element
@@ -76,7 +77,8 @@ function updateMainImage(src, elementToCenter = null) {
     }
 
     if (target) {
-        target.classList.add('active');
+        target.style.border = '2px solid var(--brand-dark)';
+        target.style.opacity = '1';
         target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     }
 }
@@ -96,6 +98,9 @@ function setupInfiniteScroll() {
     for (let i = 0; i < 4; i++) {
         originalItems.forEach(item => {
             const clone = item.cloneNode(true);
+            clone.onclick = function() {
+                updateMainImage(clone.src, clone);
+            };
             gallery.appendChild(clone);
         });
     }
@@ -109,7 +114,8 @@ function setupInfiniteScroll() {
 
         // Reset all thumbnail styles initially
         gallery.querySelectorAll('.thumbnail').forEach(t => {
-            t.classList.remove('active');
+            t.style.border = '2px solid transparent';
+            t.style.opacity = '0.6';
         });
 
         // Center on the active thumbnail in the second set (middle copy)
@@ -118,7 +124,8 @@ function setupInfiniteScroll() {
             const allMatchingThumbs = Array.from(gallery.querySelectorAll('.thumbnail')).filter(t => t.src === mainImage.src);
             const targetThumb = allMatchingThumbs[1] || allMatchingThumbs[0];
             if (targetThumb) {
-                targetThumb.classList.add('active');
+                targetThumb.style.border = '2px solid var(--brand-dark)';
+                targetThumb.style.opacity = '1';
                 targetThumb.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
             }
         } else {
@@ -166,9 +173,11 @@ function jumpToColorImage(color) {
 function selectColor(button, updateImage = true) {
     document.querySelectorAll('.color-btn').forEach(btn => {
         btn.classList.remove('active');
+        btn.style.border = '2px solid transparent';
     });
 
     button.classList.add('active');
+    button.style.border = '2px solid var(--brand-dark)';
     
     selectedColor = button.getAttribute('data-color');
     
@@ -243,9 +252,13 @@ function updateSizeAvailability() {
 function selectSize(button) {
     document.querySelectorAll('.size-btn').forEach(btn => {
         btn.classList.remove('active');
+        btn.style.border = '1px solid var(--gray-300)';
+        btn.style.backgroundColor = 'transparent';
     });
 
     button.classList.add('active');
+    button.style.border = '2px solid var(--brand-dark)';
+    button.style.backgroundColor = 'rgba(26, 26, 26, 0.05)';
 
     selectedSize = button.getAttribute('data-size');
 
@@ -435,57 +448,3 @@ function buyNow() {
     alert(`Proceeding to checkout with ${quantity} item(s) (${selectedColor} / Size ${selectedSize})...`);
     // Redirect to checkout page in real application
 }
-
-/**
- * Auto-initialize on page load by reading data attributes from .product-page.
- */
-document.addEventListener('DOMContentLoaded', function() {
-    const main = document.querySelector('.product-page');
-    if (!main) return;
-
-    const variants = JSON.parse(main.dataset.variants || '[]');
-    const images = JSON.parse(main.dataset.images || '[]');
-    const basePrice = parseFloat(main.dataset.basePrice || '0');
-    const productId = parseInt(main.dataset.productId || '0');
-
-    initProductPage(variants, images, basePrice, productId);
-
-    // Event delegation for data-action attributes
-    document.addEventListener('click', function(e) {
-        const target = e.target.closest('[data-action]');
-        if (!target) return;
-
-        switch (target.dataset.action) {
-            case 'wishlist-add-to-cart':
-            case 'add-to-cart':
-                addToCart();
-                break;
-            case 'update-main-image':
-                updateMainImage(target.src, target);
-                break;
-            case 'select-color':
-                selectColor(target);
-                break;
-            case 'select-size':
-                selectSize(target);
-                break;
-            case 'decrease-qty':
-                decreaseQuantity();
-                break;
-            case 'increase-qty':
-                increaseQuantity();
-                break;
-            case 'buy-now':
-                buyNow();
-                break;
-            case 'navigate':
-                window.location.href = target.dataset.slug;
-                break;
-            case 'quick-add-cart':
-                quickAddToCart(parseInt(target.dataset.productId), target);
-                e.preventDefault();
-                e.stopPropagation();
-                break;
-        }
-    });
-});

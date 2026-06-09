@@ -67,19 +67,19 @@ include '../includes/header.php';
             <aside class="dashboard-sidebar">
                 <ul class="sidebar-menu">
                     <li>
-                        <button class="sidebar-menu-btn active" data-tab="overview" data-action="switch-tab">
+                        <button class="sidebar-menu-btn active" data-tab="overview">
                             <svg viewBox="0 0 24 24"><path d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm11.378-3.917c-.742.742-1.02 1.851-.734 2.825l.215.733-.733.215c-.974.286-2.083.008-2.825-.734l-1.06-1.058-2.457 2.456 2.457 2.457c.742.741.742 1.944 0 2.685-.741.742-1.944.742-2.685 0L3.33 12.21l8.363-8.364 2.457 2.457c.742.741.742 1.944 0 2.685-.741.742-1.944.742-2.685 0l-.88-.88Z"/></svg>
                             Overview
                         </button>
                     </li>
                     <li>
-                            <button class="sidebar-menu-btn" data-tab="orders" data-action="switch-tab">
+                        <button class="sidebar-menu-btn" data-tab="orders">
                             <svg viewBox="0 0 24 24"><path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
                             Order History
                         </button>
                     </li>
                     <li>
-                            <button class="sidebar-menu-btn" data-tab="profile" data-action="switch-tab">
+                        <button class="sidebar-menu-btn" data-tab="profile">
                             <svg viewBox="0 0 24 24"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281a7.186 7.186 0 0 1 1.637.945l1.196-.48c.504-.2.1.066.9.463l1.833 3.175c.277.478.146 1.082-.303 1.401l-1.054.747a7.254 7.254 0 0 1 0 1.876l1.054.747c.45.32.58.923.303 1.402l-1.833 3.175c-.3.52-.77.785-1.3.626l-1.196-.48a7.186 7.186 0 0 1-1.637.945l-.213 1.282c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281a7.167 7.167 0 0 1-1.637-.945l-1.196.48c-.53.212-.1-.052-.9-.463l-1.834-3.175c-.277-.479-.147-1.082.303-1.401l1.054-.747a7.254 7.254 0 0 1 0-1.876l-1.054-.747c-.45-.32-.58-.923-.303-1.402l1.834-3.175c.3-.52.77-.785 1.3-.626l1.196.48a7.167 7.167 0 0 1 1.637-.945l.213-1.282ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>
                             Account Details
                         </button>
@@ -117,7 +117,7 @@ include '../includes/header.php';
                                     }
                                 ?>
                                 <div class="tracker-bar">
-                                    <div class="tracker-progress" style="--progress: <?= $progress ?>%;"></div>
+                                    <div class="tracker-progress" style="width: <?= $progress ?>%;"></div>
                                 </div>
                                 <div class="tracker-labels">
                                     <span>Placed</span>
@@ -126,8 +126,8 @@ include '../includes/header.php';
                                 </div>
                             </div>
                             <?php else: ?>
-                                <p class="no-recent-text">No recent orders.</p>
-                                <a href="shop.php" class="btn-sm-outline">Start Shopping</a>
+                                <p style="color: var(--gray-500); padding: 1rem 0;">No recent orders.</p>
+                                <a href="shop.php" class="btn-sm-outline" style="text-decoration:none;">Start Shopping</a>
                             <?php endif; ?>
                         </div>
 
@@ -136,13 +136,13 @@ include '../includes/header.php';
                             <h3>Quick Actions</h3>
                             <ul class="quick-links-list">
                                 <li>
-                                    <a href="#" data-action="switch-tab" data-tab="orders">
+                                    <a href="#" onclick="switchTab('orders')">
                                         <span>View Order History</span>
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7"/></svg>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" data-action="switch-tab" data-tab="profile">
+                                    <a href="#" onclick="switchTab('profile')">
                                         <span>Update Account Details</span>
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7"/></svg>
                                     </a>
@@ -157,8 +157,8 @@ include '../includes/header.php';
                     <h2 class="panel-title">Order History</h2>
                     <div class="order-history-list">
                         <?php if (empty($orders)): ?>
-                            <div class="empty-orders">
-                                <p class="empty-orders-text">You haven't placed any orders yet.</p>
+                            <div style="text-align: center; padding: 3rem;">
+                                <p style="color: var(--gray-500);">You haven't placed any orders yet.</p>
                             </div>
                         <?php else: ?>
                             <?php foreach ($orders as $order): 
@@ -181,9 +181,9 @@ include '../includes/header.php';
                                             <p><?= htmlspecialchars($order['shipping_name']) ?></p>
                                         </div>
                                     </div>
-                                    <div class="order-meta-item text-right">
+                                    <div class="order-meta-item" style="text-align: right;">
                                         <p><?= htmlspecialchars($order['order_number']) ?></p>
-                                        <span class="status-badge status-<?= strtolower($order['status']) ?> mt-1">
+                                        <span class="status-badge status-<?= strtolower($order['status']) ?>" style="margin-top: 0.25rem;">
                                             <?= ucfirst(str_replace('_', ' ', $order['status'])) ?>
                                         </span>
                                     </div>
@@ -218,7 +218,7 @@ include '../includes/header.php';
                     <div class="profile-form-wrapper">
                         
                         <!-- Details Edit Form -->
-                        <form id="profileForm" data-action="save-profile">
+                        <form id="profileForm" onsubmit="saveProfileDetails(event)">
                             <div class="form-row-dashboard">
                                 <div class="form-group-dashboard">
                                     <label for="firstName">First Name</label>
@@ -236,7 +236,7 @@ include '../includes/header.php';
 
                             <div class="form-divider"></div>
                             
-                            <h3 class="section-subtitle">Change Password</h3>
+                            <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--brand-dark);">Change Password</h3>
                             
                             <div class="form-group-dashboard">
                                 <label for="currentPassword">Current Password</label>
@@ -257,10 +257,10 @@ include '../includes/header.php';
                         </form>
 
                         <!-- Danger Zone -->
-                        <div class="form-divider danger-divider"></div>
-                        <h3 class="danger-title">Danger Zone</h3>
-                        <p class="danger-description">Once you delete your account, there is no going back. All of your order history will be permanently lost.</p>
-                        <button type="button" class="btn-danger-outline" data-action="delete-account">Delete Account</button>
+                        <div class="form-divider" style="margin-top: 3rem; border-top: 1px solid #ffcdd2;"></div>
+                        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #d32f2f;">Danger Zone</h3>
+                        <p style="color: var(--gray-500); font-size: 0.875rem; margin-bottom: 1.5rem;">Once you delete your account, there is no going back. All of your order history will be permanently lost.</p>
+                        <button type="button" class="btn-primary" style="background-color: transparent; color: #d32f2f; border: 1px solid #d32f2f; cursor: pointer;" onclick="confirmDeleteAccount()">Delete Account</button>
 
                     </div>
                 </div>
@@ -268,6 +268,43 @@ include '../includes/header.php';
         </div>
     </main>
 
-    <!-- Tab Logic (handled by scripts/dashboard.js via data-action delegation) -->
+    <!-- Tab Logic -->
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('panel-' + tabId).classList.add('active');
+            const targetBtn = document.querySelector(`.sidebar-menu-btn[data-tab="${tabId}"]`);
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up sidebar tab selection click handlers
+            document.querySelectorAll('.sidebar-menu-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+        });
+
+        function saveProfileDetails(event) {
+            event.preventDefault();
+            alert('Profile updating feature coming soon!');
+        }
+
+        function confirmDeleteAccount() {
+            if (confirm("Are you absolutely sure you want to delete your account? This action cannot be undone and you will lose all your order history.")) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'delete_account.php';
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
 
 <?php include '../includes/footer.php'; ?>

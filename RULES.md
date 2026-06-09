@@ -8,8 +8,6 @@
 - Business logic lives in `classes/`. Pages in `pages/` are thin — they call class methods, fetch data, then render HTML.
 - AJAX handlers (`cart_action.php`, `process_order.php`, `admin_manage_order.php`) should delegate to classes and return JSON only.
 - Admin logic goes in `admin_manage_*.php` files, not inline in `admin_dashboard.php`.
-- **CSS and JS must be in separate files**, never inlined in page files. No `<style>`, `style=""`, `<script>` with inline code, `onclick=""`, or `onchange=""` attributes in page templates.
-  - Use `css/style.css` as the main stylesheet. If styling is needed beyond what belongs there, create a new CSS file (e.g. `css/admin.css`, `css/cart.css`) and link it only on the relevant page(s).
 
 ## Classes
 - Each class maps to one database table (e.g., `Product` → `products`).

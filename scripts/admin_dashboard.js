@@ -1,15 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // ============================
-    // 0. LOAD PHP DATA
-    // ============================
-    const dataScript = document.getElementById('admin-data');
-    const adminData = dataScript ? JSON.parse(dataScript.textContent) : { productImages: {}, productVariants: {}, orderItems: {} };
-    const productImagesData = adminData.productImages || {};
-    const productVariantsData = adminData.productVariants || {};
-    const orderItemsData = adminData.orderItems || {};
-
-    // ============================
     // 1. TAB SWITCHER (Sidebar)
     // ============================
     document.querySelectorAll('.admin-menu-btn').forEach(btn => {
@@ -88,8 +79,8 @@ document.addEventListener('DOMContentLoaded', function() {
             currentProductId = this.dataset.productId;
             const name = this.dataset.productName;
             
-            localImages = JSON.parse(JSON.stringify(productImagesData[currentProductId] || []));
-            localVariants = JSON.parse(JSON.stringify(productVariantsData[currentProductId] || []));
+            localImages = JSON.parse(JSON.stringify(window.productImagesData?.[currentProductId] || []));
+            localVariants = JSON.parse(JSON.stringify(window.productVariantsData?.[currentProductId] || []));
 
             document.getElementById('edit-id').value = currentProductId;
             document.getElementById('edit-name').value = name;
@@ -248,8 +239,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }).then(res => res.json()).then(data => {
             btns.forEach(b => { b.disabled = false; b.textContent = 'Save Changes'; });
             if(data.success) {
-                productImagesData[currentProductId] = data.images;
-                productVariantsData[currentProductId] = data.variants;
+                if (window.productImagesData) window.productImagesData[currentProductId] = data.images;
+                if (window.productVariantsData) window.productVariantsData[currentProductId] = data.variants;
                 closeModal('modal-manage-product');
                 alert('Changes saved successfully!');
             } else {
@@ -277,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const variantColors = getVariantColors();
         
         if (images.length === 0) {
-            gallery.innerHTML = '<p class="admin-gallery-empty">No images uploaded yet.</p>';
+            gallery.innerHTML = '<p style="color:var(--gray-400);font-size:0.85rem;grid-column:1/-1;">No images uploaded yet.</p>';
             return;
         }
 
@@ -291,12 +282,12 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '  <img src="' + imgSrc + '" alt="Product image" loading="lazy">';
             
             if (index > 0) {
-                html += '  <a href="#" data-action="reorder-image" data-index="' + index + '" data-dir="prev" class="admin-image-reorder-btn reorder-prev" title="Move Left">';
+                html += '  <a href="javascript:void(0)" onclick="window.uiReorderImage(' + index + ', \'prev\')" class="admin-image-reorder-btn reorder-prev" title="Move Left">';
                 html += '    <svg viewBox="0 0 24 24" width="16" height="16"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M15 18l-6-6 6-6"/></svg>';
                 html += '  </a>';
             }
             if (index < images.length - 1) {
-                html += '  <a href="#" data-action="reorder-image" data-index="' + index + '" data-dir="next" class="admin-image-reorder-btn reorder-next" title="Move Right">';
+                html += '  <a href="javascript:void(0)" onclick="window.uiReorderImage(' + index + ', \'next\')" class="admin-image-reorder-btn reorder-next" title="Move Right">';
                 html += '    <svg viewBox="0 0 24 24" width="16" height="16"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>';
                 html += '  </a>';
             }
@@ -310,13 +301,13 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 html += '    <div></div>';
             }
-            html += '    <a href="#" data-action="delete-image" data-img-id="' + img.id + '" class="admin-image-action-btn delete-btn" title="Delete Image">';
+            html += '    <a href="javascript:void(0)" onclick="window.uiDeleteImage(' + img.id + ')" class="admin-image-action-btn delete-btn" title="Delete Image">';
             html += '      <svg viewBox="0 0 24 24" width="14" height="14"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
             html += '    </a>';
             html += '  </div>';
 
             html += '  <div class="admin-image-color-bar">';
-            html += '      <select name="color" data-action="update-image-color" data-img-id="' + img.id + '" title="Assign color">';
+            html += '      <select name="color" onchange="window.uiUpdateImageColor(' + img.id + ', this.value)" title="Assign color">';
             html += '        <option value=""' + (currentColor === '' ? ' selected' : '') + '>No color</option>';
             variantColors.forEach(c => {
                 const selected = (currentColor === c) ? ' selected' : '';
@@ -339,13 +330,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const variants = localVariants;
         
         if (variants.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="admin-variants-empty">No variants yet. Add one below.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray-400);">No variants yet. Add one below.</td></tr>';
             return;
         }
 
         let html = '';
         variants.forEach(v => {
-            const stockClass = parseInt(v.stock_quantity) === 0 ? ' class="stock-out"' : '';
+            const stockClass = parseInt(v.stock_quantity) === 0 ? ' style="color:#A34848;font-weight:600;"' : '';
             html += '<tr>';
             html += '  <td>' + v.color + '</td>';
             html += '  <td>' + v.size + '</td>';
@@ -360,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   + 'data-pricemod="' + v.price_modifier + '"'
                   + '>Edit</button> ';
             html += '    <button type="button" class="admin-btn admin-btn-sm admin-btn-danger" '
-                  + 'data-action="delete-variant" data-variant-id="' + v.id + '"'
+                  + 'onclick="window.uiDeleteVariant(' + v.id + ')"'
                   + '>Delete</button>';
             html += '  </td>';
             html += '</tr>';
@@ -413,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.onload = function(e) {
                     const img = document.createElement('img');
                     img.src = e.target.result;
-                    img.className = 'admin-preview-thumb';
+                    img.style.cssText = 'width:60px;height:80px;object-fit:cover;border-radius:4px;border:1px solid var(--brand-earth);';
                     preview.appendChild(img);
                 };
                 reader.readAsDataURL(file);
@@ -486,236 +477,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ============================
-    // 7. EVENT DELEGATION HANDLER
-    // ============================
-    document.addEventListener('click', function(e) {
-
-        // --- Close Modal ---
-        const closeBtn = e.target.closest('[data-action="close-modal"]');
-        if (closeBtn) {
-            closeModal(closeBtn.dataset.modal);
-            return;
-        }
-
-        // --- Delete Product (redirect with confirm) ---
-        const delProdBtn = e.target.closest('[data-action="delete-product"]');
-        if (delProdBtn) {
-            const name = delProdBtn.dataset.name;
-            if (confirm('Are you sure you want to permanently delete \'' + name + '\'? This will remove all images, variants, and data. This action cannot be undone.')) {
-                window.location.href = delProdBtn.dataset.url;
-            }
-            return;
-        }
-
-        // --- Delete Collection (redirect with confirm) ---
-        const delColBtn = e.target.closest('[data-action="delete-collection"]');
-        if (delColBtn) {
-            if (confirm('Delete this collection?')) {
-                window.location.href = delColBtn.dataset.url;
-            }
-            return;
-        }
-
-        // --- Delete Category (redirect with confirm) ---
-        const delCatBtn = e.target.closest('[data-action="delete-category"]');
-        if (delCatBtn) {
-            if (confirm('Delete this category?')) {
-                window.location.href = delCatBtn.dataset.url;
-            }
-            return;
-        }
-
-        // --- Delete Order (AJAX with confirm) ---
-        const delOrderBtn = e.target.closest('[data-action="delete-order"]');
-        if (delOrderBtn) {
-            const orderId = delOrderBtn.dataset.orderId;
-            const orderNum = delOrderBtn.dataset.orderNumber;
-            if (!confirm('Are you sure you want to permanently delete order \'' + orderNum + '\'? This action cannot be undone.')) {
-                return;
-            }
-            const formData = new FormData();
-            formData.append('action', 'delete_order');
-            formData.append('order_id', orderId);
-            fetch('admin_manage_order.php', {
-                method: 'POST',
-                body: formData,
-                credentials: 'same-origin'
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert(data.message || 'Failed to delete order.');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('A network error occurred.');
-            });
-            return;
-        }
-
-        // --- Update Order Status ---
-        const statusBtn = e.target.closest('[data-action="update-status"]');
-        if (statusBtn) {
-            const orderId = document.getElementById('mo-order-id').value;
-            const newStatus = document.getElementById('mo-status-select').value;
-            const formData = new FormData();
-            formData.append('action', 'update_status');
-            formData.append('order_id', orderId);
-            formData.append('status', newStatus);
-            fetch('admin_manage_order.php', {
-                method: 'POST',
-                body: formData,
-                credentials: 'same-origin'
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert(data.message || 'Failed to update status.');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                alert('A network error occurred.');
-            });
-            return;
-        }
-
-        // --- Save Product Assets ---
-        const saveBtn = e.target.closest('[data-action="save-assets"]');
-        if (saveBtn) {
-            window.saveProductAssets();
-            return;
-        }
-
-        // --- Delete Image (in gallery) ---
-        const delImgBtn = e.target.closest('[data-action="delete-image"]');
-        if (delImgBtn) {
-            window.uiDeleteImage(delImgBtn.dataset.imgId);
-            return;
-        }
-
-        // --- Reorder Image (in gallery) ---
-        const reorderBtn = e.target.closest('[data-action="reorder-image"]');
-        if (reorderBtn) {
-            e.preventDefault();
-            window.uiReorderImage(parseInt(reorderBtn.dataset.index), reorderBtn.dataset.dir);
-            return;
-        }
-
-    });
-
-    // ============================
-    // 8. CHANGE EVENT DELEGATION
-    // ============================
-    document.addEventListener('change', function(e) {
-
-        // --- Filter Orders ---
-        const filterSelect = e.target.closest('[data-action="filter-orders"]');
-        if (filterSelect) {
-            const filter = filterSelect.value;
-            const rows = document.querySelectorAll('#ordersTable tbody tr[data-status]');
-            rows.forEach(row => {
-                row.style.display = (filter === 'all' || row.getAttribute('data-status') === filter) ? '' : 'none';
-            });
-            return;
-        }
-
-        // --- Update Image Color (in gallery) ---
-        const colorSelect = e.target.closest('[data-action="update-image-color"]');
-        if (colorSelect) {
-            window.uiUpdateImageColor(colorSelect.dataset.imgId, colorSelect.value);
-            return;
-        }
-
-    });
-
-    // ============================
-    // 9. SUBMIT EVENT DELEGATION
-    // ============================
-    document.addEventListener('submit', function(e) {
-
-        // --- Upload Images ---
-        const uploadForm = e.target.closest('[data-action="upload-images"]');
-        if (uploadForm) {
-            e.preventDefault();
-            window.uploadImagesAjax();
-            return;
-        }
-
-        // --- Add Variant ---
-        const addVarForm = e.target.closest('[data-action="add-variant"]');
-        if (addVarForm) {
-            e.preventDefault();
-            window.uiAddVariant();
-            return;
-        }
-
-    });
-
-    // ============================
-    // 10. DELETE VARIANT (delegated)
-    // ============================
-    document.addEventListener('click', function(e) {
-        const delVarBtn = e.target.closest('[data-action="delete-variant"]');
-        if (delVarBtn) {
-            window.uiDeleteVariant(delVarBtn.dataset.variantId);
-            return;
-        }
-    });
-
-    // ============================
-    // 11. ORDER MODAL
-    // ============================
-    document.querySelectorAll('.btn-manage-order').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const d = this.dataset;
-            document.getElementById('mo-order-id').value = d.orderId;
-            document.getElementById('mo-title').textContent = 'Order ' + d.orderNumber;
-            document.getElementById('mo-number').textContent = d.orderNumber;
-            document.getElementById('mo-date').textContent = d.orderDate;
-            document.getElementById('mo-payment').textContent = d.orderPayment;
-            document.getElementById('mo-payment-status').textContent = d.orderPaymentStatus;
-            document.getElementById('mo-subtotal').textContent = d.orderSubtotal;
-            document.getElementById('mo-shipping').textContent = d.orderShipping;
-            document.getElementById('mo-tax').textContent = d.orderTax;
-            document.getElementById('mo-total').textContent = d.orderTotal;
-            document.getElementById('mo-ship-name').textContent = d.orderName;
-            document.getElementById('mo-ship-phone').textContent = d.orderPhone;
-            document.getElementById('mo-ship-address').textContent = d.orderAddress;
-            document.getElementById('mo-ship-city').textContent = d.orderCity;
-            document.getElementById('mo-ship-country').textContent = d.orderCountry;
-            document.getElementById('mo-status-select').value = d.orderStatus;
-
-            const tbody = document.getElementById('mo-items-body');
-            tbody.innerHTML = '';
-            const items = orderItemsData[d.orderId] || [];
-            if (items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="admin-table-empty">No items found.</td></tr>';
-            } else {
-                items.forEach(item => {
-                    const tr = document.createElement('tr');
-                    tr.className = 'order-item-row';
-                    tr.innerHTML = `
-                        <td class="order-item-cell">${item.name}</td>
-                        <td class="order-item-cell">${item.color} / ${item.size}</td>
-                        <td class="order-item-cell">${item.quantity}</td>
-                        <td class="order-item-cell">$${parseFloat(item.price).toFixed(2)}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            document.getElementById('modal-manage-order').classList.add('show');
-        });
-    });
-
-    // ============================
-    // 12. AUTO-DISMISS FLASH MESSAGES
+    // AUTO-DISMISS FLASH MESSAGES
     // ============================
     document.querySelectorAll('.admin-alert-banner').forEach(banner => {
         setTimeout(() => {
