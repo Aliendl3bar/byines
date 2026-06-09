@@ -167,6 +167,10 @@
     margin-bottom: 2rem;
 }
 
+.filter-group-disabled {
+    opacity: 0.5;
+}
+
 .filter-group-header {
     display: flex;
     align-items: center;
@@ -268,6 +272,22 @@
     grid-template-columns: repeat(1, 1fr);
     gap: 1.5rem;
     margin-bottom: 3rem;
+}
+
+.no-products {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.no-products-text {
+    color: var(--gray-500);
+    font-family: var(--font-serif);
+    font-weight: 400;
+}
+
+.block-link {
+    display: block;
 }
 
 @media (min-width: 640px) {
@@ -409,6 +429,11 @@
 
 .pagination-btn:hover {
     border-color: var(--brand-dark);
+}
+
+.pagination-btn-disabled {
+    pointer-events: none;
+    opacity: 0.5;
 }
 
 .pagination-text {

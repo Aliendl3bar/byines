@@ -3,6 +3,23 @@
  * Handles quantity updates and item removal via AJAX to cart_action.php
  */
 
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', function(e) {
+        var target = e.target.closest('[data-action]');
+        if (!target) return;
+        var action = target.getAttribute('data-action');
+        var key = target.getAttribute('data-key');
+
+        if (action === 'decrease-qty') {
+            decreaseItemQty(key);
+        } else if (action === 'increase-qty') {
+            increaseItemQty(key);
+        } else if (action === 'remove-item') {
+            removeItem(key);
+        }
+    });
+});
+
 function updateCartItem(cartKey, newQuantity) {
     if (newQuantity < 1) return;
 
@@ -68,9 +85,10 @@ function removeItem(cartKey) {
 
             // Check if cart is empty
             if (document.querySelectorAll('.cart-item').length === 0) {
-                document.getElementById('cartContent').style.display = 'none';
-                document.getElementById('emptyCart').style.display = 'block';
-                document.querySelector('.order-summary').style.display = 'none';
+                document.getElementById('cartContent').setAttribute('data-visible', 'false');
+                document.getElementById('emptyCart').setAttribute('data-visible', 'true');
+                var summary = document.querySelector('.order-summary');
+                if (summary) summary.setAttribute('data-visible', 'false');
             }
 
             // Update totals
@@ -87,7 +105,7 @@ function removeItem(cartKey) {
 
 function updateCartSummary(data) {
     // Update header badge
-    const cartBadge = document.getElementById('cart-badge-count');
+    var cartBadge = document.getElementById('cart-badge-count');
     if (cartBadge) {
         cartBadge.innerText = data.cartCount;
         cartBadge.style.display = data.cartCount > 0 ? 'flex' : 'none';

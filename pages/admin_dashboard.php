@@ -178,7 +178,7 @@ include '../includes/header.php';
                                         <span class="admin-badge badge-neutral">Hidden</span>
                                     <?php endif; ?>
                                 </td>
-                                <td style="white-space: nowrap;">
+                                <td class="text-nowrap">
                                     <button class="admin-btn admin-btn-sm btn-manage-product"
                                             data-product-id="<?= $p['id'] ?>"
                                             data-product-name="<?= htmlspecialchars($p['name'], ENT_QUOTES) ?>"
@@ -190,14 +190,16 @@ include '../includes/header.php';
                                         Manage
                                     </button>
                                     <button class="admin-btn admin-btn-sm admin-btn-danger"
-                                            onclick="if(confirm('Are you sure you want to permanently delete \'<?= htmlspecialchars($p['name'], ENT_QUOTES) ?>\'? This will remove all images, variants, and data. This action cannot be undone.')) { window.location.href='admin_manage_product.php?action=delete_product&product_id=<?= $p['id'] ?>'; }">
+                                            data-action="delete-product"
+                                            data-url="admin_manage_product.php?action=delete_product&product_id=<?= $p['id'] ?>"
+                                            data-name="<?= htmlspecialchars($p['name'], ENT_QUOTES) ?>">
                                         Delete
                                     </button>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
                             <?php if (empty($products)): ?>
-                                <tr><td colspan="7" style="text-align:center;">No products found.</td></tr>
+                                <tr><td colspan="7" class="text-center">No products found.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -235,14 +237,15 @@ include '../includes/header.php';
                                         Edit
                                     </button>
                                     <button class="admin-btn admin-btn-sm admin-btn-danger"
-                                            onclick="if(confirm('Delete this collection?')) { window.location.href='admin_manage_collection.php?action=delete&id=<?= $col['id'] ?>'; }">
+                                            data-action="delete-collection"
+                                            data-url="admin_manage_collection.php?action=delete&id=<?= $col['id'] ?>">
                                         Delete
                                     </button>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
                             <?php if (empty($allCollections)): ?>
-                                <tr><td colspan="4" style="text-align:center;">No collections found.</td></tr>
+                                <tr><td colspan="4" class="text-center">No collections found.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -280,14 +283,15 @@ include '../includes/header.php';
                                         Edit
                                     </button>
                                     <button class="admin-btn admin-btn-sm admin-btn-danger"
-                                            onclick="if(confirm('Delete this category?')) { window.location.href='admin_manage_category.php?action=delete&id=<?= $cat['id'] ?>'; }">
+                                            data-action="delete-category"
+                                            data-url="admin_manage_category.php?action=delete&id=<?= $cat['id'] ?>">
                                         Delete
                                     </button>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
                             <?php if (empty($categories)): ?>
-                                <tr><td colspan="4" style="text-align:center;">No categories found.</td></tr>
+                                <tr><td colspan="4" class="text-center">No categories found.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -298,7 +302,7 @@ include '../includes/header.php';
             <div class="admin-panel" id="panel-orders">
                 <div class="admin-panel-header">
                     <h2 class="admin-panel-title">Manage Orders</h2>
-                    <select id="orderStatusFilter" onchange="filterOrders()" style="padding: 0.4rem 0.75rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.875rem;">
+                    <select id="orderStatusFilter" class="admin-select" data-action="filter-orders">
                         <option value="all">All Statuses</option>
                         <option value="pending">Pending</option>
                         <option value="processing">Processing</option>
@@ -327,7 +331,7 @@ include '../includes/header.php';
                                 <td><?= date('M j, Y', strtotime($o['created_at'])) ?></td>
                                 <td><?= htmlspecialchars($o['shipping_name']) ?></td>
                                 <td>$<?= number_format($o['total_amount'], 2) ?></td>
-                                <td><span style="text-transform: capitalize;"><?= str_replace('_', ' ', $o['payment_method']) ?></span></td>
+                                <td><span class="text-capitalize"><?= str_replace('_', ' ', $o['payment_method']) ?></span></td>
                                 <td>
                                     <?php
                                         $statusClass = 'badge-neutral';
@@ -338,7 +342,7 @@ include '../includes/header.php';
                                     ?>
                                     <span class="admin-badge <?= $statusClass ?>"><?= ucfirst(str_replace('_', ' ', $o['status'])) ?></span>
                                 </td>
-                                <td style="white-space: nowrap;">
+                                <td class="text-nowrap">
                                     <button class="admin-btn admin-btn-sm btn-manage-order"
                                             data-order-id="<?= $o['id'] ?>"
                                             data-order-number="<?= htmlspecialchars($o['order_number'], ENT_QUOTES) ?>"
@@ -358,14 +362,16 @@ include '../includes/header.php';
                                         Manage
                                     </button>
                                     <button class="admin-btn admin-btn-sm admin-btn-danger"
-                                            onclick="if(confirm('Are you sure you want to permanently delete order \'<?= htmlspecialchars($o['order_number'], ENT_QUOTES) ?>\'? This action cannot be undone.')) { deleteOrder(<?= $o['id'] ?>); }">
+                                            data-action="delete-order"
+                                            data-order-id="<?= $o['id'] ?>"
+                                            data-order-number="<?= htmlspecialchars($o['order_number'], ENT_QUOTES) ?>">
                                         Delete
                                     </button>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
                             <?php if (empty($orders)): ?>
-                                <tr><td colspan="7" style="text-align:center;">No orders found.</td></tr>
+                                <tr><td colspan="7" class="text-center">No orders found.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -402,7 +408,7 @@ include '../includes/header.php';
                 </div>
             </div>
             <div class="admin-modal-footer">
-                <button type="button" class="admin-btn admin-btn-sm" style="background:transparent;color:var(--brand-dark);border-color:var(--brand-earth);" data-close-modal="modal-add-collection">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-sm admin-btn-secondary" data-close-modal="modal-add-collection">Cancel</button>
                 <button type="submit" class="admin-btn admin-btn-sm">Create Collection</button>
             </div>
         </form>
@@ -432,15 +438,15 @@ include '../includes/header.php';
                 </div>
                 <div class="admin-form-group">
                     <label>Current Image</label>
-                    <div style="margin-bottom: 0.5rem;">
-                        <img id="edit-col-current-image" src="" alt="Current Collection Image" style="max-height: 100px; display: none; border-radius: 4px;">
+                    <div class="mb-2">
+                        <img id="edit-col-current-image" src="" alt="Current Collection Image" class="admin-thumb-preview">
                     </div>
                     <label for="edit-col-image">New Image (Optional)</label>
                     <input type="file" id="edit-col-image" name="image" accept="image/jpeg,image/png,image/webp">
                 </div>
             </div>
             <div class="admin-modal-footer">
-                <button type="button" class="admin-btn admin-btn-sm" style="background:transparent;color:var(--brand-dark);border-color:var(--brand-earth);" data-close-modal="modal-edit-collection">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-sm admin-btn-secondary" data-close-modal="modal-edit-collection">Cancel</button>
                 <button type="submit" class="admin-btn admin-btn-sm">Save Changes</button>
             </div>
         </form>
@@ -465,14 +471,14 @@ include '../includes/header.php';
                 </div>
                 <div class="admin-form-group">
                     <label for="add-cat-image">Category Image</label>
-                    <div style="margin-bottom: 0.5rem;">
+                    <div class="mb-2">
                         <div id="add-cat-preview" class="admin-image-preview-container"></div>
                     </div>
                     <input type="file" id="add-cat-image" name="image" accept="image/jpeg,image/png,image/webp">
                 </div>
             </div>
             <div class="admin-modal-footer">
-                <button type="button" class="admin-btn admin-btn-sm" style="background:transparent;color:var(--brand-dark);border-color:var(--brand-earth);" data-close-modal="modal-add-category">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-sm admin-btn-secondary" data-close-modal="modal-add-category">Cancel</button>
                 <button type="submit" class="admin-btn admin-btn-sm">Create Category</button>
             </div>
         </form>
@@ -502,15 +508,15 @@ include '../includes/header.php';
                 </div>
                 <div class="admin-form-group">
                     <label>Current Image</label>
-                    <div style="margin-bottom: 0.5rem;">
-                        <img id="edit-cat-current-image" src="" alt="Current Category Image" style="max-height: 100px; display: none; border-radius: 4px;">
+                    <div class="mb-2">
+                        <img id="edit-cat-current-image" src="" alt="Current Category Image" class="admin-thumb-preview">
                     </div>
                     <label for="edit-cat-image">New Image (Optional)</label>
                     <input type="file" id="edit-cat-image" name="image" accept="image/jpeg,image/png,image/webp">
                 </div>
             </div>
             <div class="admin-modal-footer">
-                <button type="button" class="admin-btn admin-btn-sm" style="background:transparent;color:var(--brand-dark);border-color:var(--brand-earth);" data-close-modal="modal-edit-category">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-sm admin-btn-secondary" data-close-modal="modal-edit-category">Cancel</button>
                 <button type="submit" class="admin-btn admin-btn-sm">Save Changes</button>
             </div>
         </form>
@@ -575,7 +581,7 @@ include '../includes/header.php';
                 </div>
             </div>
             <div class="admin-modal-footer">
-                <button type="button" class="admin-btn admin-btn-sm" style="background:transparent;color:var(--brand-dark);border-color:var(--brand-earth);" data-close-modal="modal-add-product">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-sm admin-btn-secondary" data-close-modal="modal-add-product">Cancel</button>
                 <button type="submit" class="admin-btn admin-btn-sm">Create Product</button>
             </div>
         </form>
@@ -586,7 +592,7 @@ include '../includes/header.php';
      MODAL: MANAGE / EDIT PRODUCT (3 tabs: Details, Images, Stock)
      ==================================================================== -->
 <div class="admin-modal-backdrop" id="modal-manage-product">
-    <div class="admin-modal" style="max-width:720px;">
+    <div class="admin-modal admin-modal-lg">
         <div class="admin-modal-header">
             <h3 id="manage-modal-title">Manage Product</h3>
             <button class="admin-modal-close" data-close-modal="modal-manage-product">&times;</button>
@@ -640,7 +646,7 @@ include '../includes/header.php';
                     </div>
                 </div>
                 <div class="admin-modal-footer">
-                    <button type="button" class="admin-btn admin-btn-sm" style="background:transparent;color:var(--brand-dark);border-color:var(--brand-earth);" data-close-modal="modal-manage-product">Cancel</button>
+                    <button type="button" class="admin-btn admin-btn-sm admin-btn-secondary" data-close-modal="modal-manage-product">Cancel</button>
                     <button type="submit" class="admin-btn admin-btn-sm">Save Changes</button>
                 </div>
             </form>
@@ -649,7 +655,7 @@ include '../includes/header.php';
         <!-- ======================== TAB: IMAGES ======================== -->
         <div class="admin-modal-tab-panel" id="manage-tab-images">
             <div class="admin-modal-body">
-                <p style="font-size:0.8rem;color:var(--gray-500);margin-bottom:1rem;">
+                <p class="help-text">
                     <strong>â˜… Star</strong> = set as main thumbnail &nbsp;|&nbsp; 
                     <strong>âœ• Delete</strong> = remove image &nbsp;|&nbsp; 
                     Use the <strong>Color</strong> dropdown to assign an image to a specific color variant.
@@ -659,9 +665,9 @@ include '../includes/header.php';
                     <!-- JS will populate this -->
                 </div>
 
-                <hr style="border:none;border-top:1px solid var(--brand-cream);margin:1.5rem 0;">
+                <hr class="admin-divider">
                 
-                <form id="form-upload-images" onsubmit="event.preventDefault(); window.uploadImagesAjax();">
+                <form id="form-upload-images" data-action="upload-images">
                     <input type="hidden" name="action" value="ajax_upload_images">
                     <input type="hidden" name="product_id" id="upload-product-id">
                     <div class="admin-form-group">
@@ -669,33 +675,33 @@ include '../includes/header.php';
                         <div class="admin-upload-dropzone" id="upload-dropzone">
                             <input type="file" id="upload-new-images" name="new_images[]" accept="image/jpeg,image/png,image/webp" multiple>
                             <div class="dropzone-content">
-                                <svg class="dropzone-icon" width="40" height="40" style="width: 40px; height: 40px; display: block;" viewBox="0 0 24 24"><path fill="currentColor" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                                <svg class="dropzone-icon" width="40" height="40" viewBox="0 0 24 24"><path fill="currentColor" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
                                 <span class="dropzone-title">Drag & drop your images here</span>
                                 <span class="dropzone-subtitle">or click to browse from files</span>
                             </div>
                         </div>
                         <div class="admin-file-preview" id="upload-images-preview"></div>
                     </div>
-                    <div class="admin-modal-footer" style="background:transparent;padding:1rem 0 0;border-top:none;">
+                    <div class="admin-modal-footer-transparent">
                         <button type="submit" class="admin-btn admin-btn-sm" id="btn-upload-images">Upload Images</button>
                     </div>
                 </form>
             </div>
-            <div class="admin-modal-footer" style="background:#f9f9f9;border-top:1px solid var(--brand-cream);padding:1rem;">
-                <button type="button" class="admin-btn admin-btn-sm" style="background:transparent;color:var(--brand-dark);border-color:var(--brand-earth);" onclick="closeModal('modal-manage-product')">Cancel</button>
-                <button type="button" class="admin-btn admin-btn-sm" onclick="window.saveProductAssets()">Save Changes</button>
+            <div class="admin-modal-footer-soft">
+                <button type="button" class="admin-btn admin-btn-sm admin-btn-secondary" data-action="close-modal" data-modal="modal-manage-product">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-sm" data-action="save-assets">Save Changes</button>
             </div>
         </div>
 
         <!-- ======================== TAB: STOCK (Variants) ======================== -->
         <div class="admin-modal-tab-panel" id="manage-tab-stock">
             <div class="admin-modal-body">
-                <p style="font-size:0.8rem;color:var(--gray-500);margin-bottom:1rem;">
+                <p class="help-text">
                     Manage color/size combinations and their stock levels. Each row is a purchasable variant.
                 </p>
 
                 <!-- Existing Variants Table -->
-                <div class="admin-table-container" style="margin-bottom:1.5rem;" id="stock-table-wrap">
+                <div class="admin-table-container mb-3" id="stock-table-wrap">
                     <table class="admin-table" id="stock-variants-table">
                         <thead>
                             <tr>
@@ -715,8 +721,8 @@ include '../includes/header.php';
                 <!-- Add New Variant Form -->
                 <div class="admin-variant-add-section">
                     <h4 class="admin-variant-add-title">+ Add New Variant</h4>
-                    <form id="form-add-variant" onsubmit="event.preventDefault(); window.uiAddVariant();">
-                        <div class="admin-form-row" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                    <form id="form-add-variant" data-action="add-variant">
+                        <div class="admin-form-row-4col">
                             <div class="admin-form-group">
                                 <label for="new-variant-color">Color</label>
                                 <input type="text" id="new-variant-color" required placeholder="e.g. Black">
@@ -741,15 +747,15 @@ include '../includes/header.php';
                                 <input type="number" id="new-variant-price" step="0.01" value="0.00">
                             </div>
                         </div>
-                        <div style="text-align:right;margin-top:0.5rem;">
+                        <div class="text-right mt-1">
                             <button type="submit" class="admin-btn admin-btn-sm">Add Variant</button>
                         </div>
                     </form>
                 </div>
             </div>
-            <div class="admin-modal-footer" style="background:#f9f9f9;border-top:1px solid var(--brand-cream);padding:1rem;">
-                <button type="button" class="admin-btn admin-btn-sm" style="background:transparent;color:var(--brand-dark);border-color:var(--brand-earth);" onclick="closeModal('modal-manage-product')">Cancel</button>
-                <button type="button" class="admin-btn admin-btn-sm" onclick="window.saveProductAssets()">Save Changes</button>
+            <div class="admin-modal-footer-soft">
+                <button type="button" class="admin-btn admin-btn-sm admin-btn-secondary" data-action="close-modal" data-modal="modal-manage-product">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-sm" data-action="save-assets">Save Changes</button>
             </div>
         </div>
 
@@ -760,7 +766,7 @@ include '../includes/header.php';
      MODAL: EDIT VARIANT (inline edit popup)
      ==================================================================== -->
 <div class="admin-modal-backdrop" id="modal-edit-variant">
-    <div class="admin-modal" style="max-width:520px;">
+    <div class="admin-modal admin-modal-sm">
         <div class="admin-modal-header">
             <h3>Edit Variant</h3>
             <button class="admin-modal-close" data-close-modal="modal-edit-variant">&times;</button>
@@ -798,7 +804,7 @@ include '../includes/header.php';
                 </div>
             </div>
             <div class="admin-modal-footer">
-                <button type="button" class="admin-btn admin-btn-sm" style="background:transparent;color:var(--brand-dark);border-color:var(--brand-earth);" data-close-modal="modal-edit-variant">Cancel</button>
+                <button type="button" class="admin-btn admin-btn-sm admin-btn-secondary" data-close-modal="modal-edit-variant">Cancel</button>
                 <button type="submit" class="admin-btn admin-btn-sm">Save Variant</button>
             </div>
         </form>
@@ -810,207 +816,92 @@ include '../includes/header.php';
      MODAL: MANAGE ORDER
      ==================================================================== -->
 <div class="admin-modal-backdrop" id="modal-manage-order">
-    <div class="admin-modal" style="max-width: 700px;">
+<div class="admin-modal admin-modal-md">
         <div class="admin-modal-header">
             <h3 id="mo-title">Order Details</h3>
             <button class="admin-modal-close" data-close-modal="modal-manage-order">&times;</button>
         </div>
-        <div class="admin-modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <div class="admin-modal-body">
             <!-- Order Info -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; font-size: 0.875rem;">
+            <div class="order-info-grid">
                 <div>
-                    <p style="color: var(--gray-500); margin: 0;">Order Number</p>
-                    <p style="font-weight: 600; margin: 0.25rem 0 0;" id="mo-number"></p>
+                    <p class="order-info-label">Order Number</p>
+                    <p class="order-info-value" id="mo-number"></p>
                 </div>
                 <div>
-                    <p style="color: var(--gray-500); margin: 0;">Date</p>
-                    <p style="font-weight: 600; margin: 0.25rem 0 0;" id="mo-date"></p>
+                    <p class="order-info-label">Date</p>
+                    <p class="order-info-value" id="mo-date"></p>
                 </div>
                 <div>
-                    <p style="color: var(--gray-500); margin: 0;">Payment Method</p>
-                    <p style="font-weight: 600; margin: 0.25rem 0 0; text-transform: capitalize;" id="mo-payment"></p>
+                    <p class="order-info-label">Payment Method</p>
+                    <p class="order-info-value text-capitalize" id="mo-payment"></p>
                 </div>
                 <div>
-                    <p style="color: var(--gray-500); margin: 0;">Payment Status</p>
-                    <p style="font-weight: 600; margin: 0.25rem 0 0; text-transform: capitalize;" id="mo-payment-status"></p>
+                    <p class="order-info-label">Payment Status</p>
+                    <p class="order-info-value text-capitalize" id="mo-payment-status"></p>
                 </div>
             </div>
 
             <!-- Items Table -->
-            <h4 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500); margin-bottom: 0.75rem;">Items Ordered</h4>
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 1.5rem;">
+            <h4 class="order-section-title">Items Ordered</h4>
+            <table class="order-items-table">
                 <thead>
-                    <tr style="border-bottom: 1px solid #eee; text-align: left;">
-                        <th style="padding: 0.5rem 0;">Product</th>
-                        <th style="padding: 0.5rem 0;">Variant</th>
-                        <th style="padding: 0.5rem 0;">Qty</th>
-                        <th style="padding: 0.5rem 0;">Price</th>
+                    <tr>
+                        <th>Product</th>
+                        <th>Variant</th>
+                        <th>Qty</th>
+                        <th>Price</th>
                     </tr>
                 </thead>
                 <tbody id="mo-items-body"></tbody>
             </table>
 
             <!-- Totals -->
-            <div style="text-align: right; font-size: 0.875rem; margin-bottom: 1.5rem; border-top: 1px solid #eee; padding-top: 1rem;">
-                <p style="margin: 0.25rem 0;">Subtotal: $<span id="mo-subtotal"></span></p>
-                <p style="margin: 0.25rem 0;">Shipping: $<span id="mo-shipping"></span></p>
-                <p style="margin: 0.25rem 0;">Tax: $<span id="mo-tax"></span></p>
-                <p style="margin: 0.5rem 0; font-weight: 700; font-size: 1.1rem;">Total: $<span id="mo-total"></span></p>
+            <div class="order-totals">
+                <p class="order-total-line">Subtotal: $<span id="mo-subtotal"></span></p>
+                <p class="order-total-line">Shipping: $<span id="mo-shipping"></span></p>
+                <p class="order-total-line">Tax: $<span id="mo-tax"></span></p>
+                <p class="order-grand-total">Total: $<span id="mo-total"></span></p>
             </div>
 
             <!-- Shipping Details -->
-            <h4 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500); margin-bottom: 0.75rem;">Shipping Details</h4>
-            <div style="font-size: 0.875rem; margin-bottom: 1.5rem; line-height: 1.6;">
-                <p style="margin: 0;" id="mo-ship-name"></p>
-                <p style="margin: 0;" id="mo-ship-phone"></p>
-                <p style="margin: 0;" id="mo-ship-address"></p>
-                <p style="margin: 0;"><span id="mo-ship-city"></span>, <span id="mo-ship-country"></span></p>
+            <h4 class="order-section-title">Shipping Details</h4>
+            <div class="order-shipping-details">
+                <p class="order-ship-line" id="mo-ship-name"></p>
+                <p class="order-ship-line" id="mo-ship-phone"></p>
+                <p class="order-ship-line" id="mo-ship-address"></p>
+                <p class="order-ship-line"><span id="mo-ship-city"></span>, <span id="mo-ship-country"></span></p>
             </div>
 
             <!-- Update Status -->
-            <h4 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500); margin-bottom: 0.75rem;">Update Status</h4>
-            <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <select id="mo-status-select" style="flex-grow: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+            <h4 class="order-section-title">Update Status</h4>
+            <div class="order-status-row">
+                <select id="mo-status-select" class="order-status-select">
                     <option value="pending">Pending</option>
                     <option value="processing">Processing</option>
                     <option value="in_transit">In Transit</option>
                     <option value="delivered">Delivered</option>
                     <option value="cancelled">Cancelled</option>
                 </select>
-                <button class="admin-btn admin-btn-sm" onclick="updateOrderStatus()">Save</button>
+                <button class="admin-btn admin-btn-sm" data-action="update-status">Save</button>
             </div>
             <input type="hidden" id="mo-order-id">
         </div>
         <div class="admin-modal-footer">
-            <button type="button" class="admin-btn admin-btn-sm" style="background:transparent;color:var(--brand-dark);border-color:var(--brand-earth);" data-close-modal="modal-manage-order">Close</button>
+            <button type="button" class="admin-btn admin-btn-sm admin-btn-secondary" data-close-modal="modal-manage-order">Close</button>
         </div>
     </div>
 </div>
 
 <!-- ====================================================================
-     JAVASCRIPT
+     PHP DATA (consumed by admin_dashboard.js)
      ==================================================================== -->
-<script>
-    // ============================
-    // DATA FROM PHP
-    // ============================
-    const productImagesData = <?= json_encode($productImages, JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-    const productVariantsData = <?= json_encode($productVariants, JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-    const orderItemsData = <?= json_encode($orderItemsData, JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-
-    // ============================
-    // ORDER MANAGEMENT FUNCTIONS
-    // ============================
-    function filterOrders() {
-        const filter = document.getElementById('orderStatusFilter').value;
-        const rows = document.querySelectorAll('#ordersTable tbody tr[data-status]');
-        rows.forEach(row => {
-            if (filter === 'all' || row.getAttribute('data-status') === filter) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
-
-    function deleteOrder(orderId) {
-        const formData = new FormData();
-        formData.append('action', 'delete_order');
-        formData.append('order_id', orderId);
-
-        fetch('admin_manage_order.php', {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin'
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert(data.message || 'Failed to delete order.');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('A network error occurred.');
-        });
-    }
-
-    // Open order modal
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.btn-manage-order').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const d = this.dataset;
-                document.getElementById('mo-order-id').value = d.orderId;
-                document.getElementById('mo-title').textContent = 'Order ' + d.orderNumber;
-                document.getElementById('mo-number').textContent = d.orderNumber;
-                document.getElementById('mo-date').textContent = d.orderDate;
-                document.getElementById('mo-payment').textContent = d.orderPayment;
-                document.getElementById('mo-payment-status').textContent = d.orderPaymentStatus;
-                document.getElementById('mo-subtotal').textContent = d.orderSubtotal;
-                document.getElementById('mo-shipping').textContent = d.orderShipping;
-                document.getElementById('mo-tax').textContent = d.orderTax;
-                document.getElementById('mo-total').textContent = d.orderTotal;
-                document.getElementById('mo-ship-name').textContent = d.orderName;
-                document.getElementById('mo-ship-phone').textContent = d.orderPhone;
-                document.getElementById('mo-ship-address').textContent = d.orderAddress;
-                document.getElementById('mo-ship-city').textContent = d.orderCity;
-                document.getElementById('mo-ship-country').textContent = d.orderCountry;
-                document.getElementById('mo-status-select').value = d.orderStatus;
-
-                // Populate items table
-                const tbody = document.getElementById('mo-items-body');
-                tbody.innerHTML = '';
-                const items = orderItemsData[d.orderId] || [];
-                if (items.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:1rem; color:#999;">No items found.</td></tr>';
-                } else {
-                    items.forEach(item => {
-                        const tr = document.createElement('tr');
-                        tr.style.borderBottom = '1px solid #f5f5f5';
-                        tr.innerHTML = `
-                            <td style="padding:0.5rem 0;">${item.name}</td>
-                            <td style="padding:0.5rem 0;">${item.color} / ${item.size}</td>
-                            <td style="padding:0.5rem 0;">${item.quantity}</td>
-                            <td style="padding:0.5rem 0;">$${parseFloat(item.price).toFixed(2)}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                }
-
-                document.getElementById('modal-manage-order').classList.add('show');
-            });
-        });
-    });
-
-    function updateOrderStatus() {
-        const orderId = document.getElementById('mo-order-id').value;
-        const newStatus = document.getElementById('mo-status-select').value;
-
-        const formData = new FormData();
-        formData.append('action', 'update_status');
-        formData.append('order_id', orderId);
-        formData.append('status', newStatus);
-
-        fetch('admin_manage_order.php', {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin'
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert(data.message || 'Failed to update status.');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('A network error occurred.');
-        });
-    }
+<script id="admin-data" type="application/json">
+<?= json_encode([
+    'productImages' => $productImages,
+    'productVariants' => $productVariants,
+    'orderItems' => $orderItemsData,
+], JSON_HEX_APOS | JSON_HEX_QUOT) ?>
 </script>
 <script src="../scripts/admin_dashboard.js?v=<?= time() ?>"></script>
 

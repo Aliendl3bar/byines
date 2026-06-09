@@ -51,11 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h2>Create Account</h2>
                 
                 <?php if ($success): ?>
-                    <div class="auth-success" style="display: block;"><?= $success ?></div>
+                    <div class="auth-success"><?= $success ?></div>
                 <?php endif; ?>
                 
                 <?php if ($error): ?>
-                    <div class="auth-error" style="display: block;"><?= $error ?></div>
+                    <div class="auth-error"><?= $error ?></div>
                 <?php endif; ?>
 
                 <form action="signup.php" method="POST">
@@ -93,14 +93,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group-auth password-toggle">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="Create a password" required minlength="8">
-                        <span class="toggle-icon" onclick="togglePassword('password')">👁</span>
+                        <span class="toggle-icon" data-action="toggle-password" data-field="password">👁</span>
                     </div>
 
                     <!-- Confirm Password Field -->
                     <div class="form-group-auth password-toggle">
                         <label for="confirmPassword">Confirm Password</label>
                         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required minlength="8">
-                        <span class="toggle-icon" onclick="togglePassword('confirmPassword')">👁</span>
+                        <span class="toggle-icon" data-action="toggle-password" data-field="confirmPassword">👁</span>
                     </div>
 
                     <button type="submit" class="auth-submit-btn">Create Account</button>

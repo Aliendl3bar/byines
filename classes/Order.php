@@ -159,7 +159,7 @@ class Order {
         // Get items associated with this order
         $stmtItems = $this->pdo->prepare("
             SELECT oi.id, oi.variant_id, oi.quantity, oi.price,
-                   pv.color, pv.size, p.name as product_name, p.sku
+                   pv.color, pv.size, p.id as product_id, p.name, p.sku
             FROM order_items oi
             JOIN product_variants pv ON oi.variant_id = pv.id
             JOIN products p ON pv.product_id = p.id

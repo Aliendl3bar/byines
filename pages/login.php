@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h2>Sign In</h2>
                 
                 <?php if ($error): ?>
-                    <div class="auth-error" style="display: block;"><?= $error ?></div>
+                    <div class="auth-error"><?= $error ?></div>
                 <?php endif; ?>
 
                 <form action="login.php" method="POST">
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group-auth password-toggle">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                        <span class="toggle-icon" onclick="togglePassword('password')">👁</span>
+                        <span class="toggle-icon" data-action="toggle-password" data-field="password">👁</span>
                     </div>
 
                     <!-- Remember & Forgot Options -->

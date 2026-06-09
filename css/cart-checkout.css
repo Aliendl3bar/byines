@@ -8,6 +8,14 @@
     margin-bottom: 2rem;
 }
 
+.breadcrumb-current {
+    color: var(--brand-dark);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+}
+
 .breadcrumb-nav a {
     color: var(--gray-500);
     text-decoration: none;
@@ -58,6 +66,19 @@
 }
 
 /* --- CART PAGE STYLES --- */
+
+/* Cart visibility (initial state from PHP) */
+#emptyCart[data-visible="false"],
+#cartContent[data-visible="false"],
+.order-summary[data-visible="false"] {
+    display: none;
+}
+
+#emptyCart[data-visible="true"],
+#cartContent[data-visible="true"],
+.order-summary[data-visible="true"] {
+    display: block;
+}
 
 /* Empty Cart Message */
 .empty-cart-message {
@@ -258,6 +279,57 @@
 .summary-value {
     color: var(--brand-dark);
     font-weight: 600;
+}
+
+/* Payment Option Label (inline style replacement) */
+.payment-option-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.payment-option-grow {
+    flex-grow: 1;
+}
+
+.paypal-logo-img {
+    height: 24px;
+}
+
+/* Disabled Country Select */
+.country-select-disabled {
+    background-color: #f1f1f1;
+    cursor: not-allowed;
+    color: #333;
+    opacity: 0.8;
+}
+
+/* Preview Items (inline style replacements) */
+.preview-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.preview-item-name {
+    color: var(--gray-500);
+}
+
+.preview-item-price {
+    color: var(--brand-dark);
+    font-weight: 500;
+}
+
+/* Shipping display */
+.shipping-free {
+    color: #4CAF50;
+}
+
+/* Margin top utility */
+.mt-4 {
+    margin-top: 1.5rem;
 }
 
 .promo-code-section {

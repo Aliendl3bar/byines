@@ -1,16 +1,38 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initial calculation on load
     calculateShipping();
+
+    document.addEventListener('click', function(e) {
+        var target = e.target.closest('[data-action]');
+        if (!target) return;
+        var action = target.getAttribute('data-action');
+
+        if (action === 'select-payment') {
+            selectPayment(target.getAttribute('data-method'));
+        } else if (action === 'process-order') {
+            processOrder();
+        }
+    });
+
+    document.addEventListener('input', function(e) {
+        if (e.target.getAttribute('data-action') === 'calculate-shipping') {
+            calculateShipping();
+        }
+    });
 });
 
 function calculateShipping() {
-    const cityInput = document.getElementById('city').value.trim().toLowerCase();
-    let shippingCost = 0;
-    let shippingDisplay = '';
+    var checkoutMain = document.getElementById('checkout-main');
+    var subtotal = parseFloat(checkoutMain ? checkoutMain.getAttribute('data-subtotal') : 0);
+    var tax = parseFloat(checkoutMain ? checkoutMain.getAttribute('data-tax') : 0);
 
-    if (cityInput === '') {
+    var cityInput = document.getElementById('city');
+    var city = cityInput ? cityInput.value.trim().toLowerCase() : '';
+    var shippingCost = 0;
+    var shippingDisplay = '';
+
+    if (city === '') {
         shippingDisplay = 'Enter city...';
-    } else if (cityInput === 'tangier' || cityInput === 'tanger') {
+    } else if (city === 'tangier' || city === 'tanger') {
         shippingCost = 0;
         shippingDisplay = 'FREE';
     } else {
@@ -18,59 +40,72 @@ function calculateShipping() {
         shippingDisplay = '$3.00';
     }
 
-    document.getElementById('summary-shipping').innerText = shippingDisplay;
-    document.getElementById('summary-shipping').style.color = shippingCost === 0 && cityInput !== '' ? '#4CAF50' : 'var(--brand-dark)';
+    var shippingEl = document.getElementById('summary-shipping');
+    if (shippingEl) {
+        shippingEl.innerText = shippingDisplay;
+        shippingEl.style.color = shippingCost === 0 && city !== '' ? '#4CAF50' : 'var(--brand-dark)';
+    }
 
-    const total = PHP_SUBTOTAL + PHP_TAX + shippingCost;
-    
-    // Format to 2 decimal places
-    document.getElementById('summary-total').innerText = total.toFixed(2);
+    var totalEl = document.getElementById('summary-total');
+    if (totalEl) {
+        totalEl.innerText = (subtotal + tax + shippingCost).toFixed(2);
+    }
 }
 
 function selectPayment(method) {
-    document.getElementById('payment_cod').checked = (method === 'cod');
-    document.getElementById('payment_paypal').checked = (method === 'paypal');
-    
-    document.getElementById('payment_cod_wrapper').classList.toggle('selected', method === 'cod');
-    document.getElementById('payment_paypal_wrapper').classList.toggle('selected', method === 'paypal');
+    var cod = document.getElementById('payment_cod');
+    var paypal = document.getElementById('payment_paypal');
+    var codWrapper = document.getElementById('payment_cod_wrapper');
+    var paypalWrapper = document.getElementById('payment_paypal_wrapper');
+
+    if (cod) cod.checked = (method === 'cod');
+    if (paypal) paypal.checked = (method === 'paypal');
+    if (codWrapper) codWrapper.classList.toggle('selected', method === 'cod');
+    if (paypalWrapper) paypalWrapper.classList.toggle('selected', method === 'paypal');
 }
 
 function processOrder() {
-    const firstName = document.getElementById('first_name').value.trim();
-    const lastName = document.getElementById('last_name').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const address = document.getElementById('address').value.trim();
-    const city = document.getElementById('city').value.trim();
-    
-    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    var firstName = document.getElementById('first_name');
+    var lastName = document.getElementById('last_name');
+    var email = document.getElementById('email');
+    var phone = document.getElementById('phone');
+    var address = document.getElementById('address');
+    var city = document.getElementById('city');
 
-    if (!firstName || !lastName || !email || !phone || !address || !city) {
+    var fv = firstName ? firstName.value.trim() : '';
+    var lv = lastName ? lastName.value.trim() : '';
+    var ev = email ? email.value.trim() : '';
+    var pv = phone ? phone.value.trim() : '';
+    var av = address ? address.value.trim() : '';
+    var cv = city ? city.value.trim() : '';
+    var pm = document.querySelector('input[name="payment_method"]:checked');
+
+    if (!fv || !lv || !ev || !pv || !av || !cv) {
         alert("Please fill out all required shipping fields.");
         return;
     }
 
-    const btn = document.getElementById('placeOrderBtn');
-    const originalText = btn.innerHTML;
+    var btn = document.getElementById('placeOrderBtn');
+    var originalText = btn.innerHTML;
     btn.innerHTML = 'Processing...';
     btn.disabled = true;
 
-    const formData = new FormData();
-    formData.append('first_name', firstName);
-    formData.append('last_name', lastName);
-    formData.append('email', email);
-    formData.append('phone', phone);
-    formData.append('address', address);
-    formData.append('city', city);
-    formData.append('payment_method', paymentMethod);
+    var formData = new FormData();
+    formData.append('first_name', fv);
+    formData.append('last_name', lv);
+    formData.append('email', ev);
+    formData.append('phone', pv);
+    formData.append('address', av);
+    formData.append('city', cv);
+    formData.append('payment_method', pm ? pm.value : '');
 
     fetch('process_order.php', {
         method: 'POST',
         body: formData,
         credentials: 'same-origin'
     })
-    .then(response => response.json())
-    .then(data => {
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
         if (data.success) {
             window.location.href = 'order_success.php?order_id=' + data.order_id;
         } else {
@@ -79,7 +114,7 @@ function processOrder() {
             btn.disabled = false;
         }
     })
-    .catch(err => {
+    .catch(function(err) {
         console.error(err);
         alert('A network error occurred.');
         btn.innerHTML = originalText;

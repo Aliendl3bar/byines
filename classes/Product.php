@@ -361,7 +361,7 @@ class Product {
         $inQuery = implode(',', array_fill(0, count($ids), '?'));
         $placeholders = implode(',', $ids);
         $query = "
-            SELECT p.id, p.name, p.price, pi.image_name
+            SELECT p.id, p.name, p.price, p.slug, pi.image_name
             FROM products p
             LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_main = 1
             WHERE p.id IN ($inQuery) AND p.is_active = 1
