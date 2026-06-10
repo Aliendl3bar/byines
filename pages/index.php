@@ -1,8 +1,11 @@
 <?php 
 require_once '../classes/Product.php';
 require_once '../classes/Collection.php';
+require_once '../classes/Category.php';
 $productModel = new Product();
 $collectionModel = new Collection();
+$categoryModel = new Category();
+$categories = $categoryModel->getAll();
 include '../includes/header.php'; 
 ?>
 
@@ -80,30 +83,18 @@ include '../includes/header.php';
         <section class="category-browse" data-purpose="category-browse">
             <h2 class="section-title">Browse by Category</h2>
             <div class="category-grid">
-                <div class="category-item">
-                    <div class="arch-card">
-                        <img alt="Niqab" src="../assets/boutique_byines_3581710268287392853.png">
-                    </div>
-                    <h3>Niqab</h3>
-                </div>
-                <div class="category-item">
-                    <div class="arch-card">
-                        <img alt="Kimono" src="../assets/boutique_byines_3755720010749460967's2026-5-14-15.0.37 story.jpg"/>
-                    </div>
-                    <h3>Kimonos</h3>
-                </div>
-                <div class="category-item">
-                    <div class="arch-card">
-                        <img alt="Scarfs" src="../assets/boutique_byines_3481002996511481087's2026-5-14-15.21.22 story.jpg"/>
-                    </div>
-                    <h3>Scarfs</h3>
-                </div>
-                <div class="category-item">
-                    <div class="arch-card">
-                        <img alt="Accessories" src="../assets/samaa.creat_3847060077198625518's2026-5-14-12.51.304 story.jpg"/>
-                    </div>
-                    <h3>Accessories</h3>
-                </div>
+                <?php if (!empty($categories)): ?>
+                    <?php foreach ($categories as $cat): ?>
+                        <a href="shop.php?category=<?= urlencode($cat['slug']) ?>" class="category-item" style="text-decoration: none; color: inherit;">
+                            <div class="arch-card">
+                                <img alt="<?= htmlspecialchars($cat['name']) ?>" src="<?= htmlspecialchars($cat['image_url'] ?: '../assets/placeholder.png') ?>">
+                            </div>
+                            <h3><?= htmlspecialchars($cat['name']) ?></h3>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p style="color: var(--gray-500); grid-column: 1 / -1; text-align: center;">No categories available.</p>
+                <?php endif; ?>
             </div>
         </section>
     </main>

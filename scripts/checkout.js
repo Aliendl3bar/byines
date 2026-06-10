@@ -1,5 +1,17 @@
+let PHP_SUBTOTAL = 0;
+let PHP_TAX = 0;
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Initial calculation on load
+    const dataEl = document.getElementById('checkout-data');
+    if (dataEl) {
+        try {
+            const data = JSON.parse(dataEl.textContent);
+            PHP_SUBTOTAL = parseFloat(data.subtotal) || 0;
+            PHP_TAX = parseFloat(data.tax) || 0;
+        } catch (e) {
+            console.error('Failed to parse checkout data', e);
+        }
+    }
     calculateShipping();
 });
 

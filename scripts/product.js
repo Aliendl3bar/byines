@@ -448,3 +448,19 @@ function buyNow() {
     alert(`Proceeding to checkout with ${quantity} item(s) (${selectedColor} / Size ${selectedSize})...`);
     // Redirect to checkout page in real application
 }
+
+// Auto-initialize from data attributes
+document.addEventListener('DOMContentLoaded', function() {
+    const productPage = document.querySelector('.product-page');
+    if (productPage) {
+        try {
+            const variants = JSON.parse(productPage.dataset.variants);
+            const images = JSON.parse(productPage.dataset.images);
+            const basePrice = productPage.dataset.basePrice;
+            const productId = productPage.dataset.productId;
+            initProductPage(variants, images, basePrice, productId);
+        } catch (e) {
+            console.error('Failed to initialize product page:', e);
+        }
+    }
+});

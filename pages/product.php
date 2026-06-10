@@ -111,7 +111,7 @@ $relatedProducts = $productModel->getRelatedProducts($product['category_id'], $p
 include '../includes/header.php';
 ?>
 
-    <main style="max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem;">
+    <main class="product-page" style="max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem;" data-variants='<?= htmlspecialchars(json_encode($variants), ENT_QUOTES) ?>' data-images='<?= htmlspecialchars(json_encode($images), ENT_QUOTES) ?>' data-base-price="<?= floatval($product['price']) ?>" data-product-id="<?= intval($productId) ?>">
         <!-- Breadcrumb Navigation -->
         <nav class="breadcrumb-nav" style="margin-bottom: 2rem;">
             <a href="index.php" style="color: var(--gray-500); text-decoration: none; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em;">Home</a>
@@ -363,14 +363,5 @@ include '../includes/header.php';
 
     <!-- Client-side controllers and data initialization -->
     <script src="../scripts/product.js?v=<?= time() ?>"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const variants = <?= json_encode($variants) ?>;
-            const images = <?= json_encode($images) ?>;
-            const basePrice = <?= floatval($product['price']) ?>;
-            const productId = <?= intval($productId) ?>;
-            initProductPage(variants, images, basePrice, productId);
-        });
-    </script>
 
 <?php include '../includes/footer.php'; ?>

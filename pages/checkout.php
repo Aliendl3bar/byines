@@ -164,10 +164,7 @@ include '../includes/header.php';
         </div>
     </main>
 
-    <script>
-        const PHP_SUBTOTAL = <?= $subtotal ?>;
-        const PHP_TAX = <?= $tax ?>;
-    </script>
+    <script id="checkout-data" type="application/json">{"subtotal":<?= $subtotal ?>,"tax":<?= $tax ?>}</script>
     <script src="../scripts/checkout.js?v=<?= time() ?>"></script>
 
 <?php include '../includes/footer.php'; ?>

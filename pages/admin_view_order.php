@@ -39,7 +39,7 @@ include '../includes/header.php';
 ?>
 <link rel="stylesheet" href="../css/admin.css">
 
-<main class="admin-container">
+<main class="admin-container" data-order-id="<?= $orderId ?>">
     <div class="admin-sidebar">
         <!-- Re-using sidebar layout conceptually -->
         <h2 style="font-size: 1.5rem; color: var(--brand-dark); font-family: var(--font-serif); margin-bottom: 2rem;">Admin Panel</h2>
@@ -145,33 +145,6 @@ include '../includes/header.php';
     </div>
 </main>
 
-<script>
-function deleteThisOrder() {
-    if (!confirm('Are you absolutely sure you want to permanently delete this order? This action cannot be undone.')) {
-        return;
-    }
-    const formData = new FormData();
-    formData.append('action', 'delete_order');
-    formData.append('order_id', <?= $orderId ?>);
-
-    fetch('admin_manage_order.php', {
-        method: 'POST',
-        body: formData,
-        credentials: 'same-origin'
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            window.location.href = 'admin_dashboard.php#panel-orders';
-        } else {
-            alert(data.message || 'Failed to delete order.');
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        alert('A network error occurred.');
-    });
-}
-</script>
+<script src="../scripts/admin_view_order.js?v=<?= time() ?>"></script>
 
 <?php include '../includes/footer.php'; ?>

@@ -1,23 +1,22 @@
         // Switch panel tabs dynamically
-        function switchTab(tabName) {
-            // Update Active navigation button
-            document.querySelectorAll('.sidebar-menu-btn').forEach(btn => {
-                if (btn.getAttribute('data-tab') === tabName) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-
-            // Switch active panel
-            document.querySelectorAll('.tab-panel').forEach(panel => {
-                if (panel.id === `panel-${tabName}`) {
-                    panel.classList.add('active');
-                } else {
-                    panel.classList.remove('active');
-                }
-            });
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + tabId).classList.add('active');
+            const targetBtn = document.querySelector(`.sidebar-menu-btn[data-tab="${tabId}"]`);
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.sidebar-menu-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+        });
 
         // Save Account Profile details back to localStorage
         function saveProfileDetails(event) {
@@ -66,9 +65,18 @@
 
             alert('Account details updated successfully!');
             
-            // Force header username updates
             if (typeof checkAuthStatus === 'function') {
                 checkAuthStatus();
+            }
+        }
+
+        function confirmDeleteAccount() {
+            if (confirm("Are you absolutely sure you want to delete your account? This action cannot be undone and you will lose all your order history.")) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'delete_account.php';
+                document.body.appendChild(form);
+                form.submit();
             }
         }
 

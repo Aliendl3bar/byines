@@ -269,42 +269,6 @@ include '../includes/header.php';
     </main>
 
     <!-- Tab Logic -->
-    <script>
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.sidebar-menu-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById('panel-' + tabId).classList.add('active');
-            const targetBtn = document.querySelector(`.sidebar-menu-btn[data-tab="${tabId}"]`);
-            if (targetBtn) {
-                targetBtn.classList.add('active');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set up sidebar tab selection click handlers
-            document.querySelectorAll('.sidebar-menu-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const tabName = this.getAttribute('data-tab');
-                    switchTab(tabName);
-                });
-            });
-        });
-
-        function saveProfileDetails(event) {
-            event.preventDefault();
-            alert('Profile updating feature coming soon!');
-        }
-
-        function confirmDeleteAccount() {
-            if (confirm("Are you absolutely sure you want to delete your account? This action cannot be undone and you will lose all your order history.")) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = 'delete_account.php';
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }
-    </script>
+    <script src="../scripts/dashboard.js?v=<?= time() ?>"></script>
 
 <?php include '../includes/footer.php'; ?>
