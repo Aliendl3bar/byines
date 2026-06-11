@@ -492,6 +492,10 @@ Nous avons réalisé des tests manuels en parcourant tous les flux utilisateurs 
 * **Validation des données :** La soumission de formulaires incomplets ou contenant des données invalides (ex: email incorrect, prix négatif) est bloquée à la fois par le frontend (attributs HTML5) et par le backend (vérifications PHP avant insertion). **RÉUSSI.**
 * **Contrôle d'accès :** Les requêtes directes vers des pages d'administration sans session valide sont interceptées et redirigées vers la page de login. **RÉUSSI.**
 
+### 4.3 Tests de responsivité sur mobile
+
+Une vérification de l'adaptabilité (*Responsive Design*) a été effectuée sur différents appareils mobiles et tablettes. Bien que l'interface globale s'ajuste correctement aux écrans tactiles (menus hamburger, grilles de produits adaptatives), le comportement s'est avéré quelque peu instable sur certaines résolutions spécifiques. Des bugs mineurs d'affichage et des chevauchements d'éléments ont été constatés et ne fonctionnent pas encore exactement comme prévu, nécessitant une révision ultérieure des règles CSS (*Media Queries*).
+
 ***
 
 \newpage

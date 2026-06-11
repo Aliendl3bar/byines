@@ -124,7 +124,7 @@ include '../includes/header.php';
         </nav>
 
         <!-- Product Container -->
-        <div class="product-detail-container" style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4rem; margin-bottom: 6rem;">
+        <div class="product-detail-container">
             
             <!-- Product Image Gallery -->
             <section class="product-gallery" style="min-width: 0;">
@@ -254,7 +254,7 @@ include '../includes/header.php';
                 </div>
 
                 <!-- Action Buttons -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                <div class="product-actions-grid">
                     <button class="add-to-cart-btn" style="padding: 1.25rem 2rem; background-color: var(--white); border: 2px solid var(--brand-dark); border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all 0.3s ease; color: var(--brand-dark);" onclick="addToCart()">
                         Add to Cart
                     </button>
@@ -281,7 +281,7 @@ include '../includes/header.php';
 
         <!-- Product Specifications & Reviews Section -->
         <section style="margin-bottom: 6rem;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;">
+            <div class="product-specs-grid">
                 <!-- Specifications -->
                 <div>
                     <h2 style="font-size: 1.5rem; font-weight: 300; color: var(--brand-dark); margin-bottom: 1.5rem;">Specifications</h2>
@@ -339,7 +339,7 @@ include '../includes/header.php';
         <!-- Related Products -->
         <section style="margin-bottom: 6rem;">
             <h2 class="section-title" style="font-size: 2.25rem; text-align: center; margin-bottom: 4rem; font-weight: 300;">You May Also Like</h2>
-            <div class="product-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem 1rem;">
+            <div class="product-related-grid">
                 <?php foreach ($relatedProducts as $rel): 
                     $relImg = $productModel->getMainImage($rel['id']);
                     $relImgUrl = $relImg ? '../products/' . $rel['id'] . '/img/' . $relImg : '../assets/placeholder.png';

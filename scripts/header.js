@@ -1,3 +1,29 @@
+// Mobile nav toggle
+(function() {
+    const hamburger = document.getElementById('hamburgerBtn');
+    const overlay = document.getElementById('mobileNavOverlay');
+    const closeBtn = document.getElementById('mobileNavClose');
+
+    if (hamburger && overlay) {
+        function openNav() {
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeNav() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        hamburger.addEventListener('click', openNav);
+        if (closeBtn) closeBtn.addEventListener('click', closeNav);
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) closeNav();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('open')) closeNav();
+        });
+    }
+})();
+
 // Dropdown toggle logic
 (function() {
     const accountBtn = document.getElementById('accountBtn');

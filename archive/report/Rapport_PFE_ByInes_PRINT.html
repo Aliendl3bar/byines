@@ -761,6 +761,7 @@
           <ul>
             <li><span>4.1 Tests fonctionnels</span> <span class="page-num">29</span></li>
             <li><span>4.2 Tests de sécurité</span> <span class="page-num">29</span></li>
+            <li><span>4.3 Tests de responsivité</span> <span class="page-num">29</span></li>
           </ul>
         </li>
 
@@ -1176,6 +1177,9 @@ graph TD
       <li style="margin-bottom: 8px;"><strong>Validation des données :</strong> La soumission de formulaires incomplets ou contenant des données invalides (ex: email incorrect, prix négatif) est bloquée à la fois par le frontend (attributs HTML5) et par le backend. <strong>RÉUSSI.</strong></li>
       <li style="margin-bottom: 8px;"><strong>Contrôle d'accès :</strong> Les requêtes directes vers des pages d'administration sans session valide sont interceptées et redirigées vers la page de login. <strong>RÉUSSI.</strong></li>
     </ul>
+
+    <h3 style="margin-top: 25px;">4.3 Tests de responsivité sur mobile</h3>
+    <p>Une vérification de l'adaptabilité (<em>Responsive Design</em>) a été effectuée sur différents appareils mobiles et tablettes. Bien que l'interface globale s'ajuste correctement aux écrans tactiles (menus hamburger, grilles de produits adaptatives), le comportement s'est avéré quelque peu instable sur certaines résolutions spécifiques. Des bugs mineurs d'affichage et des chevauchements d'éléments ont été constatés et ne fonctionnent pas encore exactement comme prévu, nécessitant une révision ultérieure des règles CSS (<em>Media Queries</em>).</p>
   </div>
 
   <!-- ══════════════════════════ CONCLUSION ══════════════════════════ -->

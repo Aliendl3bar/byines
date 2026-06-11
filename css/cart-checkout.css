@@ -63,6 +63,27 @@
         grid-template-columns: 1fr;
         gap: 2rem;
     }
+    .page-title { font-size: 1.75rem; }
+}
+
+@media (max-width: 600px) {
+    .cart-item {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1rem;
+    }
+    .cart-item-image {
+        width: 100%;
+        max-width: 120px;
+        height: auto;
+        aspect-ratio: 3/4;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title { font-size: 1.5rem; }
+    .breadcrumb-nav a, .breadcrumb-current { font-size: 0.7rem; }
+    .cart-checkout-container { padding: 1rem 1rem; }
 }
 
 /* --- CART PAGE STYLES --- */

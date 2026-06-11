@@ -96,6 +96,10 @@
     min-width: 200px;
 }
 
+@media (max-width: 480px) {
+    .sort-container { min-width: 0; }
+}
+
 .sort-label {
     font-family: "Manrope", sans-serif;
     font-size: 12px;
@@ -382,7 +386,8 @@
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--brand-dark);
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
 }
 
 /* --- Pagination --- */

@@ -38,7 +38,27 @@ spl_autoload_register(function ($className) {
                 <a href="shop.php">New Arrivals</a>
                 <a href="shop.php">Collections</a>
                 <a href="about.php">About</a>
-            </nav>  
+            </nav>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="mobile-nav-overlay" id="mobileNavOverlay">
+                <div class="mobile-nav-panel">
+                    <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
+                    <nav class="mobile-nav-links">
+                        <a href="shop.php">New Arrivals</a>
+                        <a href="shop.php">Collections</a>
+                        <a href="about.php">About</a>
+                        <?php if ($isLoggedIn): ?>
+                            <a href="dashboard.php">Dashboard</a>
+                            <a href="logout.php">Logout</a>
+                        <?php else: ?>
+                            <a href="login.php">Sign In</a>
+                            <a href="signup.php">Create Account</a>
+                        <?php endif; ?>
+                    </nav>
+                </div>
+            </div>
             <div class="header-icons">
                 <button class="icon-btn" onclick="alert('Coming Soon');" data-purpose="search-trigger">
                     <svg class="icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
