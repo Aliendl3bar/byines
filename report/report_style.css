@@ -1,0 +1,128 @@
+/* --- ByInes PFE Report Custom Stylesheet --- */
+
+/* Page Setup & Global Typography */
+body {
+    font-family: "Noto Serif", "Georgia", "Times New Roman", serif;
+    color: #1A1A1A; /* Charcoal dark */
+    line-height: 1.6;
+    font-size: 14px;
+    background-color: #ffffff; /* Keep background white for clean PDF printing */
+}
+
+/* Headers Styling */
+h1 {
+    color: #1A1A1A;
+    font-size: 24px;
+    border-bottom: 2px solid #D2C3B4; /* Brand Earth Accent Line */
+    padding-bottom: 8px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+h2 {
+    color: #1A1A1A;
+    font-size: 18px;
+    border-left: 4px solid #D2C3B4; /* Brand Earth Accent vertical bar */
+    padding-left: 12px;
+    margin-top: 25px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+h3 {
+    color: #8E7E72; /* Darker earth color for subheadings to ensure high contrast & legibility */
+    font-size: 15px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* Text Callouts & Highlights */
+strong {
+    color: #1A1A1A;
+}
+
+a {
+    color: #8E7E72;
+    text-decoration: none;
+    border-bottom: 1px dashed #D2C3B4;
+}
+
+/* Horizontal Dividers */
+hr {
+    border: 0;
+    height: 1px;
+    background: #D2C3B4;
+    margin: 20px 0;
+}
+
+/* Lists styling */
+ul, ol {
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+/* Table Design (Premium Grid Layout) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 13px;
+}
+
+th {
+    background-color: #1A1A1A; /* Brand dark */
+    color: #F4F1EE; /* Brand cream text */
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 12px;
+    border: 1px solid #1A1A1A;
+}
+
+td {
+    padding: 10px 12px;
+    border: 1px solid #E5E1D8; /* Neutral sand borders */
+}
+
+tr:nth-child(even) {
+    background-color: #F9F8F5; /* Very soft warm tint */
+}
+
+/* Blockquotes and Academic Boxes */
+blockquote {
+    background-color: #F4F1EE; /* Brand cream background */
+    border-left: 4px solid #D2C3B4; /* Brand earth border */
+    padding: 15px;
+    margin: 15px 0;
+    font-style: italic;
+    color: #555555;
+}
+
+/* Cover Page Layout Overrides */
+div[align="center"] {
+    padding: 20px;
+}
+
+div[align="center"] h1 {
+    font-size: 28px;
+    border-bottom: none;
+    color: #1A1A1A;
+    margin-top: 40px;
+    margin-bottom: 10px;
+}
+
+div[align="center"] h3 {
+    color: #8E7E72;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+div[align="center"] hr {
+    background: #D2C3B4;
+    height: 2px;
+}

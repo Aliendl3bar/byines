@@ -1,0 +1,93 @@
+@startuml ClassDiagram_ByInes
+
+title Diagramme de Classes Logiciel - byines E-Commerce
+
+skinparam {
+    BackgroundColor #FFFDF9
+    RoundCorner 10
+    ArrowColor #5B4F43
+    ClassBackgroundColor #F6F4F0
+    ClassBorderColor #5B4F43
+    ClassFontColor #1A1A1A
+    ClassHeaderBackgroundColor #D2C3B4
+    PackageBackgroundColor #F6F4F0
+    PackageBorderColor #8C7D6C
+}
+
+class Database {
+    - host : string
+    - db_name : string
+    - username : string
+    - password : string
+    - conn : PDO
+    --
+    + getConnection() : PDO
+}
+
+class Product {
+    - conn : PDO
+    - table_name : string
+    --
+    + id : int
+    + name : string
+    + price : decimal
+    + category_id : int
+    --
+    + __construct(db : PDO)
+    + readAll() : array
+    + readOne(id : int) : array
+    + getVariants() : array
+}
+
+class User {
+    - conn : PDO
+    - table_name : string
+    --
+    + id : int
+    + email : string
+    + role : string
+    --
+    + __construct(db : PDO)
+    + login(email, pass) : bool
+    + register() : bool
+}
+
+class Order {
+    - conn : PDO
+    - table_name : string
+    --
+    + id : int
+    + user_id : int
+    + total_amount : decimal
+    --
+    + __construct(db : PDO)
+    + create() : bool
+    + updateStatus(status : string) : bool
+    + getItems() : array
+}
+
+package "Pages Front (Espace Client)" as FrontPkg {
+    class "shop.php" as Shop
+    class "checkout.php" as Checkout
+    class "wishlist.php" as Wishlist
+}
+
+package "Pages Admin (BackOffice)" as BackPkg {
+    class "admin/products.php" as AdminProducts
+    class "admin/orders.php" as AdminOrders
+}
+
+Database --> PDO : instancie
+Product --> PDO : utilise
+User --> PDO : utilise
+Order --> PDO : utilise
+
+FrontPkg --> Product : lit
+FrontPkg --> Order : crée
+FrontPkg --> User : authentifie
+
+BackPkg --> Product : modifie
+BackPkg --> Order : modifie
+BackPkg --> User : lit
+
+@enduml

@@ -28,7 +28,7 @@ include '../includes/header.php';
             <span>/</span>
             <a href="cart.php">Cart</a>
             <span>/</span>
-            <span style="color: var(--brand-dark); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Checkout</span>
+            <span class="breadcrumb-current">Checkout</span>
         </nav>
 
         <h1 class="page-title">Checkout</h1>
@@ -89,7 +89,7 @@ include '../includes/header.php';
                         </div>
                         <div class="form-group">
                             <label>Country</label>
-                            <select id="country" disabled style="background-color: #f1f1f1; cursor: not-allowed; color: #333; opacity: 0.8;">
+                            <select id="country" disabled class="checkout-country-select">
                                 <option value="Morocco" selected>Morocco</option>
                             </select>
                         </div>
@@ -100,22 +100,22 @@ include '../includes/header.php';
                 <div class="form-section">
                     <h2>Payment Method</h2>
                     
-                    <div class="shipping-option selected" id="payment_cod_wrapper" style="cursor: pointer;" onclick="selectPayment('cod')">
+                    <div class="shipping-option selected payment-option" id="payment_cod_wrapper" onclick="selectPayment('cod')">
                         <input type="radio" name="payment_method" id="payment_cod" value="cash_on_delivery" checked>
-                        <label for="payment_cod" style="display:flex; align-items:center; gap: 10px; width: 100%;">
+                        <label for="payment_cod" class="payment-label">
                             <span class="material-symbols-outlined icon-md">local_shipping</span>
-                            <div style="flex-grow:1;">
+                            <div class="payment-info">
                                 <div class="shipping-name">Cash on Delivery</div>
                                 <div class="shipping-time">Pay when you receive the item</div>
                             </div>
                         </label>
                     </div>
 
-                    <div class="shipping-option" id="payment_paypal_wrapper" style="cursor: pointer;" onclick="selectPayment('paypal')">
+                    <div class="shipping-option payment-option" id="payment_paypal_wrapper" onclick="selectPayment('paypal')">
                         <input type="radio" name="payment_method" id="payment_paypal" value="paypal">
-                        <label for="payment_paypal" style="display:flex; align-items:center; gap: 10px; width: 100%;">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" style="height: 24px;">
-                            <div style="flex-grow:1;">
+                        <label for="payment_paypal" class="payment-label">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="payment-icon">
+                            <div class="payment-info">
                                 <div class="shipping-name">Pay with PayPal</div>
                                 <div class="shipping-time">Secure checkout via PayPal Gateway</div>
                             </div>
@@ -129,11 +129,11 @@ include '../includes/header.php';
             <aside class="order-summary">
                 <h2>Order Summary</h2>
                 
-                <div class="items-preview" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--gray-300);">
+                <div class="items-preview">
                     <?php foreach ($cartItems as $item): ?>
-                    <div class="preview-item" style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.875rem;">
-                        <span style="color: var(--gray-500);"><?= htmlspecialchars($item['name']) ?> (<?= $item['quantity'] ?>x)</span>
-                        <span style="color: var(--brand-dark); font-weight: 500;">$<?= number_format($item['price'] * $item['quantity'], 2) ?></span>
+                    <div class="preview-item">
+                        <span><?= htmlspecialchars($item['name']) ?> (<?= $item['quantity'] ?>x)</span>
+                        <span>$<?= number_format($item['price'] * $item['quantity'], 2) ?></span>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -145,7 +145,7 @@ include '../includes/header.php';
 
                 <div class="summary-row">
                     <span class="summary-label">Shipping Fees</span>
-                    <span class="summary-value" id="summary-shipping" style="color: #4CAF50;">Calculating...</span>
+                    <span class="summary-value summary-highlight" id="summary-shipping">Calculating...</span>
                 </div>
 
                 <div class="summary-row">
@@ -158,7 +158,7 @@ include '../includes/header.php';
                     <span class="total-amount">$<span id="summary-total">---</span></span>
                 </div>
 
-                <button onclick="processOrder()" class="place-order-btn" id="placeOrderBtn" style="margin-top: 1.5rem;">Place Order</button>
+                <button onclick="processOrder()" class="place-order-btn" id="placeOrderBtn">Place Order</button>
                 <a href="cart.php" class="back-to-cart-btn">Back to Cart</a>
             </aside>
         </div>

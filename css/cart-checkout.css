@@ -27,6 +27,14 @@
     margin: 0 0.75rem;
 }
 
+.breadcrumb-current {
+    color: var(--brand-dark);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+}
+
 /* Page Title */
 .page-title {
     font-size: 2.5rem;
@@ -656,6 +664,36 @@
 
 .place-order-btn:hover {
     opacity: 0.8;
+}
+
+.checkout-country-select {
+    background-color: #f1f1f1;
+    cursor: not-allowed;
+    color: #333;
+    opacity: 0.8;
+}
+
+.payment-option {
+    cursor: pointer;
+}
+
+.payment-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.payment-info {
+    flex-grow: 1;
+}
+
+.payment-icon {
+    height: 24px;
+}
+
+.summary-highlight {
+    color: #4CAF50;
 }
 
 /* Responsive */

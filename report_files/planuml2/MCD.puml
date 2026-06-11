@@ -1,0 +1,116 @@
+@startuml MCD_ByInes
+
+title MCD - Modèle Conceptuel de Données\nPlateforme E-Commerce byines
+
+skinparam {
+    BackgroundColor #FFFDF9
+    RoundCorner 10
+    ArrowColor #5B4F43
+    EntityBackgroundColor #D2C3B4
+    EntityBorderColor #5B4F43
+    EntityFontColor #1A1A1A
+    NoteBackgroundColor #F6F4F0
+    NoteBorderColor #8C7D6C
+}
+
+entity "Utilisateur" as User {
+    * **id** : INTEGER
+    --
+    first_name : VARCHAR(50)
+    last_name : VARCHAR(50)
+    email : VARCHAR(100)
+    phone : VARCHAR(20)
+    role : ENUM(user, admin)
+}
+
+entity "Commande" as Order {
+    * **id** : INTEGER
+    --
+    order_number : VARCHAR(30)
+    total_amount : DECIMAL(10,2)
+    status : ENUM(pending, processing, completed, canceled)
+    created_at : DATETIME
+}
+
+entity "Produit" as Product {
+    * **id** : INTEGER
+    --
+    name : VARCHAR(150)
+    sku : VARCHAR(50)
+    price : DECIMAL(10,2)
+    is_active : BOOLEAN
+}
+
+entity "Variante" as Variant {
+    * **id** : INTEGER
+    --
+    color : VARCHAR(30)
+    size : VARCHAR(10)
+    stock_quantity : INTEGER
+}
+
+entity "Image" as Image {
+    * **id** : INTEGER
+    --
+    image_name : VARCHAR(100)
+    is_main : BOOLEAN
+}
+
+entity "Categorie" as Category {
+    * **id** : INTEGER
+    --
+    name : VARCHAR(100)
+    slug : VARCHAR(100)
+}
+
+entity "Collection" as Collection {
+    * **id** : INTEGER
+    --
+    title : VARCHAR(150)
+}
+
+entity "LigneCommande" as OrderItem {
+    * **id** : INTEGER
+    --
+    quantity : INTEGER
+    price : DECIMAL(10,2)
+}
+
+entity "Adresse" as Address {
+    * **id** : INTEGER
+    --
+    address_line1 : VARCHAR(255)
+    city : VARCHAR(100)
+    country : VARCHAR(50)
+}
+
+entity "Avis" as Review {
+    * **id** : INTEGER
+    --
+    rating : TINYINT
+    review_text : TEXT
+}
+
+entity "Wishlist" as Wishlist {
+    * **id** : INTEGER
+    --
+    created_at : TIMESTAMP
+}
+
+User ||--o{ Order : "passe"
+User ||--o{ Address : "enregistre"
+User ||--o{ Review : "publie"
+User ||--o{ Wishlist : "sauvegarde"
+
+Category ||--o{ Product : "contient"
+Product ||--|{ Variant : "possède"
+Product ||--o{ Image : "illustre"
+Product ||--o{ Review : "reçoit"
+Product ||--o{ Wishlist : "figure dans"
+
+Collection ||--o{ Product : "regroupe"
+
+Order ||--|{ OrderItem : "contient"
+Variant ||--o{ OrderItem : "concerne"
+
+@enduml

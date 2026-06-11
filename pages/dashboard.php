@@ -126,8 +126,8 @@ include '../includes/header.php';
                                 </div>
                             </div>
                             <?php else: ?>
-                                <p style="color: var(--gray-500); padding: 1rem 0;">No recent orders.</p>
-                                <a href="shop.php" class="btn-sm-outline" style="text-decoration:none;">Start Shopping</a>
+                                <p class="dashboard-empty">No recent orders.</p>
+                                <a href="shop.php" class="btn-sm-outline">Start Shopping</a>
                             <?php endif; ?>
                         </div>
 
@@ -157,8 +157,8 @@ include '../includes/header.php';
                     <h2 class="panel-title">Order History</h2>
                     <div class="order-history-list">
                         <?php if (empty($orders)): ?>
-                            <div style="text-align: center; padding: 3rem;">
-                                <p style="color: var(--gray-500);">You haven't placed any orders yet.</p>
+                            <div class="dashboard-empty-state">
+                                <p class="dashboard-empty">You haven't placed any orders yet.</p>
                             </div>
                         <?php else: ?>
                             <?php foreach ($orders as $order): 
@@ -181,9 +181,9 @@ include '../includes/header.php';
                                             <p><?= htmlspecialchars($order['shipping_name']) ?></p>
                                         </div>
                                     </div>
-                                    <div class="order-meta-item" style="text-align: right;">
+                                    <div class="order-meta-item order-meta-item-right">
                                         <p><?= htmlspecialchars($order['order_number']) ?></p>
-                                        <span class="status-badge status-<?= strtolower($order['status']) ?>" style="margin-top: 0.25rem;">
+                                        <span class="status-badge status-<?= strtolower($order['status']) ?>">
                                             <?= ucfirst(str_replace('_', ' ', $order['status'])) ?>
                                         </span>
                                     </div>
@@ -236,7 +236,7 @@ include '../includes/header.php';
 
                             <div class="form-divider"></div>
                             
-                            <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--brand-dark);">Change Password</h3>
+                            <h3 class="form-section-title">Change Password</h3>
                             
                             <div class="form-group-dashboard">
                                 <label for="currentPassword">Current Password</label>
@@ -257,10 +257,10 @@ include '../includes/header.php';
                         </form>
 
                         <!-- Danger Zone -->
-                        <div class="form-divider" style="margin-top: 3rem; border-top: 1px solid #ffcdd2;"></div>
-                        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #d32f2f;">Danger Zone</h3>
-                        <p style="color: var(--gray-500); font-size: 0.875rem; margin-bottom: 1.5rem;">Once you delete your account, there is no going back. All of your order history will be permanently lost.</p>
-                        <button type="button" class="btn-primary" style="background-color: transparent; color: #d32f2f; border: 1px solid #d32f2f; cursor: pointer;" onclick="confirmDeleteAccount()">Delete Account</button>
+                        <div class="form-divider form-divider-danger"></div>
+                        <h3 class="danger-zone-title">Danger Zone</h3>
+                        <p class="danger-zone-text">Once you delete your account, there is no going back. All of your order history will be permanently lost.</p>
+                        <button type="button" class="btn-danger-outline" onclick="confirmDeleteAccount()">Delete Account</button>
 
                     </div>
                 </div>

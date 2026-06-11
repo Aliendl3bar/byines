@@ -37,10 +37,10 @@ spl_autoload_register(function ($className) {
             <nav class="main-nav">
                 <a href="shop.php">New Arrivals</a>
                 <a href="shop.php">Collections</a>
-                <a href="product.php">About</a>
+                <a href="about.php">About</a>
             </nav>  
             <div class="header-icons">
-                <button class="icon-btn" data-purpose="search-trigger">
+                <button class="icon-btn" onclick="alert('Coming Soon');" data-purpose="search-trigger">
                     <svg class="icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                         <path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
@@ -50,11 +50,11 @@ spl_autoload_register(function ($className) {
                 $cart = new Cart();
                 $cartCount = $cart->getCount();
                 ?>
-                <a href="cart.php" class="icon-btn" data-purpose="cart-trigger" style="position: relative; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; color: inherit;">
+                <a href="cart.php" class="icon-btn cart-link" data-purpose="cart-trigger">
                     <svg class="icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                         <path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
-                    <span id="cart-badge-count" style="display: <?= $cartCount > 0 ? 'flex' : 'none' ?>; position: absolute; top: 0; right: 0; background: var(--brand-dark); color: white; border-radius: 50%; font-size: 0.65rem; width: 1.2rem; height: 1.2rem; justify-content: center; align-items: center; font-weight: bold; transform: translate(25%, -25%);">
+                    <span id="cart-badge-count" class="cart-badge" style="display: <?= $cartCount > 0 ? 'flex' : 'none' ?>;">
                         <?= $cartCount ?>
                     </span>
                 </a>
@@ -73,9 +73,9 @@ spl_autoload_register(function ($className) {
                                 <li><a href="login.php">Sign In</a></li>
                                 <li><a href="signup.php">Create Account</a></li>
                             <?php else: ?>
-                                <li><span class="welcome-user" style="padding: 10px 20px; display: block; font-weight: bold; color: var(--primary-color);">Hello, <?= htmlspecialchars($userName) ?>!</span></li>
+                                <li><span class="welcome-user">Hello, <?= htmlspecialchars($userName) ?>!</span></li>
                                 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                                    <li><a href="admin_dashboard.php" style="color: #b00020; font-weight: 500;">Admin Panel</a></li>
+                                    <li><a href="admin_dashboard.php" class="link-admin">Admin Panel</a></li>
                                 <?php endif; ?>
                                 <li><a href="dashboard.php">My Dashboard</a></li>
                                 <li><a href="logout.php">Logout</a></li>

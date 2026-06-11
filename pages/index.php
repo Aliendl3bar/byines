@@ -11,10 +11,10 @@ include '../includes/header.php';
 
     <main>
         <section class="hero-section" data-purpose="hero-banner">
-            <img alt="woman in a crossroad" class="hero-img" src="../assets/Firefly.jpg"/>
+            <img alt="woman in a crossroad" class="hero-img" src="../assets/hero-image/Firefly.jpg"/>
             <div class="hero-content">
                 <h1 class="hero-title">Timeless Elegance</h1>
-                <a class="btn-primary" href="#">start shopping</a>
+                <a class="btn-primary" href="shop.php">start shopping</a>
             </div>
             <div class="hero-gradient"></div>
         </section>
@@ -35,17 +35,17 @@ include '../includes/header.php';
                                 ? "../products/{$product['id']}/img/" . htmlspecialchars($product['image_name']) 
                                 : "../assets/placeholder.png";
                 ?>
-                        <div class="product-card" style="cursor: pointer;" onclick="window.location.href='product.php?slug=<?= urlencode($product['slug']) ?>'">
-                            <div class="product-img-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1rem; overflow: hidden; background-color: #EAE4DE; border-radius: 0.75rem;">
-                                <img alt="<?= htmlspecialchars($product['name']) ?>" class="hover-scale" src="<?= $imageSrc ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out;"/>
-                                <button class="wishlist-btn" style="position: absolute; top: 1rem; right: 1rem; padding: 0.5rem; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer;" onclick="quickAddToCart(<?= $product['id'] ?>, this); event.preventDefault(); event.stopPropagation();">
-                                    <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 1.25rem; height: 1.25rem;">
+                        <div class="product-card" onclick="window.location.href='product.php?slug=<?= urlencode($product['slug']) ?>'">
+                            <div class="product-img-wrapper">
+                                <img alt="<?= htmlspecialchars($product['name']) ?>" class="hover-scale" src="<?= $imageSrc ?>"/>
+                                <button class="wishlist-btn" onclick="quickAddToCart(<?= $product['id'] ?>, this); event.preventDefault(); event.stopPropagation();">
+                                    <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                                         <path d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
                                     </svg>
                                 </button>
                             </div>
-                            <h3 class="product-name" style="font-size: 1rem; font-weight: 500; color: var(--brand-dark); margin-bottom: 0.5rem;"><?= htmlspecialchars($product['name']) ?></h3>
-                            <p class="product-price" style="color: var(--gray-500); font-size: 0.875rem;">$<?= number_format($product['price'], 2) ?></p>
+                            <h3 class="product-name"><?= htmlspecialchars($product['name']) ?></h3>
+                            <p class="product-price">$<?= number_format($product['price'], 2) ?></p>
                         </div>
                 <?php 
                         endforeach;
@@ -68,7 +68,7 @@ include '../includes/header.php';
             <div class="feature-card">
                 <div class="feature-text">
                     <h2 class="feature-title"><?= htmlspecialchars($collection['title']) ?></h2>
-                    <a href="shop.php?id=<?= urlencode($collection['id']) ?>" class="btn-outline" style="text-decoration:none; display:inline-block;">Shop Now</a>
+                    <a href="shop.php?id=<?= urlencode($collection['id']) ?>" class="btn-outline">Shop Now</a>
                 </div>
                 <div class="feature-img-box">
                     <img class="feature-img" alt="<?= htmlspecialchars($collection['title']) ?>" src="<?= htmlspecialchars($collection['image_path']) ?>"/>
@@ -85,7 +85,7 @@ include '../includes/header.php';
             <div class="category-grid">
                 <?php if (!empty($categories)): ?>
                     <?php foreach ($categories as $cat): ?>
-                        <a href="shop.php?category=<?= urlencode($cat['slug']) ?>" class="category-item" style="text-decoration: none; color: inherit;">
+                        <a href="shop.php?category=<?= urlencode($cat['slug']) ?>" class="category-item">
                             <div class="arch-card">
                                 <img alt="<?= htmlspecialchars($cat['name']) ?>" src="<?= htmlspecialchars($cat['image_url'] ?: '../assets/placeholder.png') ?>">
                             </div>
@@ -93,7 +93,7 @@ include '../includes/header.php';
                         </a>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p style="color: var(--gray-500); grid-column: 1 / -1; text-align: center;">No categories available.</p>
+                    <p class="empty-state">No categories available.</p>
                 <?php endif; ?>
             </div>
         </section>

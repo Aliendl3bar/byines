@@ -775,3 +775,67 @@
 .profile-submit-btn:hover {
     opacity: 0.85;
 }
+
+.dashboard-empty {
+    color: var(--gray-500);
+    padding: 1rem 0;
+}
+
+.dashboard-empty-state {
+    text-align: center;
+    padding: 3rem;
+}
+
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--brand-dark);
+}
+
+.order-meta-item-right {
+    text-align: right;
+}
+
+.order-meta-item .status-badge {
+    margin-top: 0.25rem;
+}
+
+.form-divider-danger {
+    margin-top: 3rem;
+    border-top: 1px solid #ffcdd2;
+    height: auto;
+    background-color: transparent;
+}
+
+.danger-zone-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #d32f2f;
+}
+
+.danger-zone-text {
+    color: var(--gray-500);
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+}
+
+.btn-danger-outline {
+    background-color: transparent;
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
+    cursor: pointer;
+    padding: 1rem 2.5rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-weight: 500;
+    transition: 0.3s;
+    font-family: inherit;
+}
+
+.btn-danger-outline:hover {
+    background-color: #d32f2f;
+    color: var(--white);
+}

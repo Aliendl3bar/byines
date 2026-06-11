@@ -769,13 +769,13 @@
 
 /* 4-column form row for variant inputs */
 @media (max-width: 640px) {
-    .admin-form-row[style*="grid-template-columns: 1fr 1fr 1fr 1fr"] {
+    .admin-form-row-4col {
         grid-template-columns: 1fr 1fr !important;
     }
 }
 
 @media (max-width: 400px) {
-    .admin-form-row[style*="grid-template-columns: 1fr 1fr 1fr 1fr"] {
+    .admin-form-row-4col {
         grid-template-columns: 1fr !important;
     }
 }
@@ -841,4 +841,352 @@
 }
 .reorder-next {
     right: 8px;
+}
+
+/* 17. Utility Classes for Inline Style Migration */
+.admin-table-actions {
+    white-space: nowrap;
+}
+
+.admin-table-empty {
+    text-align: center;
+}
+
+.admin-order-filter {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.text-capitalize {
+    text-transform: capitalize;
+}
+
+.admin-btn-outline {
+    background: transparent;
+    color: var(--brand-dark);
+    border-color: var(--brand-earth);
+}
+
+.admin-current-image {
+    max-height: 100px;
+    display: none;
+    border-radius: 4px;
+}
+
+.admin-preview-wrap {
+    margin-bottom: 0.5rem;
+}
+
+.admin-modal-wide {
+    max-width: 720px;
+}
+
+.admin-modal-medium {
+    max-width: 520px;
+}
+
+.admin-modal-narrow {
+    max-width: 700px;
+}
+
+.admin-text-muted {
+    font-size: 0.8rem;
+    color: var(--gray-500);
+    margin-bottom: 1rem;
+}
+
+.admin-hr {
+    border: none;
+    border-top: 1px solid var(--brand-cream);
+    margin: 1.5rem 0;
+}
+
+.admin-upload-footer {
+    background: transparent;
+    padding: 1rem 0 0;
+    border-top: none;
+}
+
+.admin-tab-footer {
+    background: #f9f9f9;
+    border-top: 1px solid var(--brand-cream);
+    padding: 1rem;
+}
+
+.admin-form-row-4col {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.admin-text-right {
+    text-align: right;
+    margin-top: 0.5rem;
+}
+
+.admin-mb {
+    margin-bottom: 1.5rem;
+}
+
+.admin-modal-dialog-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* 18. Manage Order Modal (mo-) */
+.mo-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.mo-info-label {
+    color: var(--gray-500);
+    margin: 0;
+}
+
+.mo-info-value {
+    font-weight: 600;
+    margin: 0.25rem 0 0;
+}
+
+.mo-section-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray-500);
+    margin-bottom: 0.75rem;
+}
+
+.mo-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+}
+
+.mo-items-table thead tr {
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.mo-items-table th {
+    padding: 0.5rem 0;
+}
+
+.mo-items-table td {
+    padding: 0.5rem 0;
+}
+
+.mo-totals {
+    text-align: right;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+.mo-totals p {
+    margin: 0.25rem 0;
+}
+
+.mo-totals .mo-total-amount {
+    margin: 0.5rem 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.mo-shipping-details {
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.mo-shipping-details p {
+    margin: 0;
+}
+
+.mo-status-update {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.mo-status-select {
+    flex-grow: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* 19. Admin View Order (avo-) */
+.avo-sidebar-title {
+    font-size: 1.5rem;
+    color: var(--brand-dark);
+    font-family: var(--font-serif);
+    margin-bottom: 2rem;
+}
+
+.avo-nav {
+    list-style: none;
+    padding: 0;
+}
+
+.avo-nav li {
+    margin-bottom: 0.5rem;
+}
+
+.avo-nav-link {
+    text-decoration: none;
+    color: var(--gray-500);
+}
+
+.avo-nav-link.active {
+    color: var(--brand-dark);
+    font-weight: 600;
+}
+
+.avo-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.avo-btn-back {
+    background: transparent;
+    color: var(--brand-dark);
+    border-color: var(--brand-dark);
+}
+
+.avo-success-msg {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.avo-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.avo-card {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.avo-card-title {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.avo-items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.avo-items-table th {
+    padding-bottom: 0.5rem;
+}
+
+.avo-items-table td {
+    padding: 1rem 0;
+}
+
+.avo-items-table thead tr {
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    color: #666;
+}
+
+.avo-items-table tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+.avo-variant-info {
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.avo-totals {
+    margin-top: 1.5rem;
+    text-align: right;
+}
+
+.avo-totals p {
+    margin: 0.25rem 0;
+}
+
+.avo-totals .avo-total-amount {
+    margin-top: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.avo-shipping-details p {
+    margin: 0.25rem 0;
+}
+
+.avo-status-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.avo-btn-full {
+    width: 100%;
+}
+
+.avo-payment-card {
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.avo-payment-card p {
+    margin: 0.25rem 0;
+}
+
+.avo-danger-zone {
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #ffcdd2;
+}
+
+.avo-danger-zone h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.125rem;
+    color: #d32f2f;
+}
+
+.avo-danger-zone p {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.avo-btn-danger {
+    width: 100%;
+    background: #d32f2f;
+    border-color: #d32f2f;
+}
+
+.avo-btn-danger:hover {
+    background: transparent;
+    color: #d32f2f;
 }

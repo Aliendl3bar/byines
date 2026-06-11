@@ -22,7 +22,7 @@ include '../includes/header.php';
         <nav class="breadcrumb-nav">
             <a href="index.php">Home</a>
             <span>/</span>
-            <span class="breadcrumb-current" style="color: var(--brand-dark); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Shopping Cart</span>
+            <span class="breadcrumb-current">Shopping Cart</span>
         </nav>
 
         <h1 class="page-title">Your Shopping Cart</h1>
