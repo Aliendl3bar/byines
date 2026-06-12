@@ -8,11 +8,7 @@ class Order {
         $this->pdo = Database::getInstance()->getConnection();
     }
 
-    /**
-     * Create a new customer order.
-     * Uses a database transaction to ensure atomicity.
-     * @return int|false The new order ID, or false on failure.
-     */
+    /** Create a new order with transaction. @return int|false */
     public function create($userId, $shippingName, $shippingPhone, $addressLine1, $addressLine2, $city, $state, $zip, $country, $shippingMethod, $paymentMethod, $items) {
         try {
             $this->pdo->beginTransaction();
@@ -80,10 +76,7 @@ class Order {
         }
     }
 
-    /**
-     * Create order from cart items (simplified, used by process_order.php).
-     * @return array|false ['order_id' => int, 'order_number' => string]
-     */
+    /** Create order from cart items. @return array|false */
     public function createFromCart($userId, $shippingName, $shippingPhone, $addressLine1, $city, $shippingMethod, $paymentMethod, $items) {
         try {
             $this->pdo->beginTransaction();
@@ -143,10 +136,7 @@ class Order {
         }
     }
 
-    /**
-     * Fetch order details including ordered items.
-     * @return array|null
-     */
+    /** Fetch order details with items. @return array|null */
     public function getById($id) {
         $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE id = ?");
         $stmt->execute([$id]);
@@ -156,7 +146,7 @@ class Order {
             return null;
         }
 
-        // Get items associated with this order
+        // get items associated with this order
         $stmtItems = $this->pdo->prepare("
             SELECT oi.id, oi.variant_id, oi.quantity, oi.price,
                    pv.product_id, pv.color, pv.size, p.name, p.sku
@@ -171,20 +161,14 @@ class Order {
         return $order;
     }
 
-    /**
-     * Get order history of a specific user.
-     * @return array
-     */
+    /** Get orders by user. @return array */
     public function getByUser($userId) {
         $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC");
         $stmt->execute([$userId]);
         return $stmt->fetchAll();
     }
 
-    /**
-     * Get all recent orders (usually for Admin Panel).
-     * @return array
-     */
+    /** Get all recent orders. @return array */
     public function getAll($limit = 50) {
         $stmt = $this->pdo->prepare("SELECT * FROM orders ORDER BY created_at DESC LIMIT ?");
         $stmt->bindValue(1, (int)$limit, PDO::PARAM_INT);
@@ -192,19 +176,13 @@ class Order {
         return $stmt->fetchAll();
     }
 
-    /**
-     * Update order shipment/processing status.
-     * @return bool
-     */
+    /** Update order status. @return bool */
     public function updateStatus($id, $status) {
         $stmt = $this->pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
         return $stmt->execute([$status, $id]);
     }
 
-    /**
-     * Delete an order and its items.
-     * @return bool
-     */
+    /** Delete an order. @return bool */
     public function deleteOrder($orderId) {
         try {
             $this->pdo->beginTransaction();
@@ -220,29 +198,20 @@ class Order {
         }
     }
 
-    /**
-     * Look up variant ID by product, color, and size.
-     * @return int|null
-     */
+    /** Get variant ID by product, color, and size. @return int|null */
     public function getVariantId($productId, $color, $size) {
         $stmt = $this->pdo->prepare("SELECT id FROM product_variants WHERE product_id = ? AND color = ? AND size = ? LIMIT 1");
         $stmt->execute([$productId, $color, $size]);
         return $stmt->fetchColumn() ?: null;
     }
 
-    /**
-     * Get total number of orders.
-     * @return int
-     */
+    /** Get total order count. @return int */
     public function getTotalCount() {
         $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM orders");
         return (int)$stmt->fetch()['total'];
     }
 
-    /**
-     * Get total revenue from paid orders.
-     * @return float
-     */
+    /** Get total revenue from paid orders. @return float */
     public function getTotalRevenue() {
         $stmt = $this->pdo->query("SELECT SUM(total_amount) as revenue FROM orders WHERE payment_status = 'paid'");
         return (float)($stmt->fetch()['revenue'] ?? 0.00);

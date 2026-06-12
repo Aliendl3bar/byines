@@ -8,10 +8,7 @@ class User {
         $this->pdo = Database::getInstance()->getConnection();
     }
 
-    /**
-     * Register a new user in the database.
-     * @return int|false The new user ID on success, or false on failure.
-     */
+    /** Register a new user. @return int|false */
     public function register($firstName, $lastName, $email, $password) {
         // Check if email already exists
         $stmt = $this->pdo->prepare("SELECT id FROM users WHERE email = ?");
@@ -28,10 +25,7 @@ class User {
         return false;
     }
 
-    /**
-     * Authenticate a user and set up session variables.
-     * @return array|false The user details on success, or false on failure.
-     */
+    /** Authenticate user and set session. @return array|false */
     public function login($email, $password) {
         $stmt = $this->pdo->prepare("SELECT id, first_name, last_name, password_hash, role FROM users WHERE email = ?");
         $stmt->execute([$email]);
@@ -49,20 +43,14 @@ class User {
         return false;
     }
 
-    /**
-     * Get a user's details by their ID.
-     * @return array|null User details or null if not found.
-     */
+    /** Get user details by ID. @return array|null */
     public function getProfile($userId) {
         $stmt = $this->pdo->prepare("SELECT id, first_name, last_name, email, role, created_at FROM users WHERE id = ?");
         $stmt->execute([$userId]);
         return $stmt->fetch() ?: null;
     }
 
-    /**
-     * Update user details. Option to change password if provided.
-     * @return bool
-     */
+    /** Update user details, optionally change password. @return bool */
     public function updateProfile($userId, $firstName, $lastName, $email, $password = null) {
         if ($password) {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -74,10 +62,7 @@ class User {
         }
     }
 
-    /**
-     * Check if a specific user ID is an admin.
-     * @return bool
-     */
+    /** Check if user is admin. @return bool */
     public function isAdmin($userId) {
         $stmt = $this->pdo->prepare("SELECT role FROM users WHERE id = ?");
         $stmt->execute([$userId]);
@@ -85,19 +70,13 @@ class User {
         return ($user && $user['role'] === 'admin');
     }
 
-    /**
-     * Delete a user account by ID.
-     * @return bool
-     */
+    /** Delete a user account. @return bool */
     public function deleteAccount($userId) {
         $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = ?");
         return $stmt->execute([$userId]);
     }
 
-    /**
-     * Get total count of registered users (non-admin).
-     * @return int
-     */
+    /** Get count of registered users. @return int */
     public function getUserCount() {
         $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM users WHERE role = 'user'");
         return (int)$stmt->fetch()['total'];

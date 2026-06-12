@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Autoload core database and domain classes
+// autoload core database and domain classes
 spl_autoload_register(function ($className) {
     $file = __DIR__ . '/../classes/' . $className . '.php';
     if (file_exists($file)) {
@@ -14,14 +14,14 @@ spl_autoload_register(function ($className) {
 $productModel = new Product();
 $product = null;
 
-// Get product identifier from URL query string
+// get product identifier from url query string
 if (isset($_GET['id'])) {
     $product = $productModel->getById(intval($_GET['id']));
 } elseif (isset($_GET['slug'])) {
     $product = $productModel->getBySlug(trim($_GET['slug']));
 }
 
-// Fallback: If no identifier is passed, but there's an active product in the DB, load the first one.
+// fallback: if no identifier is passed, load the first active product
 if (!$product && !isset($_GET['id']) && !isset($_GET['slug'])) {
     $allProducts = $productModel->getAll(false);
     if (!empty($allProducts)) {
@@ -29,7 +29,7 @@ if (!$product && !isset($_GET['id']) && !isset($_GET['slug'])) {
     }
 }
 
-// If product is still not found or inactive (and user is not an admin), show Product Not Found
+// if product is not found or inactive (and user is not an admin), show 404
 if (!$product || (!$product['is_active'] && ($_SESSION['user_role'] ?? '') !== 'admin')) {
     $pageTitle = 'Product Not Found';
     include '../includes/header.php';
@@ -47,11 +47,11 @@ if (!$product || (!$product['is_active'] && ($_SESSION['user_role'] ?? '') !== '
 $productId = $product['id'];
 $pageTitle = $product['name'];
 
-// Fetch images and variants
+// fetch images and variants
 $images = $productModel->getImages($productId);
 $variants = $productModel->getVariants($productId);
 
-// Resolve Main Image (is_main = 1 or the first uploaded image)
+// resolve main image (is_main = 1 or first uploaded image)
 $mainImageSrc = '../assets/placeholder.png'; // default fallback
 if (!empty($images)) {
     $mainImageSrc = '../products/' . $productId . '/img/' . $images[0]['image_name'];
@@ -63,7 +63,7 @@ if (!empty($images)) {
     }
 }
 
-// Extract distinct colors and sizes from variants
+// extract distinct colors and sizes from variants
 $distinctColors = [];
 $distinctSizes = [];
 foreach ($variants as $v) {
@@ -75,13 +75,13 @@ foreach ($variants as $v) {
     }
 }
 
-// Sort sizes logically
+// sort sizes logically
 $sizeOrder = ['XS' => 1, 'S' => 2, 'M' => 3, 'L' => 4, 'XL' => 5, 'XXL' => 6];
 usort($distinctSizes, function($a, $b) use ($sizeOrder) {
     return ($sizeOrder[$a] ?? 99) <=> ($sizeOrder[$b] ?? 99);
 });
 
-// Fetch reviews
+// fetch reviews
 $db = Database::getInstance();
 $pdo = $db->getConnection();
 $stmtReviews = $pdo->prepare("
@@ -94,7 +94,7 @@ $stmtReviews = $pdo->prepare("
 $stmtReviews->execute([$productId]);
 $reviews = $stmtReviews->fetchAll();
 
-// Calculate average rating
+// calculate average rating
 $avgRating = 0.0;
 $reviewCount = count($reviews);
 if ($reviewCount > 0) {
@@ -105,14 +105,14 @@ if ($reviewCount > 0) {
     $avgRating = round($totalRating / $reviewCount, 1);
 }
 
-// Fetch related products (same category, active, limit 4)
+// fetch related products (same category, active, limit 4)
 $relatedProducts = $productModel->getRelatedProducts($product['category_id'], $productId, 4);
 
 include '../includes/header.php';
 ?>
 
     <main class="product-page" style="max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem;" data-variants='<?= htmlspecialchars(json_encode($variants), ENT_QUOTES) ?>' data-images='<?= htmlspecialchars(json_encode($images), ENT_QUOTES) ?>' data-base-price="<?= floatval($product['price']) ?>" data-product-id="<?= intval($productId) ?>">
-        <!-- Breadcrumb Navigation -->
+        <!-- breadcrumb navigation -->
         <nav class="breadcrumb-nav" style="margin-bottom: 2rem;">
             <a href="index.php" style="color: var(--gray-500); text-decoration: none; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em;">Home</a>
             <span style="color: var(--gray-500); margin: 0 0.75rem; font-size: 0.75rem;">/</span>
@@ -123,12 +123,12 @@ include '../includes/header.php';
             <span style="color: var(--brand-dark); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;"><?= htmlspecialchars($product['name']) ?></span>
         </nav>
 
-        <!-- Product Container -->
+        <!-- product container -->
         <div class="product-detail-container">
             
-            <!-- Product Image Gallery -->
+            <!-- product image gallery -->
             <section class="product-gallery" style="min-width: 0;">
-                <!-- Main Image -->
+                <!-- main image -->
                 <div class="main-image-wrapper" style="position: relative; aspect-ratio: 3/4; margin-bottom: 1.5rem; overflow: hidden; background-color: #EAE4DE; border-radius: 1rem;">
                     <img id="mainImage" alt="<?= htmlspecialchars($product['name']) ?> - Main View" src="<?= $mainImageSrc ?>" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" />
                     <button class="wishlist-btn" style="position: absolute; top: 1.5rem; right: 1.5rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(4px); border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease;" onclick="addToCart()">
@@ -139,7 +139,7 @@ include '../includes/header.php';
                 </div>
 
                 <link rel="stylesheet" href="../css/product.css">
-                <!-- Thumbnail Gallery -->
+                <!-- thumbnail gallery -->
                 <div class="thumbnail-gallery" style="display: flex; gap: 0.75rem; overflow-x: auto; scroll-behavior: smooth; white-space: nowrap; padding: 0.5rem 0; scrollbar-width: none; -ms-overflow-style: none;">
                     <?php foreach ($images as $index => $img): 
                         $imgUrl = '../products/' . $productId . '/img/' . $img['image_name'];
@@ -158,9 +158,9 @@ include '../includes/header.php';
                 </div>
             </section>
 
-            <!-- Product Details -->
+            <!-- product details -->
             <section class="product-details" style="display: flex; flex-direction: column; justify-content: center;">
-                <!-- Product Title & Price -->
+                <!-- product title & price -->
                 <div style="margin-bottom: 2rem;">
                     <h1 style="font-size: 2.5rem; font-weight: 300; color: var(--brand-dark); margin-bottom: 0.5rem;"><?= htmlspecialchars($product['name']) ?></h1>
                     <p style="color: var(--gray-500); font-size: 1rem; margin-bottom: 1rem;">SKU: <?= htmlspecialchars($product['sku']) ?></p>
@@ -190,14 +190,14 @@ include '../includes/header.php';
                     </div>
                 </div>
 
-                <!-- Product Description -->
+                <!-- product description -->
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: rgba(244, 241, 238, 0.5); border-radius: 0.75rem;">
                     <p style="color: var(--brand-dark); line-height: 1.8; font-size: 1rem;">
                         <?= nl2br(htmlspecialchars($product['description'])) ?>
                     </p>
                 </div>
 
-                <!-- Color Options -->
+                <!-- color options -->
                 <?php if (!empty($distinctColors)): ?>
                     <div style="margin-bottom: 2rem;">
                         <label style="display: block; font-weight: 600; color: var(--brand-dark); margin-bottom: 1rem; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.1em;">Select Color</label>
@@ -223,7 +223,7 @@ include '../includes/header.php';
                     </div>
                 <?php endif; ?>
 
-                <!-- Size Options -->
+                <!-- size options -->
                 <?php if (!empty($distinctSizes)): ?>
                     <div style="margin-bottom: 2rem;">
                         <label style="display: block; font-weight: 600; color: var(--brand-dark); margin-bottom: 1rem; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.1em;">Select Size</label>
@@ -237,7 +237,7 @@ include '../includes/header.php';
                     </div>
                 <?php endif; ?>
 
-                <!-- Quantity Selector & Stock Info -->
+                <!-- quantity selector & stock info -->
                 <div style="margin-bottom: 2rem; display: flex; align-items: center; gap: 2rem;">
                     <div>
                         <label style="display: block; font-weight: 600; color: var(--brand-dark); margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.875rem; letter-spacing: 0.1em;">Quantity</label>
@@ -253,7 +253,7 @@ include '../includes/header.php';
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
+                <!-- action buttons -->
                 <div class="product-actions-grid">
                     <button class="add-to-cart-btn" style="padding: 1.25rem 2rem; background-color: var(--white); border: 2px solid var(--brand-dark); border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all 0.3s ease; color: var(--brand-dark);" onclick="addToCart()">
                         Add to Cart
@@ -263,7 +263,7 @@ include '../includes/header.php';
                     </button>
                 </div>
 
-                <!-- Additional Info -->
+                <!-- additional info -->
                 <div style="padding-top: 2rem; border-top: 1px solid var(--gray-200);">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
                         <div>
@@ -279,10 +279,10 @@ include '../includes/header.php';
             </section>
         </div>
 
-        <!-- Product Specifications & Reviews Section -->
+        <!-- product specifications & reviews -->
         <section style="margin-bottom: 6rem;">
             <div class="product-specs-grid">
-                <!-- Specifications -->
+                <!-- specifications -->
                 <div>
                     <h2 style="font-size: 1.5rem; font-weight: 300; color: var(--brand-dark); margin-bottom: 1.5rem;">Specifications</h2>
                     <table style="width: 100%; border-collapse: collapse;">
@@ -305,7 +305,7 @@ include '../includes/header.php';
                     </table>
                 </div>
 
-                <!-- Reviews -->
+                <!-- reviews -->
                 <div>
                     <h2 style="font-size: 1.5rem; font-weight: 300; color: var(--brand-dark); margin-bottom: 1.5rem;">Customer Reviews</h2>
                     <div style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -336,7 +336,7 @@ include '../includes/header.php';
             </div>
         </section>
 
-        <!-- Related Products -->
+        <!-- related products -->
         <section style="margin-bottom: 6rem;">
             <h2 class="section-title" style="font-size: 2.25rem; text-align: center; margin-bottom: 4rem; font-weight: 300;">You May Also Like</h2>
             <div class="product-related-grid">
@@ -361,7 +361,7 @@ include '../includes/header.php';
         </section>
     </main>
 
-    <!-- Client-side controllers and data initialization -->
+    <!-- client-side controllers and data initialization -->
     <script src="../scripts/product.js?v=<?= time() ?>"></script>
 
 <?php include '../includes/footer.php'; ?>

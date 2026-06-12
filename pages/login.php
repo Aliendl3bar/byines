@@ -2,7 +2,7 @@
 session_start();
 require_once '../classes/User.php';
 
-// Redirect logged-in users away from the login page
+// redirect logged-in users away from the login page
 if (isset($_SESSION['user_id'])) {
     header("Location: dashboard.php");
     exit;
@@ -10,7 +10,7 @@ if (isset($_SESSION['user_id'])) {
 
 $error = '';
 
-// Handle Form Submission
+// handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../css/login.css">
 
     <main class="auth-container">
-        <!-- Breadcrumb -->
+        <!-- breadcrumb -->
         <nav class="auth-breadcrumb">
             <a href="index.php">Home</a>
             <span>/</span>
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
 
                 <form action="login.php" method="POST">
-                    <!-- Email Field -->
+                    <!-- email field -->
                     <div class="form-group-auth">
                         <label for="email">Email Address</label>
                         <input 
@@ -60,14 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         >
                     </div>
 
-                    <!-- Password Field -->
+                    <!-- password field -->
                     <div class="form-group-auth password-toggle">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="Enter your password" required>
                         <span class="toggle-icon" onclick="togglePassword('password')">👁</span>
                     </div>
 
-                    <!-- Remember & Forgot Options -->
+                    <!-- remember & forgot options -->
                     <div class="form-options">
                         <div class="checkbox-wrapper">
                             <input type="checkbox" id="remember" name="remember">

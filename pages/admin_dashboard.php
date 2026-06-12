@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Strict Admin Auth Guard
+// admin auth guard
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
     header("Location: index.php");
     exit;
@@ -23,15 +23,15 @@ $orderModel = new Order();
 $userModel = new User();
 $collectionModel = new Collection();
 
-// --- Fetch Overview Stats ---
+// --- overview stats ---
 $totalOrders = $orderModel->getTotalCount();
 $totalRevenue = $orderModel->getTotalRevenue();
 $totalUsers = $userModel->getUserCount();
 
-// --- Fetch Products ---
+// --- fetch products ---
 $products = $productModel->getAll(true);
 
-// Pre-fetch images and variants for each product (pass to JS)
+// pre-fetch images and variants for each product (pass to js)
 $productImages = [];
 $productVariants = [];
 foreach ($products as $p) {
@@ -39,37 +39,37 @@ foreach ($products as $p) {
     $productVariants[$p['id']] = $productModel->getVariants($p['id']);
 }
 
-// --- Fetch Categories ---
+// --- fetch categories ---
 $categories = $categoryModel->getAll();
 
-// --- Fetch Collections ---
+// --- fetch collections ---
 $allCollections = $collectionModel->getAll();
 
-// --- Fetch Orders ---
+// --- fetch orders ---
 $orders = $orderModel->getAll(50);
 
-// Pre-fetch order items for each order (pass to JS for modal)
+// pre-fetch order items for each order (pass to js for modal)
 $orderItemsData = [];
 foreach ($orders as $o) {
     $orderDetail = $orderModel->getById($o['id']);
     $orderItemsData[$o['id']] = $orderDetail['items'] ?? [];
 }
 
-// Flash messages
+// flash messages
 $adminSuccess = $_SESSION['admin_success'] ?? null;
 $adminError = $_SESSION['admin_error'] ?? null;
 unset($_SESSION['admin_success'], $_SESSION['admin_error']);
 
 include '../includes/header.php'; 
 ?>
-<!-- Include Admin CSS -->
+<!-- include admin css -->
 <link rel="stylesheet" href="../css/admin_dashboard.css?v=<?= time() ?>">
 
 
 <main class="admin-container">
     <div class="admin-layout">
         
-        <!-- Sidebar -->
+        <!-- sidebar -->
         <aside class="admin-sidebar">
             <div class="admin-sidebar-header">
                 <h1 class="admin-sidebar-title">Admin Panel</h1>
@@ -108,10 +108,10 @@ include '../includes/header.php';
             </ul>
         </aside>
 
-        <!-- Main Content -->
+        <!-- main content -->
         <section class="admin-content">
 
-            <!-- Flash Messages -->
+            <!-- flash messages -->
             <?php if ($adminSuccess): ?>
                 <div class="admin-alert-banner admin-alert-success" id="flash-success">
                     <?= htmlspecialchars($adminSuccess) ?>
@@ -123,7 +123,7 @@ include '../includes/header.php';
                 </div>
             <?php endif; ?>
             
-            <!-- OVERVIEW PANEL -->
+            <!-- overview panel -->
             <div class="admin-panel active" id="panel-overview">
                 <div class="admin-panel-header">
                     <h2 class="admin-panel-title">Dashboard Overview</h2>
@@ -144,7 +144,7 @@ include '../includes/header.php';
                 </div>
             </div>
 
-            <!-- PRODUCTS PANEL -->
+            <!-- products panel -->
             <div class="admin-panel" id="panel-products">
                 <div class="admin-panel-header">
                     <h2 class="admin-panel-title">Manage Products</h2>
@@ -204,7 +204,7 @@ include '../includes/header.php';
                 </div>
             </div>
 
-            <!-- COLLECTIONS PANEL -->
+            <!-- collections panel -->
             <div class="admin-panel" id="panel-collections">
                 <div class="admin-panel-header">
                     <h2 class="admin-panel-title">Manage Collections</h2>
@@ -249,7 +249,7 @@ include '../includes/header.php';
                 </div>
             </div>
 
-            <!-- CATEGORIES PANEL -->
+            <!-- categories panel -->
             <div class="admin-panel" id="panel-categories">
                 <div class="admin-panel-header">
                     <h2 class="admin-panel-title">Manage Categories</h2>
@@ -294,7 +294,7 @@ include '../includes/header.php';
                 </div>
             </div>
 
-            <!-- ORDERS PANEL -->
+            <!-- orders panel -->
             <div class="admin-panel" id="panel-orders">
                 <div class="admin-panel-header">
                     <h2 class="admin-panel-title">Manage Orders</h2>
@@ -376,9 +376,7 @@ include '../includes/header.php';
     </div>
 </main>
 
-<!-- ====================================================================
-     MODAL: ADD COLLECTION
-     ==================================================================== -->
+<!-- modal: add collection -->
 <div class="admin-modal-backdrop" id="modal-add-collection">
     <div class="admin-modal">
         <div class="admin-modal-header">
@@ -409,9 +407,7 @@ include '../includes/header.php';
     </div>
 </div>
 
-<!-- ====================================================================
-     MODAL: EDIT COLLECTION
-     ==================================================================== -->
+<!-- modal: edit collection -->
 <div class="admin-modal-backdrop" id="modal-edit-collection">
     <div class="admin-modal">
         <div class="admin-modal-header">
@@ -447,9 +443,7 @@ include '../includes/header.php';
     </div>
 </div>
 
-<!-- ====================================================================
-     MODAL: ADD CATEGORY
-     ==================================================================== -->
+<!-- modal: add category -->
 <div class="admin-modal-backdrop" id="modal-add-category">
     <div class="admin-modal">
         <div class="admin-modal-header">
@@ -479,9 +473,7 @@ include '../includes/header.php';
     </div>
 </div>
 
-<!-- ====================================================================
-     MODAL: EDIT CATEGORY
-     ==================================================================== -->
+<!-- modal: edit category -->
 <div class="admin-modal-backdrop" id="modal-edit-category">
     <div class="admin-modal">
         <div class="admin-modal-header">
@@ -517,9 +509,7 @@ include '../includes/header.php';
     </div>
 </div>
 
-<!-- ====================================================================
-     MODAL: ADD NEW PRODUCT
-     ==================================================================== -->
+<!-- modal: add new product -->
 <div class="admin-modal-backdrop" id="modal-add-product">
     <div class="admin-modal">
         <div class="admin-modal-header">
@@ -582,9 +572,7 @@ include '../includes/header.php';
     </div>
 </div>
 
-<!-- ====================================================================
-     MODAL: MANAGE / EDIT PRODUCT (3 tabs: Details, Images, Stock)
-     ==================================================================== -->
+<!-- modal: manage / edit product -->
 <div class="admin-modal-backdrop" id="modal-manage-product">
     <div class="admin-modal admin-modal-wide">
         <div class="admin-modal-header">
@@ -592,14 +580,14 @@ include '../includes/header.php';
             <button class="admin-modal-close" data-close-modal="modal-manage-product">&times;</button>
         </div>
 
-        <!-- TAB BAR -->
+        <!-- tab bar -->
         <div class="admin-modal-tabs">
             <button class="admin-modal-tab active" data-manage-tab="details">Edit Details</button>
             <button class="admin-modal-tab" data-manage-tab="images">Images</button>
             <button class="admin-modal-tab" data-manage-tab="stock">Stock</button>
         </div>
 
-        <!-- ======================== TAB: EDIT DETAILS ======================== -->
+        <!-- tab: edit details -->
         <div class="admin-modal-tab-panel active" id="manage-tab-details">
             <form action="admin_manage_product.php" method="POST">
                 <input type="hidden" name="action" value="edit">
@@ -646,7 +634,7 @@ include '../includes/header.php';
             </form>
         </div>
 
-        <!-- ======================== TAB: IMAGES ======================== -->
+        <!-- tab: images -->
         <div class="admin-modal-tab-panel" id="manage-tab-images">
             <div class="admin-modal-body">
                 <p class="admin-text-muted">
@@ -656,7 +644,7 @@ include '../includes/header.php';
                 </p>
                 
                 <div class="admin-image-edit-grid" id="manage-image-gallery">
-                    <!-- JS will populate this -->
+                    <!-- js will populate this -->
                 </div>
 
                 <hr class="admin-hr">
@@ -687,14 +675,14 @@ include '../includes/header.php';
             </div>
         </div>
 
-        <!-- ======================== TAB: STOCK (Variants) ======================== -->
+        <!-- tab: stock (variants) -->
         <div class="admin-modal-tab-panel" id="manage-tab-stock">
             <div class="admin-modal-body">
                 <p class="admin-text-muted">
                     Manage color/size combinations and their stock levels. Each row is a purchasable variant.
                 </p>
 
-                <!-- Existing Variants Table -->
+                <!-- existing variants table -->
                 <div class="admin-table-container admin-mb" id="stock-table-wrap">
                     <table class="admin-table" id="stock-variants-table">
                         <thead>
@@ -707,12 +695,12 @@ include '../includes/header.php';
                             </tr>
                         </thead>
                         <tbody id="stock-variants-body">
-                            <!-- JS will populate -->
+                            <!-- js will populate -->
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Add New Variant Form -->
+                <!-- add new variant form -->
                 <div class="admin-variant-add-section">
                     <h4 class="admin-variant-add-title">+ Add New Variant</h4>
                     <form id="form-add-variant" onsubmit="event.preventDefault(); window.uiAddVariant();">
@@ -756,9 +744,7 @@ include '../includes/header.php';
     </div>
 </div>
 
-<!-- ====================================================================
-     MODAL: EDIT VARIANT (inline edit popup)
-     ==================================================================== -->
+<!-- modal: edit variant -->
 <div class="admin-modal-backdrop" id="modal-edit-variant">
     <div class="admin-modal admin-modal-medium">
         <div class="admin-modal-header">
@@ -806,9 +792,7 @@ include '../includes/header.php';
 </div>
 </div>
 
-<!-- ====================================================================
-     MODAL: MANAGE ORDER
-     ==================================================================== -->
+<!-- modal: manage order -->
 <div class="admin-modal-backdrop" id="modal-manage-order">
     <div class="admin-modal admin-modal-narrow">
         <div class="admin-modal-header">
@@ -816,7 +800,7 @@ include '../includes/header.php';
             <button class="admin-modal-close" data-close-modal="modal-manage-order">&times;</button>
         </div>
         <div class="admin-modal-body admin-modal-dialog-body">
-            <!-- Order Info -->
+            <!-- order info -->
             <div class="mo-info-grid">
                 <div>
                     <p class="mo-info-label">Order Number</p>
@@ -836,7 +820,7 @@ include '../includes/header.php';
                 </div>
             </div>
 
-            <!-- Items Table -->
+            <!-- items table -->
             <h4 class="mo-section-title">Items Ordered</h4>
             <table class="mo-items-table">
                 <thead>
@@ -850,7 +834,7 @@ include '../includes/header.php';
                 <tbody id="mo-items-body"></tbody>
             </table>
 
-            <!-- Totals -->
+            <!-- totals -->
             <div class="mo-totals">
                 <p>Subtotal: $<span id="mo-subtotal"></span></p>
                 <p>Shipping: $<span id="mo-shipping"></span></p>
@@ -858,7 +842,7 @@ include '../includes/header.php';
                 <p class="mo-total-amount">Total: $<span id="mo-total"></span></p>
             </div>
 
-            <!-- Shipping Details -->
+            <!-- shipping details -->
             <h4 class="mo-section-title">Shipping Details</h4>
             <div class="mo-shipping-details">
                 <p id="mo-ship-name"></p>
@@ -867,7 +851,7 @@ include '../includes/header.php';
                 <p><span id="mo-ship-city"></span>, <span id="mo-ship-country"></span></p>
             </div>
 
-            <!-- Update Status -->
+            <!-- update status -->
             <h4 class="mo-section-title">Update Status</h4>
             <div class="mo-status-update">
                 <select id="mo-status-select" class="mo-status-select">
@@ -887,9 +871,7 @@ include '../includes/header.php';
     </div>
 </div>
 
-<!-- ====================================================================
-     JAVASCRIPT
-     ==================================================================== -->
+<!-- javascript -->
 <script>
     window.productImagesData = <?= json_encode($productImages, JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     window.productVariantsData = <?= json_encode($productVariants, JSON_HEX_APOS | JSON_HEX_QUOT) ?>;

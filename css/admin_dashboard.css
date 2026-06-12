@@ -1,10 +1,8 @@
-/* ==========================================================================
-   Admin Dashboard Stylesheet - Byines Luxury Boutique Redesign
-   ========================================================================== */
+/* --- admin dashboard stylesheet --- */
 
-/* 1. Main Container & Layout */
+/* --- main container & layout --- */
 .admin-container {
-    padding-top: 80px; /* Account for fixed header */
+    padding-top: 80px; /* account for fixed header */
     min-height: calc(100vh - 80px);
     background-color: var(--brand-cream);
     display: flex;
@@ -23,14 +21,14 @@
     align-items: start;
 }
 
-/* 2. Sidebar Navigation */
+/* --- sidebar navigation --- */
 .admin-sidebar {
     background-color: var(--white);
     border: 1px solid var(--brand-earth);
     border-radius: 0.75rem;
     padding: 1.5rem;
     position: sticky;
-    top: 100px; /* Keep visible on scroll below header */
+    top: 100px; /* keep visible on scroll */
     box-shadow: 0 4px 20px -2px rgba(26, 26, 26, 0.03);
 }
 
@@ -101,9 +99,9 @@
     font-weight: 600;
 }
 
-/* 3. Main Content Section */
+/* --- main content section --- */
 .admin-content {
-    min-width: 0; /* Prevents overflow */
+    min-width: 0; /* prevents overflow */
 }
 
 .admin-panel {
@@ -132,7 +130,7 @@
     letter-spacing: -0.01em;
 }
 
-/* 4. Stats & Overview Cards */
+/* --- stats & overview cards --- */
 .admin-stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -167,7 +165,7 @@
     line-height: 1.1;
 }
 
-/* 5. Tables */
+/* --- tables --- */
 .admin-table-container {
     background: var(--white);
     border-radius: 0.75rem;
@@ -183,7 +181,7 @@
 }
 
 .admin-table th {
-    background-color: #FAF8F6; /* Soft beige-tinted header */
+    background-color: #FAF8F6; /* soft beige-tinted header */
     color: var(--brand-dark);
     font-family: var(--font-serif);
     font-size: 0.85rem;
@@ -211,10 +209,10 @@
 }
 
 .admin-table tbody tr:hover {
-    background-color: #FCFBFB; /* Warm background highlight */
+    background-color: #FCFBFB; /* warm background highlight */
 }
 
-/* 6. Status Badges & Pill Labels */
+/* --- status badges & pill labels --- */
 .admin-badge {
     padding: 0.35rem 0.85rem;
     border-radius: 9999px;
@@ -225,28 +223,28 @@
     display: inline-block;
 }
 
-/* Organic / Boutique color tones for statuses */
+/* boutique color tones for statuses */
 .badge-success { 
     background-color: #E2EFE0; 
     color: #4C7246; 
-} /* Dusty Sage */
+}
 
 .badge-warning { 
     background-color: #FAF0D6; 
     color: #8E702D; 
-} /* Muted Mustard */
+}
 
 .badge-danger { 
     background-color: #F8E2E2; 
     color: #A34848; 
-} /* Soft Rose */
+}
 
 .badge-neutral { 
     background-color: #EAE5E0; 
     color: #6E5C50; 
-} /* Sand/Taupe */
+}
 
-/* 7. Buttons */
+/* --- buttons --- */
 .admin-btn {
     padding: 0.85rem 1.75rem;
     background-color: var(--brand-dark);
@@ -285,7 +283,7 @@
     color: #A34848;
 }
 
-/* 8. Fade In Animation */
+/* --- fade in animation --- */
 @keyframes fadeIn {
     from { 
         opacity: 0; 
@@ -297,7 +295,7 @@
     }
 }
 
-/* 9. Responsive Adjustments */
+/* --- responsive adjustments --- */
 @media (max-width: 992px) {
     .admin-layout {
         grid-template-columns: 1fr;
@@ -337,7 +335,7 @@
     }
 }
 
-/* 10. Admin Modals & Form Dialogs */
+/* --- admin modals & form dialogs --- */
 .admin-modal-backdrop {
     position: fixed;
     inset: 0;
@@ -463,7 +461,7 @@
     gap: 1rem;
 }
 
-/* 11. Modal Image Edit Gallery */
+/* --- modal image edit gallery --- */
 .admin-image-edit-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -503,7 +501,7 @@
     transform: scale(1.05);
 }
 
-/* Actions Overlay (fades in slightly on hover or sits elegantly) */
+/* actions overlay */
 .admin-image-top-actions {
     position: absolute;
     top: 0;
@@ -538,15 +536,15 @@
 }
 
 .admin-image-action-btn.star-btn:hover {
-    color: #c9a063; /* Elegant Gold */
+    color: #c9a063;
 }
 
 .admin-image-action-btn.delete-btn:hover {
-    color: #a34848; /* Red alert color */
+    color: #a34848; /* red alert color */
 }
 
 .admin-image-star-badge {
-    background: rgba(76, 114, 70, 0.95); /* Soft Sage Green */
+    background: rgba(76, 114, 70, 0.95);
     color: var(--white);
     padding: 3px 8px;
     border-radius: 20px;
@@ -585,7 +583,7 @@
     border: 1px solid #EFAFAF;
 }
 
-/* 12. Form Row (2-column layout inside modals) */
+/* --- form row --- */
 .admin-form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -598,7 +596,7 @@
     }
 }
 
-/* 13. Modal Tabs */
+/* --- modal tabs --- */
 .admin-modal-tabs {
     display: flex;
     border-bottom: 1px solid var(--brand-cream);
@@ -640,7 +638,7 @@
     display: block;
 }
 
-/* 14. Drag & Drop File Upload Zone */
+/* --- drag & drop file upload zone --- */
 .admin-upload-dropzone {
     border: 2px dashed rgba(210, 195, 180, 0.8);
     border-radius: 0.75rem;
@@ -709,7 +707,7 @@
     margin-top: 1rem;
 }
 
-/* 15. Image Color Assignment Bar */
+/* --- image color assignment bar --- */
 .admin-image-color-bar {
     position: absolute;
     bottom: 0;
@@ -749,7 +747,7 @@
     outline: none;
 }
 
-/* 16. Variant / Stock Section */
+/* --- variant / stock section --- */
 .admin-variant-add-section {
     border: 1px solid var(--brand-cream);
     border-radius: 0.75rem;
@@ -780,7 +778,7 @@
     }
 }
 
-/* Stock table: compact actions column */
+/* stock table: compact actions column */
 #stock-variants-table .admin-btn-sm {
     padding: 0.35rem 0.85rem;
     font-size: 0.65rem;
@@ -793,7 +791,7 @@
     align-items: center;
 }
 
-/* Out of stock highlight */
+/* out of stock highlight */
 #stock-variants-table td[style*="color:#A34848"] {
     font-weight: 600;
 }
@@ -843,7 +841,7 @@
     right: 8px;
 }
 
-/* 17. Utility Classes for Inline Style Migration */
+/* --- utility classes for inline style migration --- */
 .admin-table-actions {
     white-space: nowrap;
 }
@@ -933,7 +931,7 @@
     overflow-y: auto;
 }
 
-/* 18. Manage Order Modal (mo-) */
+/* --- manage order modal --- */
 .mo-info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1021,7 +1019,7 @@
     border-radius: 4px;
 }
 
-/* 19. Admin View Order (avo-) */
+/* --- admin view order --- */
 .avo-sidebar-title {
     font-size: 1.5rem;
     color: var(--brand-dark);

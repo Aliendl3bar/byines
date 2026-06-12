@@ -1,7 +1,4 @@
-/**
- * Cart Page Dynamic Actions
- * Handles quantity updates and item removal via AJAX to cart_action.php
- */
+/** Cart page interactions. */
 
 function updateCartItem(cartKey, newQuantity) {
     if (newQuantity < 1) return;
@@ -19,13 +16,13 @@ function updateCartItem(cartKey, newQuantity) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Update input value
+            // update input value
             document.getElementById('qty_' + cartKey).value = newQuantity;
-            // Update totals
+            // update totals
             updateCartSummary(data);
         } else {
             alert(data.message || 'Error updating cart.');
-            // Revert value
+            // revert value
             location.reload();
         }
     })
@@ -62,18 +59,18 @@ function removeItem(cartKey) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Remove DOM element
+            // remove dom element
             const itemEl = document.getElementById('item_' + cartKey);
             if (itemEl) itemEl.remove();
 
-            // Check if cart is empty
+            // check if cart is empty
             if (document.querySelectorAll('.cart-item').length === 0) {
                 document.getElementById('cartContent').style.display = 'none';
                 document.getElementById('emptyCart').style.display = 'block';
                 document.querySelector('.order-summary').style.display = 'none';
             }
 
-            // Update totals
+            // update totals
             updateCartSummary(data);
         } else {
             alert(data.message || 'Error removing item.');
@@ -86,14 +83,14 @@ function removeItem(cartKey) {
 }
 
 function updateCartSummary(data) {
-    // Update header badge
+    // update header badge
     const cartBadge = document.getElementById('cart-badge-count');
     if (cartBadge) {
         cartBadge.innerText = data.cartCount;
         cartBadge.style.display = data.cartCount > 0 ? 'flex' : 'none';
     }
 
-    // Update order summary sidebar
+    // update order summary sidebar
     const subtotalEl = document.getElementById('summary-subtotal');
     const taxEl = document.getElementById('summary-tax');
     const totalEl = document.getElementById('summary-total');

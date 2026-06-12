@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-// Secure PHP Auth Guard
+// auth guard
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -16,10 +16,10 @@ $userModel = new User();
 $orderModel = new Order();
 $productModel = new Product();
 
-// Fetch user data
+// fetch user data
 $user = $userModel->getProfile($_SESSION['user_id']);
 
-// Fetch orders
+// fetch orders
 $orders = $orderModel->getByUser($_SESSION['user_id']);
 
 $orderCount = count($orders);
@@ -35,14 +35,14 @@ include '../includes/header.php';
     <link rel="stylesheet" href="../css/dashboard.css">
 
     <main class="dashboard-container">
-        <!-- Breadcrumb Navigation -->
+        <!-- breadcrumb navigation -->
         <nav class="dashboard-breadcrumb">
             <a href="index.php">Home</a>
             <span>/</span>
             <span class="current">My Account</span>
         </nav>
 
-        <!-- Welcome Banner -->
+        <!-- welcome banner -->
         <section class="welcome-banner">
             <div class="welcome-info">
                 <h1>Hello, <span id="bannerFirstName"><?= htmlspecialchars($user['first_name'] ?? 'User') ?></span>!</h1>
@@ -60,10 +60,10 @@ include '../includes/header.php';
             </div>
         </section>
 
-        <!-- Core Dashboard Layout -->
+        <!-- core dashboard layout -->
         <div class="dashboard-layout">
             
-            <!-- Sidebar Navigation -->
+            <!-- sidebar navigation -->
             <aside class="dashboard-sidebar">
                 <ul class="sidebar-menu">
                     <li>
@@ -87,15 +87,15 @@ include '../includes/header.php';
                 </ul>
             </aside>
 
-            <!-- Main Content Area -->
+            <!-- main content area -->
             <section class="dashboard-content">
                 
-                <!-- Overview Panel -->
+                <!-- overview panel -->
                 <div class="tab-panel active" id="panel-overview">
                     <h2 class="panel-title">Overview</h2>
                     <div class="overview-intro-grid">
                         
-                        <!-- Recent Order Widget -->
+                        <!-- recent order widget -->
                         <div class="overview-card">
                             <h3>Recent Order</h3>
                             <?php if ($recentOrder): ?>
@@ -131,7 +131,7 @@ include '../includes/header.php';
                             <?php endif; ?>
                         </div>
 
-                        <!-- Quick Links -->
+                        <!-- quick links -->
                         <div class="overview-card">
                             <h3>Quick Actions</h3>
                             <ul class="quick-links-list">
@@ -152,7 +152,7 @@ include '../includes/header.php';
                     </div>
                 </div>
 
-                <!-- Order History Panel -->
+                <!-- order history panel -->
                 <div class="tab-panel" id="panel-orders">
                     <h2 class="panel-title">Order History</h2>
                     <div class="order-history-list">
@@ -212,12 +212,12 @@ include '../includes/header.php';
                     </div>
                 </div>
 
-                <!-- Account Details Panel -->
+                <!-- account details panel -->
                 <div class="tab-panel" id="panel-profile">
                     <h2 class="panel-title">Account Details</h2>
                     <div class="profile-form-wrapper">
                         
-                        <!-- Details Edit Form -->
+                        <!-- details edit form -->
                         <form id="profileForm" onsubmit="saveProfileDetails(event)">
                             <div class="form-row-dashboard">
                                 <div class="form-group-dashboard">
@@ -256,7 +256,7 @@ include '../includes/header.php';
                             <button type="submit" class="profile-submit-btn">Save Changes</button>
                         </form>
 
-                        <!-- Danger Zone -->
+                        <!-- danger zone -->
                         <div class="form-divider form-divider-danger"></div>
                         <h3 class="danger-zone-title">Danger Zone</h3>
                         <p class="danger-zone-text">Once you delete your account, there is no going back. All of your order history will be permanently lost.</p>
@@ -268,7 +268,7 @@ include '../includes/header.php';
         </div>
     </main>
 
-    <!-- Tab Logic -->
+    <!-- tab logic -->
     <script src="../scripts/dashboard.js?v=<?= time() ?>"></script>
 
 <?php include '../includes/footer.php'; ?>

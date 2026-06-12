@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Strict Admin Auth Guard
+// admin auth guard
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
     header("Location: login.php");
     exit;
@@ -18,7 +18,7 @@ $pdo = $db->getConnection();
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
-// Helper function to create clean slugs
+// helper to create clean slugs
 function createSlug($text) {
     $text = preg_replace('~[^\pL\d]+~u', '-', $text);
     $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
@@ -29,7 +29,7 @@ function createSlug($text) {
     return empty($text) ? 'n-a' : $text;
 }
 
-// Helper to handle file uploads
+// helper to handle file uploads
 function uploadProductImages($productId, $fileInputName, $productModel) {
     if (!isset($_FILES[$fileInputName]) || empty($_FILES[$fileInputName]['name'][0])) {
         return false;
@@ -58,7 +58,7 @@ function uploadProductImages($productId, $fileInputName, $productModel) {
             $destPath = $targetDir . $newFileName;
 
             if (move_uploaded_file($fileTmpPath, $destPath)) {
-                // If it's the first image, mark as primary
+                // if it's the first image, mark as primary
                 $currentImages = $productModel->getImages($productId);
                 $isMain = empty($currentImages) ? 1 : 0;
                 
@@ -70,7 +70,7 @@ function uploadProductImages($productId, $fileInputName, $productModel) {
     return $uploadedCount > 0;
 }
 
-// --- Route Actions ---
+// --- route actions ---
 
 if ($action === 'save_product_assets') {
     header('Content-Type: application/json');
@@ -89,8 +89,8 @@ if ($action === 'save_product_assets') {
     try {
         $pdo->beginTransaction();
 
-        // 1. Process Images
-        // Fetch current images from database to check for deleted ones
+        // 1. process images
+        // fetch current images from database to check for deleted ones
         $currentImages = $productModel->getImages($productId);
         $remainingIds = [];
         
@@ -98,21 +98,21 @@ if ($action === 'save_product_assets') {
             $imgId = (int)($imgData['id'] ?? 0);
             if ($imgId > 0) {
                 $remainingIds[] = $imgId;
-                // Update color, sort_order, and is_main
+                // update color, sort_order, and is_main
                 $stmtImg = $pdo->prepare("UPDATE product_images SET color = ?, sort_order = ?, is_main = ? WHERE id = ? AND product_id = ?");
                 $colorVal = ($imgData['color'] === '' || $imgData['color'] === null) ? null : $imgData['color'];
                 $stmtImg->execute([$colorVal, (int)$imgData['sort_order'], (int)$imgData['is_main'], $imgId, $productId]);
             }
         }
 
-        // Delete images that were in current DB but are missing in the submitted list
+        // delete images that were in current db but are missing in the submitted list
         foreach ($currentImages as $dbImg) {
             if (!in_array($dbImg['id'], $remainingIds)) {
                 $productModel->deleteImage($dbImg['id']);
             }
         }
 
-        // 2. Process Variants
+        // 2. process variants
         $currentVariants = $productModel->getVariants($productId);
         $remainingVariantIds = [];
 
@@ -128,11 +128,11 @@ if ($action === 'save_product_assets') {
             }
 
             if ($vId > 0) {
-                // Update existing
+                // update existing
                 $remainingVariantIds[] = $vId;
                 $productModel->updateVariant($vId, $color, $size, $stock, $priceMod);
             } else {
-                // Add new
+                // add new
                 $newId = $productModel->addVariant($productId, $color, $size, $stock, $priceMod);
                 if ($newId) {
                     $remainingVariantIds[] = $newId;
@@ -140,7 +140,7 @@ if ($action === 'save_product_assets') {
             }
         }
 
-        // Delete variants that were removed
+        // delete variants that were removed
         foreach ($currentVariants as $dbV) {
             if (!in_array($dbV['id'], $remainingVariantIds)) {
                 $productModel->deleteVariant($dbV['id']);
@@ -149,7 +149,7 @@ if ($action === 'save_product_assets') {
 
         $pdo->commit();
 
-        // Return updated lists to sync frontend
+        // return updated lists to sync frontend
         $updatedImages = $productModel->getImages($productId);
         $updatedVariants = $productModel->getVariants($productId);
 
@@ -196,7 +196,7 @@ if ($action === 'save_product_assets') {
         exit;
     }
 
-    // Check unique SKU
+    // check unique sku
     if ($productModel->skuExists($sku)) {
         $_SESSION['admin_error'] = "Product SKU '$sku' already exists.";
         header("Location: admin_dashboard.php?tab=products");
@@ -205,7 +205,7 @@ if ($action === 'save_product_assets') {
 
     $slug = createSlug($name);
     
-    // Check unique slug
+    // check unique slug
     if ($productModel->slugExists($slug)) {
         $slug .= '-' . time();
     }
@@ -213,10 +213,10 @@ if ($action === 'save_product_assets') {
     $productId = $productModel->create($categoryId, $name, $slug, $sku, $description, $price, null, $isActive);
 
     if ($productId) {
-        // Automatically insert a default variant (Color: Default, Size: M, Stock)
+        // automatically insert a default variant (color: default, size: m, stock)
         $productModel->addVariant($productId, 'Default', 'M', $stock, 0.00);
 
-        // Process uploads
+        // process uploads
         uploadProductImages($productId, 'images', $productModel);
 
         $_SESSION['admin_success'] = "Product '$name' added successfully.";
@@ -307,7 +307,7 @@ if ($action === 'save_product_assets') {
     header("Location: admin_dashboard.php?tab=products");
     exit;
 
-// --- VARIANT MANAGEMENT ---
+// --- variant management ---
 
 } elseif ($action === 'add_variant') {
     $productId = (int)($_POST['product_id'] ?? 0);
@@ -361,7 +361,7 @@ if ($action === 'save_product_assets') {
     header("Location: admin_dashboard.php?tab=products");
     exit;
 
-// --- IMAGE COLOR ASSIGNMENT ---
+// --- image color assignment ---
 
 } elseif ($action === 'update_image_color') {
     $imageId = (int)($_POST['image_id'] ?? 0);

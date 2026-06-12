@@ -13,7 +13,7 @@ if ($orderId > 0) {
         $orderModel = new Order();
         $order = $orderModel->getById($orderId);
     } catch (Exception $e) {
-        // Handle silently
+        // handle silently
     }
 }
 

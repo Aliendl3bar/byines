@@ -12,10 +12,10 @@ $collectionId = $_GET['id'] ?? null;
 $sort = $_GET['sort'] ?? 'newest';
 $priceFilter = $_GET['price_filter'] ?? 500;
 
-// Fetch categories
+// fetch categories
 $categories = $categoryModel->getAll();
 
-// Base query for products
+// base query for products
 $where = ["p.is_active = 1"];
 $params = [];
 
@@ -46,36 +46,36 @@ if ($categorySlug) {
     }
 }
 
-// Price filtering
+// price filtering
 if ($priceFilter > 0 && $priceFilter < 500) {
     $where[] = "p.price <= ?";
     $params[] = $priceFilter;
 }
 
-// Sorting
+// sorting
 $orderBy = "p.created_at DESC";
 if ($sort === 'price_asc') $orderBy = "p.price ASC";
 if ($sort === 'price_desc') $orderBy = "p.price DESC";
 
 $whereClause = implode(" AND ", $where);
 
-// Pagination
+// pagination
 $page = max(1, (int)($_GET['page'] ?? 1));
 $limit = 12;
 $offset = ($page - 1) * $limit;
 
-// Total count
+// total count
 $totalProducts = $productModel->countProducts($whereClause, $params);
 $totalPages = max(1, ceil($totalProducts / $limit));
 
-// Fetch products
+// fetch products
 $products = $productModel->getProductsWithImages($whereClause, $params, $orderBy, $limit, $offset);
 
 include '../includes/header.php'; 
 ?>
 <link rel="stylesheet" href="../css/cstyle.css">
     <main class="main-content">
-        <!-- Breadcrumbs & Heading -->
+        <!-- breadcrumbs & heading -->
         <div class="header-section">
             <nav class="breadcrumbs">
                 <a class="breadcrumb-link" href="index.php">Home</a>
@@ -106,7 +106,7 @@ include '../includes/header.php';
         </div>
 
         <div class="content-layout">
-            <!-- SideNavBar (Filters) -->
+            <!-- sidenavbar (filters) -->
             <aside class="sidebar-filters">
                 <form method="GET" action="shop.php" id="filter-form">
                     <?php if ($collectionId): ?><input type="hidden" name="id" value="<?= htmlspecialchars($collectionId) ?>"><?php endif; ?>
@@ -115,7 +115,7 @@ include '../includes/header.php';
                         <h3 class="filter-title">Filters</h3>
                         <p class="filter-subtitle">Refine your selection</p>
                         
-                        <!-- Categories -->
+                        <!-- categories -->
                         <div class="filter-group">
                             <div class="filter-group-header">
                                 <span class="material-symbols-outlined icon-md text-primary">category</span>
@@ -136,7 +136,7 @@ include '../includes/header.php';
                             </ul>
                         </div>
                         
-                        <!-- Size (For later) -->
+                        <!-- size -->
                         <div class="filter-group filter-group-disabled">
                             <div class="filter-group-header">
                                 <span class="material-symbols-outlined icon-md">straighten</span>
@@ -150,7 +150,7 @@ include '../includes/header.php';
                             <small>Coming soon</small>
                         </div>
                         
-                        <!-- Price -->
+                        <!-- price -->
                         <div class="filter-group">
                             <div class="filter-group-header">
                                 <span class="material-symbols-outlined icon-md">payments</span>
@@ -170,7 +170,7 @@ include '../includes/header.php';
                 </form>
             </aside>
 
-            <!-- Product Grid -->
+            <!-- product grid -->
             <section class="product-section">
                 <div class="product-grid">
                     <?php if (empty($products)): ?>
@@ -204,7 +204,7 @@ include '../includes/header.php';
                     <?php endif; ?>
                 </div>
 
-                <!-- Pagination -->
+                <!-- pagination -->
                 <?php if ($totalPages > 1): ?>
                 <div class="pagination-container">
                     <?php 

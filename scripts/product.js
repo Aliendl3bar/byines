@@ -1,9 +1,6 @@
-/**
- * Product Page Dynamic Actions
- * Handles image switching, color filtering, variant matching, pricing updates, and stock checks.
- */
+/** Product page interactions. */
 
-// Global variables initialized by product.php
+// global variables initialized by product.php
 let productVariants = [];
 let productImages = [];
 let basePrice = 0.00;
@@ -11,56 +8,49 @@ let selectedColor = "";
 let selectedSize = "";
 let currentProductId = 0;
 
-/**
- * Initialize the product page controls.
- */
+/** Initialize product page controls. */
 function initProductPage(variants, images, base, pid) {
     productVariants = variants;
     productImages = images;
     basePrice = parseFloat(base);
     currentProductId = parseInt(pid);
 
-    // Initialize infinite scroll
+    // initialize infinite scroll
     setupInfiniteScroll();
 
-    // Auto-select the first available color and size
+    // auto-select the first available color and size
     const colorButtons = document.querySelectorAll('.color-btn');
     const sizeButtons = document.querySelectorAll('.size-btn');
 
     if (colorButtons.length > 0) {
-        selectColor(colorButtons[0], false); // Pass false so we don't switch image on page load
+        selectColor(colorButtons[0], false); // pass false so we don't switch image on page load
     } else {
-        // No colors, but check sizes
+        // no colors, but check sizes
         if (sizeButtons.length > 0) {
             selectSize(sizeButtons[0]);
         }
     }
 }
 
-/**
- * Handle thumbnail image hover/click to update main image.
- */
-/**
- * Handle thumbnail image hover/click to update main image.
- */
+/** Handle thumbnail hover/click to update main image. */
 function updateMainImage(src, elementToCenter = null) {
     const mainImage = document.getElementById('mainImage');
     if (!mainImage) return;
     mainImage.src = src;
     
-    // Clear styles from all thumbnails
+    // clear styles from all thumbnails
     document.querySelectorAll('.thumbnail').forEach(thumb => {
         thumb.style.border = '2px solid transparent';
         thumb.style.opacity = '0.6';
     });
 
-    // Highlight and center the correct element
+    // highlight and center the correct element
     let target = elementToCenter;
     if (!target) {
         const gallery = document.querySelector('.thumbnail-gallery');
         const allMatching = Array.from(document.querySelectorAll('.thumbnail')).filter(thumb => thumb.src === src);
         if (gallery && allMatching.length > 0) {
-            // Find the copy closest to the current scroll center of the gallery
+            // find the copy closest to the current scroll center of the gallery
             const containerCenter = gallery.scrollLeft + (gallery.clientWidth / 2);
             let minDistance = Infinity;
             allMatching.forEach(thumb => {
@@ -83,9 +73,7 @@ function updateMainImage(src, elementToCenter = null) {
     }
 }
 
-/**
- * Setup infinite scroll carousel for thumbnails
- */
+/** Setup infinite scroll carousel for thumbnails. */
 function setupInfiniteScroll() {
     const gallery = document.querySelector('.thumbnail-gallery');
     if (!gallery) return;
@@ -94,7 +82,7 @@ function setupInfiniteScroll() {
     const count = originalItems.length;
     if (count <= 1) return;
 
-    // Clone items multiple times to ensure we can scroll infinitely in both directions
+    // clone items multiple times to enable infinite scrolling in both directions
     for (let i = 0; i < 4; i++) {
         originalItems.forEach(item => {
             const clone = item.cloneNode(true);
@@ -105,20 +93,20 @@ function setupInfiniteScroll() {
         });
     }
 
-    // Wrap-around scroll logic
+    // wrap-around scroll logic
     setTimeout(() => {
-        // Calculate width of one original set including gap
+        // calculate width of one original set including gap
         const itemWidth = originalItems[0].getBoundingClientRect().width;
         const gap = 12; // 0.75rem in pixels
         const setWidth = count * (itemWidth + gap);
 
-        // Reset all thumbnail styles initially
+        // reset all thumbnail styles initially
         gallery.querySelectorAll('.thumbnail').forEach(t => {
             t.style.border = '2px solid transparent';
             t.style.opacity = '0.6';
         });
 
-        // Center on the active thumbnail in the second set (middle copy)
+        // center on the active thumbnail in the second set (middle copy)
         const mainImage = document.getElementById('mainImage');
         if (mainImage) {
             const allMatchingThumbs = Array.from(gallery.querySelectorAll('.thumbnail')).filter(t => t.src === mainImage.src);
@@ -129,16 +117,16 @@ function setupInfiniteScroll() {
                 targetThumb.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
             }
         } else {
-            // Fallback: just scroll to the middle item
+            // fallback: just scroll to the middle item
             gallery.scrollLeft = setWidth;
         }
 
         gallery.addEventListener('scroll', () => {
-            // If scrolled near the start, jump forward by one set width
+            // if scrolled near the start, jump forward by one set width
             if (gallery.scrollLeft < 20) {
                 gallery.scrollLeft += setWidth;
             } 
-            // If scrolled near the end, jump back by one set width
+            // if scrolled near the end, jump back by one set width
             else if (gallery.scrollLeft >= (gallery.scrollWidth - gallery.clientWidth - 20)) {
                 gallery.scrollLeft -= setWidth;
             }
@@ -146,9 +134,7 @@ function setupInfiniteScroll() {
     }, 200);
 }
 
-/**
- * Switch the main image to the first image matching the selected color.
- */
+/** Switch main image to first matching selected color. */
 function jumpToColorImage(color) {
     const thumbnails = document.querySelectorAll('.thumbnail');
     let firstMatchSrc = '';
@@ -167,9 +153,7 @@ function jumpToColorImage(color) {
     }
 }
 
-/**
- * Handle color button click.
- */
+/** Handle color button click. */
 function selectColor(button, updateImage = true) {
     document.querySelectorAll('.color-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -186,21 +170,19 @@ function selectColor(button, updateImage = true) {
         colorLabel.innerHTML = 'Selected: <strong>' + selectedColor + '</strong>';
     }
 
-    // Switch main image to this color's view if not initial load
+    // switch main image to this color's view if not initial load
     if (updateImage) {
         jumpToColorImage(selectedColor);
     }
 
-    // Update sizes based on this color
+    // update sizes based on this color
     updateSizeAvailability();
 
-    // Check variant matching
+    // check variant matching
     checkVariant();
 }
 
-/**
- * Adjust size buttons based on whether they have stock for the selected color.
- */
+/** Adjust size buttons based on stock for selected color. */
 function updateSizeAvailability() {
     const sizeButtons = document.querySelectorAll('.size-btn');
     let firstAvailableSizeBtn = null;
@@ -208,7 +190,7 @@ function updateSizeAvailability() {
 
     sizeButtons.forEach(btn => {
         const size = btn.getAttribute('data-size');
-        // Find if this variant exists and has stock
+        // find if this variant exists and has stock
         const variant = productVariants.find(v => v.color.toLowerCase() === selectedColor.toLowerCase() && v.size === size);
         
         if (variant) {
@@ -228,17 +210,17 @@ function updateSizeAvailability() {
                 btn.style.opacity = '0.5';
             }
         } else {
-            // Variant combination does not exist at all in database
+            // variant combination does not exist in database
             btn.disabled = false; 
             btn.style.opacity = '0.4';
         }
     });
 
-    // If current selected size is invalid or not available, select the first available one
+    // if current selected size is unavailable, select the first available
     if (!currentlySelectedStillAvailable && firstAvailableSizeBtn) {
         selectSize(firstAvailableSizeBtn);
     } else {
-        // Find and highlight currently selected size button
+        // find and highlight currently selected size button
         const activeBtn = Array.from(sizeButtons).find(btn => btn.getAttribute('data-size') === selectedSize);
         if (activeBtn) {
             selectSize(activeBtn);
@@ -246,9 +228,7 @@ function updateSizeAvailability() {
     }
 }
 
-/**
- * Handle size button click.
- */
+/** Handle size button click. */
 function selectSize(button) {
     document.querySelectorAll('.size-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -262,30 +242,28 @@ function selectSize(button) {
 
     selectedSize = button.getAttribute('data-size');
 
-    // Check variant matching
+    // check variant matching
     checkVariant();
 }
 
-/**
- * Match current color/size selection to variant list and update price, stock, and buttons.
- */
+/** Match selection to variant list and update price/stock/buttons. */
 function checkVariant() {
     const priceDisplay = document.getElementById('productPrice');
     const stockDisplay = document.getElementById('stockStatus');
     const addToCartBtn = document.querySelector('.add-to-cart-btn');
     const buyNowBtn = document.querySelector('.buy-now-btn');
 
-    // Reset qty input to 1
+    // reset qty input to 1
     const qtyInput = document.getElementById('quantity');
     if (qtyInput) qtyInput.value = 1;
 
-    // Find matching variant
+    // find matching variant
     const variant = productVariants.find(
         v => v.color.toLowerCase() === selectedColor.toLowerCase() && v.size === selectedSize
     );
 
     if (variant) {
-        // Calculate dynamic price
+        // calculate dynamic price
         const priceModifier = parseFloat(variant.price_modifier || 0.00);
         const finalPrice = basePrice + priceModifier;
         if (priceDisplay) {
@@ -308,7 +286,7 @@ function checkVariant() {
             if (buyNowBtn) buyNowBtn.disabled = true;
         }
     } else {
-        // No matching variant found in database
+        // no matching variant found in database
         if (priceDisplay) {
             priceDisplay.textContent = '$' + basePrice.toFixed(2);
         }
@@ -320,14 +298,12 @@ function checkVariant() {
     }
 }
 
-/**
- * Handle quantity increment.
- */
+/** Handle quantity increment. */
 function increaseQuantity() {
     const qtyInput = document.getElementById('quantity');
     if (!qtyInput) return;
 
-    // Find current variant to get stock limit
+    // find current variant to get stock limit
     const variant = productVariants.find(
         v => v.color.toLowerCase() === selectedColor.toLowerCase() && v.size === selectedSize
     );
@@ -340,9 +316,7 @@ function increaseQuantity() {
     }
 }
 
-/**
- * Handle quantity decrement.
- */
+/** Handle quantity decrement. */
 function decreaseQuantity() {
     const qtyInput = document.getElementById('quantity');
     if (!qtyInput) return;
@@ -353,14 +327,12 @@ function decreaseQuantity() {
     }
 }
 
-/**
- * Handle Add to Cart action.
- */
+/** Handle add to cart action. */
 function addToCart() {
     const qtyInput = document.getElementById('quantity');
     const quantity = qtyInput ? qtyInput.value : 1;
     
-    // Find current variant
+    // find current variant
     const variant = productVariants.find(
         v => v.color.toLowerCase() === selectedColor.toLowerCase() && v.size === selectedSize
     );
@@ -375,7 +347,7 @@ function addToCart() {
     addToCartBtn.innerHTML = 'Adding...';
     addToCartBtn.disabled = true;
 
-    // Send AJAX request
+    // send ajax request
     const formData = new FormData();
     formData.append('action', 'add');
     formData.append('product_id', currentProductId);
@@ -391,18 +363,18 @@ function addToCart() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Update cart badge in header
+            // update cart badge in header
             const cartBadge = document.getElementById('cart-badge-count');
             if (cartBadge) {
                 cartBadge.innerText = data.cartCount;
                 cartBadge.style.display = data.cartCount > 0 ? 'flex' : 'none';
                 
-                // Add a small bounce animation to the badge
+                // add a small bounce animation to the badge
                 cartBadge.style.transform = 'translate(25%, -25%) scale(1.3)';
                 setTimeout(() => { cartBadge.style.transform = 'translate(25%, -25%) scale(1)'; }, 300);
             }
             
-            // Visual feedback on button
+            // visual feedback on button
             addToCartBtn.innerHTML = 'Added to Cart ✓';
             addToCartBtn.style.backgroundColor = '#4CAF50';
             addToCartBtn.style.color = 'white';
@@ -428,14 +400,12 @@ function addToCart() {
     });
 }
 
-/**
- * Handle Buy Now action.
- */
+/** Handle buy now action. */
 function buyNow() {
     const qtyInput = document.getElementById('quantity');
     const quantity = qtyInput ? qtyInput.value : 1;
     
-    // Find current variant
+    // find current variant
     const variant = productVariants.find(
         v => v.color.toLowerCase() === selectedColor.toLowerCase() && v.size === selectedSize
     );
@@ -446,10 +416,10 @@ function buyNow() {
     }
 
     alert(`Proceeding to checkout with ${quantity} item(s) (${selectedColor} / Size ${selectedSize})...`);
-    // Redirect to checkout page in real application
+    // redirect to checkout page in real application
 }
 
-// Auto-initialize from data attributes
+// auto-initialize from data attributes
 document.addEventListener('DOMContentLoaded', function() {
     const productPage = document.querySelector('.product-page');
     if (productPage) {

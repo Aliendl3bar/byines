@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $isLoggedIn = isset($_SESSION['user_id']);
 $userName = $_SESSION['user_name'] ?? '';
 
-// Autoload core database and domain classes
+// autoload core database and domain classes
 spl_autoload_register(function ($className) {
     $file = __DIR__ . '/../classes/' . $className . '.php';
     if (file_exists($file)) {
@@ -19,11 +19,11 @@ spl_autoload_register(function ($className) {
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title><?= isset($pageTitle) ? htmlspecialchars($pageTitle) . ' - Byines' : 'Byines - Timeless Elegance' ?></title>
-    <!-- Google Fonts: Noto Serif -->
+    <!-- google fonts: noto serif -->
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"/>
-    <!-- Material Symbols for collections page -->
+    <!-- material symbols for collections page -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -84,11 +84,11 @@ spl_autoload_register(function ($className) {
                             <path d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
                     </button>
-                    <!-- Account Dropdown Menu -->
+                    <!-- account dropdown menu -->
                     <div class="account-dropdown" id="accountDropdown">
                         <div class="dropdown-arrow"></div>
                         <ul class="dropdown-list">
-                            <!-- Check PHP Session for auth state -->
+                            <!-- check php session for auth state -->
                             <?php if (!$isLoggedIn): ?>
                                 <li><a href="login.php">Sign In</a></li>
                                 <li><a href="signup.php">Create Account</a></li>

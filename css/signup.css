@@ -1,13 +1,13 @@
-/* --- Signup Page Styles --- */
+/* --- signup page styles --- */
 
-/* Main Auth Container */
+/* main auth container */
 .auth-container {
     max-width: 1280px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
 }
 
-/* Auth Wrapper - Single Column Centered */
+/* auth wrapper - single column centered */
 .auth-wrapper {
     max-width: 500px;
     margin: 4rem auto;
@@ -20,7 +20,7 @@
     }
 }
 
-/* Auth Form */
+/* auth form */
 .auth-form {
     background-color: transparent;
     padding: 0;
@@ -43,7 +43,7 @@
     text-align: center;
 }
 
-/* Form Group */
+/* form group */
 .form-group-auth {
     margin-bottom: 1.5rem;
 }
@@ -77,7 +77,7 @@
     color: var(--gray-400);
 }
 
-/* Two Column Form (First & Last Name row) */
+/* two column form (first & last name row) */
 .form-row-auth {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -96,7 +96,7 @@
     margin-bottom: 0;
 }
 
-/* Submit Button */
+/* submit button */
 .auth-submit-btn {
     width: 100%;
     padding: 1rem;
@@ -118,7 +118,7 @@
     opacity: 0.85;
 }
 
-/* Auth Breadcrumb */
+/* auth breadcrumb */
 .auth-breadcrumb {
     display: flex;
     align-items: center;
@@ -149,7 +149,7 @@
     text-transform: capitalize;
 }
 
-/* Auth Content */
+/* auth content */
 .auth-content {
     text-align: center;
     margin-bottom: 2rem;
@@ -173,7 +173,7 @@
     text-decoration: underline;
 }
 
-/* Success Message */
+/* success message */
 .auth-success {
     background-color: #d1fae5;
     color: #065f46;
@@ -184,7 +184,7 @@
     text-align: center;
 }
 
-/* Error Message */
+/* error message */
 .auth-error {
     background-color: #fee2e2;
     color: #991b1b;
@@ -195,7 +195,7 @@
     text-align: center;
 }
 
-/* Password Toggle */
+/* password toggle */
 .password-toggle {
     position: relative;
 }
@@ -220,7 +220,7 @@
     opacity: 0.7;
 }
 
-/* Footer Links */
+/* footer links */
 .auth-footer-links {
     text-align: center;
     font-size: 0.875rem;
@@ -238,7 +238,7 @@
     text-decoration: underline;
 }
 
-/* Responsive */
+/* responsive */
 @media (max-width: 480px) {
     .auth-form h2 {
         font-size: 1.25rem;

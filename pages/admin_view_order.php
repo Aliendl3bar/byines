@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-// Basic Admin Auth Guard
+// admin auth guard
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
     header("Location: index.php");
     exit;
@@ -17,7 +17,7 @@ if (!$orderId) {
     die('Order ID is required.');
 }
 
-// Handle Status Update
+// handle status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
     $newStatus = $_POST['status'];
     $orderModel->updateStatus($orderId, $newStatus);
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
-// Fetch order with items
+// fetch order with items
 $order = $orderModel->getById($orderId);
 
 if (!$order) {
@@ -63,7 +63,7 @@ include '../includes/header.php';
 
         <div class="avo-layout">
             
-            <!-- Left Column: Items & Shipping -->
+            <!-- left column: items & shipping -->
             <div>
                 <div class="avo-card">
                     <h3 class="avo-card-title">Order Items</h3>
@@ -111,7 +111,7 @@ include '../includes/header.php';
                 </div>
             </div>
 
-            <!-- Right Column: Status & Payment -->
+            <!-- right column: status & payment -->
             <div>
                 <div class="avo-card">
                     <h3 class="avo-card-title">Order Status</h3>
@@ -134,7 +134,7 @@ include '../includes/header.php';
                     <p><strong>Status:</strong> <span class="text-capitalize"><?= htmlspecialchars($order['payment_status']) ?></span></p>
                 </div>
 
-                <!-- Delete Order -->
+                <!-- delete order -->
                 <div class="avo-danger-zone">
                     <h3>Danger Zone</h3>
                     <p>Permanently delete this order and all its items. This cannot be undone.</p>

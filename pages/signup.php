@@ -5,7 +5,7 @@ require_once '../classes/User.php';
 $error = '';
 $success = '';
 
-// Handle Form Submission
+// handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstName = trim($_POST['firstName'] ?? '');
     $lastName = trim($_POST['lastName'] ?? '');
@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirmPassword'] ?? '';
 
-    // Basic Validation
+    // basic validation
     if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
         $error = 'Please fill in all fields.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../css/signup.css">
 
     <main class="auth-container">
-        <!-- Breadcrumb -->
+        <!-- breadcrumb -->
         <nav class="auth-breadcrumb">
             <a href="index.php">Home</a>
             <span>/</span>
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
 
                 <form action="signup.php" method="POST">
-                    <!-- Name Fields -->
+                    <!-- name fields -->
                     <div class="form-row-auth">
                         <div class="form-group-auth">
                             <label for="firstName">First Name</label>
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <!-- Email Field -->
+                    <!-- email field -->
                     <div class="form-group-auth">
                         <label for="email">Email Address</label>
                         <input 
@@ -89,14 +89,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         >
                     </div>
 
-                    <!-- Password Field -->
+                    <!-- password field -->
                     <div class="form-group-auth password-toggle">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="Create a password" required minlength="8">
                         <span class="toggle-icon" onclick="togglePassword('password')">👁</span>
                     </div>
 
-                    <!-- Confirm Password Field -->
+                    <!-- confirm password field -->
                     <div class="form-group-auth password-toggle">
                         <label for="confirmPassword">Confirm Password</label>
                         <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required minlength="8">

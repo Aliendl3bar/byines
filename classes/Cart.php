@@ -14,6 +14,7 @@ class Cart {
         }
     }
 
+    /** Build a unique cart key from product id, color, and size. @return string */
     private function makeKey($productId, $color, $size) {
         return $productId . '_' . md5($color . '_' . $size);
     }

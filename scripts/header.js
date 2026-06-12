@@ -1,4 +1,4 @@
-// Mobile nav toggle
+// mobile nav toggle
 (function() {
     const hamburger = document.getElementById('hamburgerBtn');
     const overlay = document.getElementById('mobileNavOverlay');
@@ -24,7 +24,7 @@
     }
 })();
 
-// Dropdown toggle logic
+// dropdown toggle logic
 (function() {
     const accountBtn = document.getElementById('accountBtn');
     const dropdown = document.getElementById('accountDropdown');
@@ -41,7 +41,7 @@
     }
 })();
 
-// Global function for quick adding to cart from grid views
+// quick add to cart from grid views
 function quickAddToCart(productId, btnElement) {
     const originalHTML = btnElement.innerHTML;
     btnElement.innerHTML = '<span class="material-symbols-outlined icon-md" style="color:#4CAF50;">check</span>';

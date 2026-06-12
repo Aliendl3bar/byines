@@ -18,7 +18,7 @@ include '../includes/header.php';
 ?>
     <link rel="stylesheet" href="../css/cart-checkout.css">
     <main class="cart-checkout-container">
-        <!-- Breadcrumb Navigation -->
+        <!-- breadcrumb navigation -->
         <nav class="breadcrumb-nav">
             <a href="index.php">Home</a>
             <span>/</span>
@@ -27,10 +27,10 @@ include '../includes/header.php';
 
         <h1 class="page-title">Your Shopping Cart</h1>
 
-        <!-- Cart Content -->
+        <!-- cart content -->
         <div class="cart-checkout-layout">
             
-            <!-- Cart Items List -->
+            <!-- cart items list -->
             <section class="cart-items">
                 <div id="emptyCart" class="empty-cart-message" style="display: <?= empty($cartItems) ? 'block' : 'none' ?>;">
                     <p>Your cart is empty</p>
@@ -74,14 +74,14 @@ include '../includes/header.php';
                         <?php endforeach; ?>
                     <?php endif; ?>
 
-                    <!-- Continue Shopping -->
+                    <!-- continue shopping -->
                     <div class="continue-shopping-section">
                         <a href="shop.php" class="continue-shopping-link">Continue Shopping</a>
                     </div>
                 </div>
             </section>
 
-            <!-- Order Summary Sidebar -->
+            <!-- order summary sidebar -->
             <aside class="order-summary" style="display: <?= empty($cartItems) ? 'none' : 'block' ?>;">
                 <h2>Order Summary</h2>
                 
@@ -100,7 +100,7 @@ include '../includes/header.php';
                     <span class="summary-value" id="summary-tax">$<?= number_format($tax, 2) ?></span>
                 </div>
 
-                <!-- Promo Code -->
+                <!-- promo code -->
                 <div class="promo-code-section">
                     <label class="promo-code-label">Promo Code</label>
                     <div class="promo-code-input-group">
@@ -109,16 +109,16 @@ include '../includes/header.php';
                     </div>
                 </div>
 
-                <!-- Total -->
+                <!-- total -->
                 <div class="order-total">
                     <span class="total-label">Total</span>
                     <span class="total-amount" id="summary-total">$<?= number_format($total, 2) ?></span>
                 </div>
 
-                <!-- Checkout Button -->
+                <!-- checkout button -->
                 <a href="checkout.php" class="checkout-btn">Proceed to Checkout</a>
 
-                <!-- Additional Info -->
+                <!-- additional info -->
                 <div class="summary-info">
                     <p><strong>✓</strong> Free shipping on orders over $100</p>
                     <p><strong>✓</strong> 30-day return policy</p>

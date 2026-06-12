@@ -627,7 +627,7 @@ a {
     .order-success-grid { grid-template-columns: 1fr; }
 }
 
-/* --- Product Page Responsive --- */
+/* --- product page responsive --- */
 .product-detail-container {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -712,13 +712,13 @@ a {
     .order-success-grid { grid-template-columns: 1fr; }
 }
 
-/* --- Custom Scrollbar --- */
+/* --- custom scrollbar --- */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
 ::-webkit-scrollbar-thumb { background: #888; }
 ::-webkit-scrollbar-thumb:hover { background: #555; }
 
-/* Order Success */
+/* order success */
 .order-success-container {
     max-width: 800px;
     margin: 4rem auto;
@@ -825,7 +825,7 @@ a {
     background: #1da851;
 }
 
-/* Shop */
+/* shop */
 .filter-group-disabled {
     opacity: 0.5;
 }

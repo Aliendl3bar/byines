@@ -35,7 +35,7 @@ function calculateShipping() {
 
     const total = PHP_SUBTOTAL + PHP_TAX + shippingCost;
     
-    // Format to 2 decimal places
+    // format to 2 decimal places
     document.getElementById('summary-total').innerText = total.toFixed(2);
 }
 

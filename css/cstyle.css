@@ -1,6 +1,6 @@
-/* --- Collections-Specific Design Tokens --- */
+/* --- collections design tokens --- */
 :root {
-    /* Collections color scheme - complements style.css */
+    /* collections color scheme */
     --collections-muted-stone: #767676;
     --collections-charcoal: #222222;
     --collections-sand: #E8E2DA;
@@ -8,7 +8,7 @@
     --collections-outline-variant: #c4c7c7;
 }
 
-/* --- Material Symbols Icons --- */
+/* --- material symbols icons --- */
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
 }
@@ -19,7 +19,7 @@
 .font-bold { font-weight: 700; }
 .text-primary { color: var(--brand-dark); }
 
-/* --- Collections Page Layout --- */
+/* --- collections page layout --- */
 .main-content {
     margin-top: 5rem;
     padding-left: 1.5rem;
@@ -30,7 +30,7 @@
     min-height: 100vh;
 }
 
-/* --- Breadcrumbs & Header Section --- */
+/* --- breadcrumbs & header section --- */
 .header-section {
     padding-top: 1rem;
     padding-bottom: 1rem;
@@ -126,7 +126,7 @@
     width: 100%;
 }
     
-/* --- Main Layout: Filters + Products --- */
+/* --- main layout: filters + products --- */
 .content-layout {
     display: flex;
     flex-direction: column;
@@ -140,7 +140,7 @@
     }
 }
 
-/* --- Sidebar Filters --- */
+/* --- sidebar filters --- */
 .sidebar-filters {
     display: none;
     width: 250px;
@@ -262,7 +262,7 @@
     color: var(--collections-muted-stone);
 }
 
-/* --- Product Section (Collections-specific) --- */
+/* --- product section --- */
 .product-section {
     flex: 1;
 }
@@ -390,7 +390,7 @@
     word-break: break-word;
 }
 
-/* --- Pagination --- */
+/* --- pagination --- */
 .pagination-container {
     margin-top: 3rem;
     margin-bottom: 3rem;
@@ -438,7 +438,7 @@
     color: var(--color-primary);
 }
 
-/* --- Footer Area --- */
+/* --- footer area --- */
 .main-footer {
     background-color: var(--color-cream);
     border-top: 1px solid var(--color-outline-variant);
@@ -589,9 +589,9 @@
 }
 
 
-/* --- Responsive Media Queries (Matches Tailwind Breakpoints) --- */
+/* --- responsive media queries --- */
 
-/* Medium Devices (Tablets, 768px and up) */
+/* medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
     .desktop-nav {
         display: flex;
@@ -620,7 +620,7 @@
     }
 }
 
-/* Large Devices (Desktops, 1024px and up) */
+/* large devices (desktops, 1024px and up) */
 @media (min-width: 1024px) {
     .content-layout {
         flex-direction: row;

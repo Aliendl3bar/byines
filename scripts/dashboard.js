@@ -1,4 +1,4 @@
-        // Switch panel tabs dynamically
+        // switch panel tabs dynamically
         function switchTab(tabId) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.sidebar-menu-btn').forEach(b => b.classList.remove('active'));
@@ -18,7 +18,7 @@
             });
         });
 
-        // Save Account Profile details back to localStorage
+        // save account profile details to localstorage
         function saveProfileDetails(event) {
             event.preventDefault();
             
@@ -29,7 +29,7 @@
             const newPassword = document.getElementById('newPassword').value;
             const confirmNewPassword = document.getElementById('confirmNewPassword').value;
 
-            // Password Change validation
+            // password change validation
             if (newPassword || confirmNewPassword) {
                 const currentPassword = document.getElementById('currentPassword').value;
                 if (!currentPassword) {
@@ -46,7 +46,7 @@
                 }
             }
 
-            // Save updated profile
+            // save updated profile
             const userData = {
                 firstName,
                 lastName,
@@ -55,10 +55,10 @@
 
             localStorage.setItem('userData', JSON.stringify(userData));
             
-            // Reload components (Note: assumes window.firstName/lastName are updated if needed or reloads)
+            // reload components
             if(window.loadUserProfile) window.loadUserProfile();
             
-            // Clear passwords fields
+            // clear password fields
             document.getElementById('currentPassword').value = '';
             document.getElementById('newPassword').value = '';
             document.getElementById('confirmNewPassword').value = '';
@@ -80,7 +80,7 @@
             }
         }
 
-        // Wishlist items management
+        // wishlist items management
         let wishlistCount = 3;
         function removeWishlistItem(itemId) {
             const itemElement = document.getElementById(`wishlist-item-${itemId}`);

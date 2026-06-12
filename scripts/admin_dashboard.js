@@ -1,8 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ============================
-    // 1. TAB SWITCHER (Sidebar)
-    // ============================
+    // --- tab switcher ---
     document.querySelectorAll('.admin-menu-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.admin-menu-btn').forEach(b => b.classList.remove('active'));
@@ -20,9 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (tabBtn) tabBtn.click();
     }
 
-    // ============================
-    // 2. MODAL OPEN / CLOSE
-    // ============================
+    // --- modal open/close ---
     window.openModal = function(id) {
         const modal = document.getElementById(id);
         if (modal) {
@@ -61,9 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ============================
-    // 3. PRODUCT MODALS
-    // ============================
+    // --- product modals ---
     const btnAddProduct = document.getElementById('btn-open-add-product');
     if (btnAddProduct) {
         btnAddProduct.addEventListener('click', () => openModal('modal-add-product'));
@@ -387,9 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ============================
-    // IMAGE PREVIEW ON FILE INPUT
-    // ============================
+    // --- image preview on file input ---
     function setupImagePreview(inputId, previewId) {
         const input = document.getElementById(inputId);
         const preview = document.getElementById(previewId);
@@ -419,9 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupImagePreview('add-cat-image', 'add-cat-preview');
     setupImagePreview('edit-cat-image', 'edit-cat-preview');
 
-    // ============================
-    // CATEGORY MODALS
-    // ============================
+    // --- category modals ---
     const btnAddCategory = document.getElementById('btn-open-add-category');
     if (btnAddCategory) {
         btnAddCategory.addEventListener('click', () => openModal('modal-add-category'));
@@ -447,9 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ============================
-    // COLLECTION MODALS
-    // ============================
+    // --- collection modals ---
     const btnAddCollection = document.getElementById('btn-open-add-collection');
     if (btnAddCollection) {
         btnAddCollection.addEventListener('click', () => openModal('modal-add-collection'));
@@ -476,9 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ============================
-    // ORDER MANAGEMENT
-    // ============================
+    // --- order management ---
     document.querySelectorAll('.btn-manage-order').forEach(btn => {
         btn.addEventListener('click', function() {
             const d = this.dataset;
@@ -522,9 +508,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ============================
-    // AUTO-DISMISS FLASH MESSAGES
-    // ============================
+    // --- auto-dismiss flash messages ---
     document.querySelectorAll('.admin-alert-banner').forEach(banner => {
         setTimeout(() => {
             banner.style.transition = 'opacity 0.5s ease, transform 0.5s ease';

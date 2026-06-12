@@ -1,35 +1,35 @@
 <?php
 
 class Database {
-    // Singleton instance
+    // singleton instance
     private static $instance = null;
     
-    // PDO Connection
+    // pdo connection
     private $conn;
     
-    // Database credentials
+    // db credentials
     private $host = 'localhost';
     private $user = 'root';
     private $pass = '';
     private $name = 'byines';
     
-    // Private constructor to prevent direct instantiation
+    // prevent direct instantiation
     private function __construct() {
         try {
-            // Data Source Name
+            // dsn string
             $dsn = "mysql:host={$this->host};dbname={$this->name};charset=utf8mb4";
             
-            // PDO Options for better error handling and security
+            // pdo options
             $options = [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Throw exceptions on errors
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // Fetch arrays by default
-                PDO::ATTR_EMULATE_PREPARES   => false,                  // Use real prepared statements
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // throw exceptions on errors
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // fetch arrays by default
+                PDO::ATTR_EMULATE_PREPARES   => false,                  // use real prepared statements
             ];
             
             $this->conn = new PDO($dsn, $this->user, $this->pass, $options);
             
         } catch (PDOException $e) {
-            // For production, you might want to log this instead of outputting directly
+            // log instead of displaying in production
             die("Database Connection Error: " . $e->getMessage());
         }
     }
@@ -41,8 +41,7 @@ class Database {
         }
         return self::$instance;
     }
-    
-    // Get the PDO connection object
+        // Get the PDO connection object
     public function getConnection() {
         return $this->conn;
     }

@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 header('Content-Type: application/json');
 
-// Admin Auth Guard
+// admin auth guard
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
     echo json_encode(['success' => false, 'message' => 'Unauthorized.']);
     exit;

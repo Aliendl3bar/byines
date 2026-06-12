@@ -7,7 +7,7 @@ require_once '../classes/Cart.php';
 
 $cart = new Cart();
 
-// Check if cart is empty
+// check if cart is empty
 if ($cart->isEmpty()) {
     echo "<script>window.location.href='cart.php';</script>";
     exit;
@@ -33,7 +33,7 @@ include '../includes/header.php';
 
         <h1 class="page-title">Checkout</h1>
 
-        <!-- Progress Steps -->
+        <!-- progress steps -->
         <div class="progress-steps">
             <div class="progress-step completed">
                 <div class="step-number">✓</div>
@@ -51,7 +51,7 @@ include '../includes/header.php';
 
         <div class="cart-checkout-layout">
             <section class="checkout-form">
-                <!-- Shipping Information -->
+                <!-- shipping information -->
                 <div class="form-section">
                     <h2>Shipping Information</h2>
                     
@@ -96,7 +96,7 @@ include '../includes/header.php';
                     </div>
                 </div>
 
-                <!-- Payment Method -->
+                <!-- payment method -->
                 <div class="form-section">
                     <h2>Payment Method</h2>
                     
@@ -125,7 +125,7 @@ include '../includes/header.php';
 
             </section>
 
-            <!-- Order Summary -->
+            <!-- order summary -->
             <aside class="order-summary">
                 <h2>Order Summary</h2>
                 
